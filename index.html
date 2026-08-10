@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script>document.documentElement.className += ' js';</script>
+    <title>SHIFT — Создаём сайты, которые продают</title>
+    <meta name="description" content="Разработка сайтов любой сложности под ключ. Тёмный премиум-дизайн, адаптив, демо перед оплатой. Сайт под ключ за 5 990 ₽.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <!-- ШАПКА -->
+    <header class="header" id="header">
+        <div class="container header__inner">
+            <a href="#hero" class="logo">SHIFT<span class="logo__dot">.</span></a>
+            <nav class="nav" id="nav">
+                <a href="#hero" class="nav__link">Главная</a>
+                <a href="#services" class="nav__link">Услуги</a>
+                <a href="#pricing" class="nav__link">Тарифы</a>
+                <a href="#faq" class="nav__link">Вопросы</a>
+                <a href="#contact" class="nav__link">Контакты</a>
+            </nav>
+            <button class="btn btn--primary header__cta" data-open-modal>Заказать сайт</button>
+            <button class="burger" id="burger" aria-label="Меню">
+                <span></span><span></span><span></span>
+            </button>
+        </div>
+    </header>
+
+    <!-- HERO -->
+    <section class="hero" id="hero">
+        <div class="hero__bg"></div>
+        <div class="hero__overlay"></div>
+        <div class="container hero__content">
+            <div class="hero__tag reveal">Разработка сайтов под ключ</div>
+            <h1 class="hero__title reveal">
+                Ваш сайт<br><span class="accent">на вершине</span>
+            </h1>
+            <p class="hero__subtitle reveal">
+                Создаём сайты любой сложности, которые продают. Тёмный премиум-дизайн,
+                молниеносная скорость и демо-версия ещё до оплаты.
+            </p>
+            <div class="hero__actions reveal">
+                <button class="btn btn--primary btn--lg" data-open-modal>Заказать сайт</button>
+                <a href="#services" class="btn btn--ghost btn--lg">Смотреть услуги</a>
+            </div>
+            <div class="hero__stats reveal">
+                <div class="stat">
+                    <div class="stat__num">100+</div>
+                    <div class="stat__label">проектов запущено</div>
+                </div>
+                <div class="stat">
+                    <div class="stat__num">от 3 дней</div>
+                    <div class="stat__label">срок разработки</div>
+                </div>
+                <div class="stat">
+                    <div class="stat__num">5 990 ₽</div>
+                    <div class="stat__label">сайт под ключ</div>
+                </div>
+            </div>
+        </div>
+        <a href="#services" class="hero__scroll" aria-label="Вниз">
+            <span></span>
+        </a>
+    </section>
+
+    <!-- УСЛУГИ -->
+    <section class="section services" id="services">
+        <div class="container">
+            <div class="section__head reveal">
+                <span class="section__eyebrow">Услуги</span>
+                <h2 class="section__title">Всё для вашего<br>присутствия в интернете</h2>
+                <p class="section__lead">От простого лендинга до сложного многостраничного
+                    проекта — берём на себя каждый этап работы.</p>
+            </div>
+            <div class="services__grid">
+                <article class="card service reveal">
+                    <div class="service__icon">◆</div>
+                    <h3 class="service__title">Сайт под ключ</h3>
+                    <p class="service__text">Лендинг или многостраничный сайт: дизайн,
+                        вёрстка, наполнение и запуск — вы получаете готовый результат.</p>
+                </article>
+                <article class="card service reveal">
+                    <div class="service__icon">▲</div>
+                    <h3 class="service__title">Разработка демо-версии</h3>
+                    <p class="service__text">Показываем рабочий прототип дизайна ещё до
+                        оплаты — вы видите будущий сайт и платите за то, что понравилось.</p>
+                </article>
+                <article class="card service reveal">
+                    <div class="service__icon">▮</div>
+                    <h3 class="service__title">Адаптив под все устройства</h3>
+                    <p class="service__text">Сайт одинаково хорошо выглядит на компьютере,
+                        планшете и смартфоне — ни один клиент не потеряется.</p>
+                </article>
+                <article class="card service reveal">
+                    <div class="service__icon">⬡</div>
+                    <h3 class="service__title">Домен и хостинг</h3>
+                    <p class="service__text">Поможем выбрать и подключить домен и хостинг,
+                        чтобы сайт открывался по вашему красивому адресу.</p>
+                </article>
+                <article class="card service reveal">
+                    <div class="service__icon">✦</div>
+                    <h3 class="service__title">Форма заявок и интеграции</h3>
+                    <p class="service__text">Заявки с сайта приходят прямо в Telegram или на
+                        почту. Подключим оплату, аналитику и нужные сервисы.</p>
+                </article>
+                <article class="card service reveal">
+                    <div class="service__icon">◈</div>
+                    <h3 class="service__title">SEO и поддержка</h3>
+                    <p class="service__text">Базовая SEO-настройка для поисковиков, а также
+                        правки и техподдержка после запуска.</p>
+                </article>
+            </div>
+        </div>
+    </section>
+
+    <!-- ТАРИФЫ -->
+    <section class="section pricing" id="pricing">
+        <div class="container">
+            <div class="section__head reveal">
+                <span class="section__eyebrow">Тарифы</span>
+                <h2 class="section__title">Выберите свой формат</h2>
+                <p class="section__lead">Прозрачные условия без скрытых платежей.
+                    Начните с бесплатной демо-версии.</p>
+            </div>
+            <div class="pricing__grid">
+                <article class="card plan reveal">
+                    <div class="plan__icon">▲</div>
+                    <h3 class="plan__name">Демо-версия</h3>
+                    <p class="plan__for">Чтобы увидеть будущий сайт до заказа</p>
+                    <div class="plan__price"><span class="plan__amount">0 ₽</span></div>
+                    <ul class="plan__features">
+                        <li>Прототип главного экрана</li>
+                        <li>Ваши цвета и стиль</li>
+                        <li>Без обязательств</li>
+                        <li>Ответ в течение дня</li>
+                    </ul>
+                    <button class="btn btn--ghost btn--block" data-open-modal>Получить демо</button>
+                </article>
+
+                <article class="card plan plan--featured reveal">
+                    <div class="plan__badge">Хит</div>
+                    <div class="plan__icon plan__icon--accent">◆</div>
+                    <h3 class="plan__name">Сайт под ключ</h3>
+                    <p class="plan__for">Готовое решение для вашего бизнеса</p>
+                    <div class="plan__price"><span class="plan__amount">5 990 ₽</span></div>
+                    <ul class="plan__features">
+                        <li>Тёмный премиум-дизайн</li>
+                        <li>Адаптив под все устройства</li>
+                        <li>Форма заявок в Telegram</li>
+                        <li>Базовая SEO-настройка</li>
+                        <li>Демо-версия перед оплатой</li>
+                        <li>Пакет правок</li>
+                        <li>Помощь с доменом и хостингом</li>
+                    </ul>
+                    <button class="btn btn--primary btn--block" data-open-modal>Заказать сайт</button>
+                </article>
+
+                <article class="card plan reveal">
+                    <div class="plan__icon">⬡</div>
+                    <h3 class="plan__name">Сложный проект</h3>
+                    <p class="plan__for">Для больших и нестандартных задач</p>
+                    <div class="plan__price"><span class="plan__amount">Индивидуально</span></div>
+                    <ul class="plan__features">
+                        <li>Многостраничные сайты</li>
+                        <li>Каталоги и личные кабинеты</li>
+                        <li>Сложные интеграции</li>
+                        <li>Оплата онлайн</li>
+                        <li>Индивидуальный дизайн</li>
+                    </ul>
+                    <button class="btn btn--ghost btn--block" data-open-modal>Обсудить проект</button>
+                </article>
+            </div>
+        </div>
+    </section>
+
+    <!-- FAQ -->
+    <section class="section faq" id="faq">
+        <div class="container">
+            <div class="section__head reveal">
+                <span class="section__eyebrow">Вопросы</span>
+                <h2 class="section__title">Есть вопрос?<br>У нас есть ответ</h2>
+                <p class="section__lead">Всё, что нужно знать перед началом работы.</p>
+            </div>
+            <div class="faq__list">
+                <div class="faq__item reveal">
+                    <button class="faq__q">Сколько времени займёт разработка?<span class="faq__icon">+</span></button>
+                    <div class="faq__a"><p>Простой сайт под ключ мы делаем от 3 дней. Сроки
+                        сложных проектов обсуждаем индивидуально после знакомства с задачей.</p></div>
+                </div>
+                <div class="faq__item reveal">
+                    <button class="faq__q">Что входит в цену 5 990 ₽?<span class="faq__icon">+</span></button>
+                    <div class="faq__a"><p>Тёмный премиум-дизайн, адаптивная вёрстка под все
+                        устройства, форма заявок в Telegram, базовая SEO-настройка, демо-версия
+                        перед оплатой, пакет правок и помощь с подключением домена и хостинга.</p></div>
+                </div>
+                <div class="faq__item reveal">
+                    <button class="faq__q">Нужны ли мне навыки в программировании?<span class="faq__icon">+</span></button>
+                    <div class="faq__a"><p>Нет. Мы берём на себя всю техническую часть — вы
+                        просто рассказываете о бизнесе, а получаете готовый работающий сайт.</p></div>
+                </div>
+                <div class="faq__item reveal">
+                    <button class="faq__q">Можно ли посмотреть сайт до оплаты?<span class="faq__icon">+</span></button>
+                    <div class="faq__a"><p>Да. Мы бесплатно готовим демо-версию — прототип
+                        главного экрана в вашем стиле. Вы платите только за то, что вам понравилось.</p></div>
+                </div>
+                <div class="faq__item reveal">
+                    <button class="faq__q">Вносите ли вы правки после запуска?<span class="faq__icon">+</span></button>
+                    <div class="faq__a"><p>Конечно. В тариф «Сайт под ключ» уже входит пакет
+                        правок, а после запуска мы помогаем с поддержкой и обновлениями.</p></div>
+                </div>
+                <div class="faq__item reveal">
+                    <button class="faq__q">Как проходит оплата?<span class="faq__icon">+</span></button>
+                    <div class="faq__a"><p>Сначала бесплатная демо-версия, затем оплата за
+                        готовый сайт. Способ оплаты удобный для вас — обсудим в личной переписке.</p></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ФИНАЛЬНЫЙ CTA -->
+    <section class="section cta" id="contact">
+        <div class="container cta__inner reveal">
+            <h2 class="cta__title">Готовы покорить вершину?</h2>
+            <p class="cta__text">Оставьте заявку — подготовим бесплатную демо-версию вашего
+                будущего сайта и обсудим детали.</p>
+            <button class="btn btn--primary btn--lg" data-open-modal>Оставить заявку</button>
+        </div>
+    </section>
+
+    <!-- ПОДВАЛ -->
+    <footer class="footer">
+        <div class="container footer__inner">
+            <div class="footer__brand">
+                <a href="#hero" class="logo">SHIFT<span class="logo__dot">.</span></a>
+                <p class="footer__tagline">Создаём сайты, которые продают.</p>
+            </div>
+            <nav class="footer__nav">
+                <a href="#services" class="footer__link">Услуги</a>
+                <a href="#pricing" class="footer__link">Тарифы</a>
+                <a href="#faq" class="footer__link">Вопросы</a>
+                <button class="footer__link footer__link--btn" data-open-modal>Заказать сайт</button>
+            </nav>
+        </div>
+        <div class="container footer__bottom">
+            <span>© 2026 SHIFT. Все права защищены.</span>
+        </div>
+    </footer>
+
+    <!-- МОДАЛКА ЗАЯВКИ -->
+    <div class="modal" id="modal" aria-hidden="true">
+        <div class="modal__backdrop" data-close-modal></div>
+        <div class="modal__dialog" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+            <button class="modal__close" data-close-modal aria-label="Закрыть">×</button>
+            <h3 class="modal__title" id="modalTitle">Заказать сайт</h3>
+            <p class="modal__subtitle">Расскажите о проекте — подготовим демо и вернёмся с предложением.</p>
+            <form class="form" id="orderForm" novalidate>
+                <div class="form__row">
+                    <label class="form__label">Как вас зовут? <span>*</span>
+                        <input type="text" name="name" class="form__input" placeholder="Ваше имя" required>
+                    </label>
+                </div>
+                <div class="form__row">
+                    <label class="form__label">Контакт для связи <span>*</span>
+                        <input type="text" name="contact" class="form__input" placeholder="Telegram, телефон или email" required>
+                    </label>
+                </div>
+                <div class="form__row">
+                    <label class="form__label">О чём ваш бизнес? <span>*</span>
+                        <textarea name="business" class="form__input form__textarea" placeholder="Например: доставка кофе, студия маникюра, онлайн-курсы..." required></textarea>
+                    </label>
+                </div>
+                <div class="form__row">
+                    <label class="form__label">Примерный бюджет
+                        <select name="budget" class="form__input">
+                            <option value="До 6 000 ₽">До 6 000 ₽</option>
+                            <option value="6 000–20 000 ₽">6 000–20 000 ₽</option>
+                            <option value="Более 20 000 ₽">Более 20 000 ₽</option>
+                            <option value="Пока не знаю">Пока не знаю</option>
+                        </select>
+                    </label>
+                </div>
+                <div class="form__row">
+                    <label class="form__label">Комментарий
+                        <textarea name="comment" class="form__input form__textarea" placeholder="Пожелания, сроки, примеры сайтов, которые нравятся"></textarea>
+                    </label>
+                </div>
+                <button type="submit" class="btn btn--primary btn--block btn--lg" id="submitBtn">Отправить заявку</button>
+                <p class="form__note">Нажимая кнопку, вы соглашаетесь на обработку данных для связи с вами.</p>
+            </form>
+        </div>
+    </div>
+
+    <!-- МОДАЛКА УСПЕХА -->
+    <div class="modal" id="successModal" aria-hidden="true">
+        <div class="modal__backdrop" data-close-success></div>
+        <div class="modal__dialog modal__dialog--success" role="dialog" aria-modal="true">
+            <div class="success__icon">✓</div>
+            <h3 class="modal__title">Заявка успешно отправлена!</h3>
+            <p class="modal__subtitle">Спасибо! Мы уже получили вашу заявку и свяжемся с вами
+                в ближайшее время, чтобы обсудить детали и подготовить демо-версию.</p>
+            <button class="btn btn--primary btn--block" data-close-success>Отлично</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
