@@ -10,7 +10,7 @@
    только для этой задачи (см. план проекта).                */
 const TELEGRAM = {
     BOT_TOKEN: '8684145030:AAFvR_Kf7gGD5bovd-dc2fvsUWLc6Ss9NM4',
-    CHAT_ID:   ''    // ← сюда впишем ваш chat_id (получим после сообщения боту)
+    CHAT_ID:   '1275636122'
 };
 
 document.addEventListener('DOMContentLoaded', () => {
