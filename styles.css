@@ -166,7 +166,7 @@ button { font-family:inherit; cursor:pointer; border:none; background:none; colo
         linear-gradient(180deg, rgba(10,10,11,.55) 0%, rgba(10,10,11,.25) 40%, rgba(10,10,11,.85) 88%, var(--bg) 100%),
         linear-gradient(90deg, rgba(10,10,11,.7) 0%, rgba(10,10,11,0) 55%);
 }
-.hero__content { position:relative; z-index:2; max-width:760px; }
+.hero__content { position:relative; z-index:2; max-width:860px; }
 
 .hero__tag {
     display:inline-block;
@@ -183,16 +183,16 @@ button { font-family:inherit; cursor:pointer; border:none; background:none; colo
     backdrop-filter:blur(6px);
 }
 .hero__title {
-    font-size:clamp(44px, 8vw, 92px);
+    font-size:clamp(44px, 6.5vw, 108px);
     line-height:1.02;
     font-weight:800;
     letter-spacing:-.02em;
     margin-bottom:26px;
 }
 .hero__subtitle {
-    font-size:clamp(16px, 2.2vw, 20px);
+    font-size:clamp(16px, 1.6vw, 21px);
     color:var(--muted);
-    max-width:560px;
+    max-width:620px;
     margin-bottom:38px;
 }
 .hero__actions { display:flex; gap:16px; flex-wrap:wrap; margin-bottom:64px; }
