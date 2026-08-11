@@ -226,7 +226,9 @@ button { font-family:inherit; cursor:pointer; border:none; background:none; colo
 /* ---------- СЕКЦИИ ---------- */
 .section { padding:110px 0; position:relative; }
 .services { background:var(--bg); }
-.pricing  { background:linear-gradient(180deg, var(--bg) 0%, var(--bg-soft) 100%); }
+.pricing  { background:linear-gradient(180deg, var(--bg) 0%, var(--bg-soft) 100%); overflow:hidden; }
+.pricing__stars { position:absolute; inset:0; z-index:0; pointer-events:none; }
+.pricing .container { position:relative; z-index:1; }
 .faq      { background:var(--bg-soft); }
 
 .section__head { max-width:640px; margin:0 auto 64px; text-align:center; }

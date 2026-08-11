@@ -141,6 +141,9 @@ document.addEventListener('DOMContentLoaded', () => {
         field.addEventListener('input', () => field.classList.remove('invalid'))
     );
 
+    /* ---------- Пиксельные звёзды на фоне блока тарифов ---------- */
+    initPixelStarsBackground();
+
     async function sendToTelegram(data) {
         if (!TELEGRAM.BOT_TOKEN || !TELEGRAM.CHAT_ID) {
             console.info('[SHIFT] Токен Telegram не задан — заявка не отправлена (демо-режим).', data);
@@ -166,5 +169,180 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch (err) {
             console.error('[SHIFT] Ошибка отправки в Telegram:', err);
         }
+    }
+
+    function initPixelStarsBackground() {
+        const section = document.querySelector('.pricing');
+        const canvas = section && section.querySelector('.pricing__stars');
+        if (!section || !canvas || !canvas.getContext) return;
+        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+        const ctx = canvas.getContext('2d');
+        const STAR_COLORS = ['#FFFFFF', '#FFFFAA', '#AAAAFF', '#FFAAAA', '#AAFFAA', '#FFAAFF', '#AAFFFF'];
+        const STAR_DENSITY = 0.00015;
+        const TWINKLE_PROB = 0.7;
+        const MIN_TWINKLE = 2, MAX_TWINKLE = 4;
+        const PIXEL = 4;
+        const REGEN_INTERVAL = 5000;
+        const REGEN_PERCENT = 0.15;
+        const SHOOT_PIXEL = 2;
+        const FPS = 16;
+        const FRAME_MS = 1000 / FPS;
+
+        let stars = [];
+        let shootingStars = [];
+        let rafId = null;
+        let lastFrame = 0;
+        let shootTimeout = null;
+        let regenInterval = null;
+        let running = false;
+
+        function makeStar() {
+            const gridX = Math.floor(Math.random() * (canvas.width / PIXEL)) * PIXEL;
+            const gridY = Math.floor(Math.random() * (canvas.height / PIXEL)) * PIXEL;
+            const baseOpacity = Math.random() * 0.5 + 0.5;
+            return {
+                x: gridX, y: gridY,
+                color: STAR_COLORS[Math.floor(Math.random() * STAR_COLORS.length)],
+                baseOpacity, currentOpacity: baseOpacity,
+                twinkle: Math.random() < TWINKLE_PROB,
+                twinkleSpeed: MIN_TWINKLE + Math.random() * (MAX_TWINKLE - MIN_TWINKLE),
+                twinkleDirection: -1,
+                twinkleTimer: 0
+            };
+        }
+
+        function initStars() {
+            const count = Math.floor(canvas.width * canvas.height * STAR_DENSITY);
+            stars = Array.from({ length: count }, makeStar);
+        }
+
+        function regenerateStars() {
+            if (!stars.length) return;
+            const n = Math.max(1, Math.floor(stars.length * REGEN_PERCENT));
+            for (let i = 0; i < n; i++) {
+                stars[Math.floor(Math.random() * stars.length)] = makeStar();
+            }
+        }
+
+        function createShootingStar() {
+            shootingStars.push({
+                x: Math.random() * canvas.width,
+                y: 0,
+                angle: 45 + Math.random() * 90,
+                speed: Math.random() * 5 + 8,
+                distance: 0,
+                trail: []
+            });
+        }
+
+        function scheduleShootingStar() {
+            shootTimeout = setTimeout(() => {
+                createShootingStar();
+                scheduleShootingStar();
+            }, Math.random() * 4000 + 2000);
+        }
+
+        function resize() {
+            canvas.width = section.clientWidth;
+            canvas.height = section.clientHeight;
+            initStars();
+        }
+
+        function draw(timestamp) {
+            if (timestamp - lastFrame < FRAME_MS) {
+                rafId = requestAnimationFrame(draw);
+                return;
+            }
+            lastFrame = timestamp;
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            stars.forEach(star => {
+                if (star.twinkle) {
+                    star.twinkleTimer += 1 / FPS;
+                    if (star.twinkleTimer >= star.twinkleSpeed) {
+                        star.twinkleTimer = 0;
+                        star.twinkleDirection *= -1;
+                    }
+                    const progress = star.twinkleTimer / star.twinkleSpeed;
+                    const dim = star.baseOpacity * 0.3;
+                    if (progress < 0.5) {
+                        star.currentOpacity = star.twinkleDirection < 0 ? star.baseOpacity : dim;
+                    } else {
+                        star.currentOpacity = star.twinkleDirection < 0 ? dim : star.baseOpacity;
+                    }
+                }
+                ctx.globalAlpha = star.currentOpacity;
+                ctx.fillStyle = star.color;
+                ctx.fillRect(star.x, star.y, PIXEL, PIXEL);
+            });
+
+            if (shootingStars.length) {
+                shootingStars = shootingStars
+                    .map(star => {
+                        const rad = star.angle * Math.PI / 180;
+                        const newX = star.x + star.speed * Math.cos(rad);
+                        const newY = star.y + star.speed * Math.sin(rad);
+                        const newDistance = star.distance + star.speed;
+                        const trail = star.trail
+                            .map(p => ({ x: p.x, y: p.y, opacity: p.opacity - 0.1 }))
+                            .filter(p => p.opacity > 0);
+                        if (newDistance % 8 < star.speed) {
+                            trail.push({ x: star.x, y: star.y, opacity: 1 });
+                        }
+                        return { ...star, x: newX, y: newY, distance: newDistance, trail };
+                    })
+                    .filter(star =>
+                        star.x >= -30 && star.x <= canvas.width + 30 &&
+                        star.y >= -30 && star.y <= canvas.height + 30
+                    );
+
+                shootingStars.forEach(star => {
+                    ctx.globalAlpha = 1;
+                    star.trail.forEach(p => {
+                        ctx.fillStyle = `rgba(180,242,255,${p.opacity})`;
+                        ctx.fillRect(p.x, p.y, SHOOT_PIXEL, SHOOT_PIXEL);
+                    });
+                    ctx.fillStyle = '#ffffff';
+                    for (let y = 0; y < 2; y++) {
+                        for (let x = 0; x < 4; x++) {
+                            if ((x === 0 && y === 1) || (x === 3 && y === 0)) continue;
+                            ctx.fillRect(star.x + x * SHOOT_PIXEL, star.y + y * SHOOT_PIXEL, SHOOT_PIXEL, SHOOT_PIXEL);
+                        }
+                    }
+                });
+            }
+
+            ctx.globalAlpha = 1;
+            rafId = requestAnimationFrame(draw);
+        }
+
+        function start() {
+            if (running) return;
+            running = true;
+            resize();
+            lastFrame = 0;
+            rafId = requestAnimationFrame(draw);
+            scheduleShootingStar();
+            regenInterval = setInterval(regenerateStars, REGEN_INTERVAL);
+        }
+
+        function stop() {
+            running = false;
+            if (rafId) cancelAnimationFrame(rafId);
+            if (shootTimeout) clearTimeout(shootTimeout);
+            if (regenInterval) clearInterval(regenInterval);
+        }
+
+        if ('IntersectionObserver' in window) {
+            const io = new IntersectionObserver(entries => {
+                entries.forEach(entry => (entry.isIntersecting ? start() : stop()));
+            }, { threshold: 0.05 });
+            io.observe(section);
+        } else {
+            start();
+        }
+
+        window.addEventListener('resize', () => { if (running) resize(); }, { passive: true });
     }
 });
