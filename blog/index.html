@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script>document.documentElement.className += ' js';</script>
+    <title>Блог — статьи о разработке сайтов | SHIFT</title>
+    <meta name="description" content="Полезные статьи о разработке сайтов под ключ: сколько стоит сайт, сроки, как выбрать формат сайта и зачем нужна демо-версия перед оплатой.">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://shiftagency.space/blog/">
+
+    <meta property="og:type" content="website">
+    <meta property="og:locale" content="ru_RU">
+    <meta property="og:url" content="https://shiftagency.space/blog/">
+    <meta property="og:site_name" content="SHIFT">
+    <meta property="og:title" content="Блог — статьи о разработке сайтов | SHIFT">
+    <meta property="og:description" content="Полезные статьи о разработке сайтов под ключ: цены, сроки, форматы и демо-версии.">
+    <meta property="og:image" content="https://shiftagency.space/images/everest.jpg">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../styles.css">
+</head>
+<body>
+
+    <header class="header" id="header">
+        <div class="container header__inner">
+            <a href="../index.html#hero" class="logo">SHIFT<span class="logo__dot">.</span></a>
+            <nav class="nav" id="nav">
+                <a href="../index.html#hero" class="nav__link">Главная</a>
+                <a href="../index.html#services" class="nav__link">Услуги</a>
+                <a href="../index.html#pricing" class="nav__link">Тарифы</a>
+                <a href="index.html" class="nav__link">Блог</a>
+                <a href="../index.html#contact" class="nav__link">Контакты</a>
+            </nav>
+            <a href="../index.html#hero" class="btn btn--primary header__cta">Заказать сайт</a>
+            <button class="burger" id="burger" aria-label="Меню">
+                <span></span><span></span><span></span>
+            </button>
+        </div>
+    </header>
+
+    <section class="blog-hero">
+        <div class="container">
+            <h1 class="blog-hero__title">Блог SHIFT</h1>
+            <p class="blog-hero__text">Разбираем стоимость, сроки и форматы сайтов простым
+                языком — чтобы вы принимали решение осознанно, а не наугад.</p>
+        </div>
+    </section>
+
+    <section class="section" style="padding-top:0;">
+        <div class="container">
+            <div class="blog__grid">
+                <article class="card blog-card">
+                    <h2 class="blog-card__title">Сколько стоит сайт под ключ</h2>
+                    <p class="blog-card__excerpt">Разбираем, из чего складывается цена сайта,
+                        почему 5 990 ₽ — реальная стоимость, а не «от», и на чём можно
+                        переплатить у других исполнителей.</p>
+                    <a href="skolko-stoit-sayt-pod-klyuch.html" class="blog-card__link">Читать статью →</a>
+                </article>
+
+                <article class="card blog-card">
+                    <h2 class="blog-card__title">Сроки разработки сайта</h2>
+                    <p class="blog-card__excerpt">Почему сайт под ключ можно сделать за 3 дня,
+                        какие этапы входят в разработку и что реально влияет на сроки.</p>
+                    <a href="sroki-razrabotki-sayta.html" class="blog-card__link">Читать статью →</a>
+                </article>
+
+                <article class="card blog-card">
+                    <h2 class="blog-card__title">Демо-версия сайта до оплаты</h2>
+                    <p class="blog-card__excerpt">Зачем нужна бесплатная демо-версия, как она
+                        снижает риски для заказчика и почему мы работаем именно так.</p>
+                    <a href="demo-versiya-sayta-do-oplaty.html" class="blog-card__link">Читать статью →</a>
+                </article>
+
+                <article class="card blog-card">
+                    <h2 class="blog-card__title">Лендинг или многостраничный сайт</h2>
+                    <p class="blog-card__excerpt">Как понять, какой формат сайта нужен именно
+                        вашему бизнесу — сравниваем на практических примерах.</p>
+                    <a href="lending-ili-mnogostranichny-sayt.html" class="blog-card__link">Читать статью →</a>
+                </article>
+            </div>
+        </div>
+    </section>
+
+    <footer class="footer">
+        <div class="container footer__inner">
+            <div class="footer__brand">
+                <a href="../index.html#hero" class="logo">SHIFT<span class="logo__dot">.</span></a>
+                <p class="footer__tagline">Создаём сайты, которые продают.</p>
+            </div>
+            <nav class="footer__nav">
+                <a href="../index.html#services" class="footer__link">Услуги</a>
+                <a href="../index.html#pricing" class="footer__link">Тарифы</a>
+                <a href="index.html" class="footer__link">Блог</a>
+                <a href="../index.html#hero" class="footer__link footer__link--btn">Заказать сайт</a>
+            </nav>
+        </div>
+        <div class="container footer__bottom">
+            <span>© 2026 SHIFT. Все права защищены.</span>
+        </div>
+    </footer>
+
+    <script>
+        const burger = document.getElementById('burger');
+        const nav = document.getElementById('nav');
+        const header = document.getElementById('header');
+        burger?.addEventListener('click', () => { burger.classList.toggle('open'); nav.classList.toggle('open'); });
+        window.addEventListener('scroll', () => { header.classList.toggle('scrolled', window.scrollY > 10); });
+    </script>
+</body>
+</html>

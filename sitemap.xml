@@ -6,4 +6,34 @@
         <changefreq>weekly</changefreq>
         <priority>1.0</priority>
     </url>
+    <url>
+        <loc>https://shiftagency.space/blog/</loc>
+        <lastmod>2026-08-15</lastmod>
+        <changefreq>weekly</changefreq>
+        <priority>0.8</priority>
+    </url>
+    <url>
+        <loc>https://shiftagency.space/blog/skolko-stoit-sayt-pod-klyuch.html</loc>
+        <lastmod>2026-08-15</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.7</priority>
+    </url>
+    <url>
+        <loc>https://shiftagency.space/blog/sroki-razrabotki-sayta.html</loc>
+        <lastmod>2026-08-15</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.7</priority>
+    </url>
+    <url>
+        <loc>https://shiftagency.space/blog/demo-versiya-sayta-do-oplaty.html</loc>
+        <lastmod>2026-08-15</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.7</priority>
+    </url>
+    <url>
+        <loc>https://shiftagency.space/blog/lending-ili-mnogostranichny-sayt.html</loc>
+        <lastmod>2026-08-15</lastmod>
+        <changefreq>monthly</changefreq>
+        <priority>0.7</priority>
+    </url>
 </urlset>
