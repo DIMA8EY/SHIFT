@@ -151,7 +151,7 @@ button { font-family:inherit; cursor:pointer; border:none; background:none; colo
     inset:0;
     background:
         radial-gradient(120% 90% at 60% 10%, #1a1a22 0%, #0a0a0b 60%),
-        url('images/everest.jpg.png') center 30% / cover no-repeat;
+        url('images/everest.jpg') center 30% / cover no-repeat;
     background-blend-mode:screen, normal;
     z-index:0;
     animation:heroZoom 24s ease-in-out infinite alternate;
