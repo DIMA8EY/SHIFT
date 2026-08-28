@@ -343,6 +343,83 @@ button { font-family:inherit; cursor:pointer; border:none; background:none; colo
 
 /* ---------- КЕЙСЫ ---------- */
 .cases { background:var(--bg); }
+
+/* ---------- Featured-кейс (реальный проект, авто-кроссфейд до/после) ---------- */
+.case-featured {
+    display:grid;
+    grid-template-columns:1.15fr 1fr;
+    gap:32px;
+    align-items:center;
+    padding:20px;
+    margin-bottom:24px;
+}
+.case-featured:hover { transform:none; border-color:var(--border-2); }
+
+.case-featured__visual {
+    position:relative;
+    aspect-ratio:1200 / 673;
+    border-radius:var(--radius-sm);
+    overflow:hidden;
+    border:1px solid var(--border-2);
+    background:var(--bg-soft);
+    display:flex;
+    flex-direction:column;
+}
+.case-featured__chrome {
+    height:20px;
+    display:flex;
+    align-items:center;
+    gap:5px;
+    padding:0 10px;
+    flex-shrink:0;
+    background:rgba(255,255,255,.06);
+    position:relative;
+    z-index:2;
+}
+.case-featured__chrome i { width:6px; height:6px; border-radius:50%; background:rgba(255,255,255,.25); display:block; }
+
+.case-featured__shots { position:relative; flex:1; }
+.case-featured__shot {
+    position:absolute; inset:0;
+    margin:0;
+    animation:caseFade 7s ease-in-out infinite;
+}
+.case-featured__shot img { width:100%; height:100%; object-fit:cover; object-position:top; display:block; }
+.case-featured__shot--before { animation-delay:-3.5s; }
+.case-featured__shot--after  { opacity:0; }
+
+.case-featured__tag {
+    position:absolute; top:10px; left:10px; z-index:2;
+    font-size:11px; font-weight:700; letter-spacing:.06em; text-transform:uppercase;
+    padding:4px 10px; border-radius:100px; color:#fff;
+    background:rgba(10,10,11,.65); backdrop-filter:blur(4px);
+}
+.case-featured__tag--after { background:var(--accent); }
+
+@keyframes caseFade {
+    0%, 42%  { opacity:1; }
+    50%, 92% { opacity:0; }
+    100%     { opacity:1; }
+}
+@media (prefers-reduced-motion: reduce) {
+    .case-featured__shot { animation:none !important; }
+    .case-featured__shot--before { opacity:0 !important; }
+    .case-featured__shot--after  { opacity:1 !important; }
+}
+
+.case-featured__badge {
+    display:inline-block;
+    font-size:11px; font-weight:700; letter-spacing:.06em; text-transform:uppercase;
+    color:var(--accent-2);
+    background:rgba(255,90,31,.12);
+    border:1px solid rgba(255,90,31,.3);
+    padding:5px 12px;
+    border-radius:100px;
+    margin-bottom:14px;
+}
+.case-featured__title { font-size:22px; font-weight:700; margin-bottom:12px; line-height:1.25; }
+.case-featured__text { font-size:14.5px; color:var(--muted); line-height:1.6; margin-bottom:22px; }
+
 .cases__grid {
     display:grid;
     grid-template-columns:repeat(3, 1fr);
@@ -677,6 +754,7 @@ select.form__input { appearance:none; cursor:pointer; }
     .pricing__grid { grid-template-columns:1fr; max-width:460px; margin:0 auto; }
     .plan--featured { order:-1; }
     .cases__grid { grid-template-columns:1fr; max-width:460px; margin:0 auto; }
+    .case-featured { grid-template-columns:1fr; }
 }
 
 @media (max-width:760px) {

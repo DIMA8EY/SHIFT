@@ -1,0 +1,484 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Редизайн MMC Club</title>
+<meta name="description" content="Демоверсия редизайна сайта автотехцентра Mitsubishi Motors Club: ремонт и обслуживание Mitsubishi, Toyota, Lexus в Москве.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;600;700&family=Golos+Text:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body id="top">
+
+<!-- ================= Демо-плашка ================= -->
+<div class="demobar">
+  <div class="container demobar__in">
+    <span class="dot"></span>
+    <span><b>Демоверсия редизайна.</b> Цены, свободные слоты и расчёты — демонстрационные, заявки никуда не отправляются.</span>
+  </div>
+</div>
+
+<!-- ================= Шапка ================= -->
+<header class="hdr" id="hdr">
+  <div class="container hdr__in">
+    <a class="logo" href="#top" aria-label="MMC Club — на главную">
+      <span class="logo__mark" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 17h18M5 17l1.6-5.2A3 3 0 0 1 9.5 9.6h5a3 3 0 0 1 2.9 2.2L19 17"/>
+          <circle cx="7.5" cy="17" r="1.8"/><circle cx="16.5" cy="17" r="1.8"/>
+        </svg>
+      </span>
+      <span class="logo__txt">
+        <span class="logo__name">MMC CLUB</span>
+        <span class="logo__sub">Сервис с 1998 года</span>
+      </span>
+    </a>
+
+    <nav class="nav" id="nav">
+      <a class="nav__link" href="#services">Услуги</a>
+      <a class="nav__link" href="#calc">Калькулятор ТО</a>
+      <a class="nav__link" href="#centers">Техцентры</a>
+      <a class="nav__link" href="#reviews">Отзывы</a>
+      <a class="nav__link" href="#contacts">Контакты</a>
+    </nav>
+
+    <div class="hdr__side">
+      <a class="hdr__phone" href="tel:+74957078141">
+        +7 (495) 707-81-41
+        <small>ежедневно 8:00–20:00</small>
+      </a>
+      <a class="btn btn--primary btn--sm" href="#booking">Записаться</a>
+      <button class="burger" id="burger" aria-label="Меню" aria-expanded="false"><span></span></button>
+    </div>
+  </div>
+</header>
+
+<!-- ================= Hero ================= -->
+<section class="hero">
+  <div class="container hero__grid">
+    <div>
+      <span class="eyebrow"><span class="dot"></span> Три техцентра в Москве · работаем без выходных</span>
+
+      <h1 class="hero__title">Ремонт и обслуживание <span>Mitsubishi</span>, Toyota и Lexus</h1>
+
+      <p class="hero__lead">
+        Профильный сервис с 1998 года: 450 000 обслуженных автомобилей, мастера с опытом
+        от 15 лет по марке и собственный склад оригинальных запчастей. Смета до начала
+        работ — без «нашли ещё» по ходу ремонта.
+      </p>
+
+      <div class="hero__cta">
+        <a class="btn btn--primary btn--lg" href="#calc">Рассчитать стоимость ТО</a>
+        <a class="btn btn--ghost btn--lg" href="#booking">Записаться онлайн</a>
+      </div>
+
+      <ul class="hero__trust">
+        <li>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v6c0 4.4-3 8.2-7 9-4-.8-7-4.6-7-9V6l7-3z"/><path d="M9 12l2 2 4-4"/></svg>
+          Гарантия на все работы
+        </li>
+        <li>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7l9-4 9 4-9 4-9-4z"/><path d="M3 12l9 4 9-4M3 17l9 4 9-4"/></svg>
+          5 000+ оригинальных запчастей на складе
+        </li>
+        <li>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+          Ежедневно 8:00–20:00
+        </li>
+      </ul>
+    </div>
+
+    <aside class="hero-card reveal" aria-label="Ближайшая свободная запись">
+      <div class="hero-card__top">
+        <span class="hero-card__title">Ближайшая запись</span>
+        <span class="hero-card__date" id="heroDate">—</span>
+      </div>
+      <p class="hero-card__center">Шоссе Энтузиастов, д. 31, стр. 40 · слесарный и кузовной цех</p>
+
+      <div class="hero-card__slots" id="heroSlots"></div>
+
+      <a class="btn btn--primary btn--block" href="#booking">Выбрать другое время</a>
+      <p class="hero-card__note">Подтверждаем заявку звонком в течение дня</p>
+    </aside>
+  </div>
+</section>
+
+<!-- ================= Цифры ================= -->
+<section class="stats">
+  <div class="container">
+    <div class="stats__grid">
+      <div class="stat"><div class="stat__num">27 лет</div><div class="stat__label">на рынке автосервиса</div></div>
+      <div class="stat"><div class="stat__num">450 000</div><div class="stat__label">обслуженных автомобилей</div></div>
+      <div class="stat"><div class="stat__num">3</div><div class="stat__label">техцентра в Москве</div></div>
+      <div class="stat"><div class="stat__num">40</div><div class="stat__label">постов и подъёмников</div></div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= Услуги ================= -->
+<section class="section" id="services">
+  <div class="container">
+    <div class="section__head section__head--split reveal">
+      <div>
+        <span class="eyebrow">Что мы делаем</span>
+        <h2 class="section__title">Полный цикл работ по вашей марке</h2>
+        <p class="section__sub">От регламентного ТО до кузовного ремонта и восстановления геометрии — в одном месте, без поездок по подрядчикам.</p>
+      </div>
+      <a class="btn btn--ghost" href="#booking">Записаться на диагностику</a>
+    </div>
+
+    <div class="services" id="servicesGrid"></div>
+  </div>
+</section>
+
+<!-- ================= Калькулятор ТО ================= -->
+<section class="section section--tint" id="calc">
+  <div class="container">
+    <div class="section__head reveal">
+      <span class="eyebrow">Прозрачные цены</span>
+      <h2 class="section__title">Калькулятор ТО</h2>
+      <p class="section__sub">Выберите автомобиль и вид обслуживания — покажем состав работ, стоимость запчастей и итог до визита в сервис.</p>
+    </div>
+
+    <div class="calc__grid">
+      <!-- Форма -->
+      <div class="panel reveal">
+        <div class="panel__title">Ваш автомобиль</div>
+
+        <div class="field">
+          <label class="field__label" for="cBrand">Марка</label>
+          <select class="control" id="cBrand"></select>
+        </div>
+
+        <div class="field">
+          <label class="field__label" for="cModel">Модель</label>
+          <select class="control" id="cModel"></select>
+        </div>
+
+        <div class="field field--row">
+          <div>
+            <label class="field__label" for="cYear">Год выпуска</label>
+            <select class="control" id="cYear"></select>
+          </div>
+          <div>
+            <label class="field__label" for="cEngine">Двигатель</label>
+            <select class="control" id="cEngine"></select>
+          </div>
+        </div>
+
+        <div class="field">
+          <span class="field__label">Вид обслуживания</span>
+          <div class="chips" id="cLevels" role="group" aria-label="Вид обслуживания"></div>
+        </div>
+
+        <button class="btn btn--primary btn--block btn--lg" id="cCalc">Рассчитать стоимость</button>
+      </div>
+
+      <!-- Результат -->
+      <div class="panel panel--result reveal" id="cResult" aria-live="polite">
+        <div class="res__empty">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="4" y="2.5" width="16" height="19" rx="3"/><path d="M8 7h8M8 11.5h3M8 15.5h3M15 11.5h1M15 15.5h1"/>
+          </svg>
+          <p>Выберите автомобиль и вид ТО — расчёт появится здесь.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= Почему мы ================= -->
+<section class="section" id="why">
+  <div class="container">
+    <div class="section__head reveal">
+      <span class="eyebrow">Почему к нам возвращаются</span>
+      <h2 class="section__title">Профильный сервис вместо универсального</h2>
+    </div>
+
+    <div class="why reveal">
+      <div class="why__item">
+        <div class="why__ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M14.5 6.5a4 4 0 0 0 5 5l-8 8a2.8 2.8 0 0 1-4-4l8-8a4 4 0 0 0-1-1z"/></svg></div>
+        <h3 class="why__title">Мастера по марке</h3>
+        <p class="why__text">Механики и диагносты работают только с Mitsubishi, Toyota и Lexus — опыт от 15 лет, типовые болячки моделей знают наизусть.</p>
+      </div>
+      <div class="why__item">
+        <div class="why__ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7l9-4 9 4-9 4-9-4z"/><path d="M3 12l9 4 9-4M3 17l9 4 9-4"/></svg></div>
+        <h3 class="why__title">Свой склад запчастей</h3>
+        <p class="why__text">Более 5 000 наименований оригинальных деталей: поставки со складов в Германии, Японии и ОАЭ. Расходники по ТО — в наличии.</p>
+      </div>
+      <div class="why__item">
+        <div class="why__ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h12v18l-3-2-3 2-3-2-3 2V3z"/><path d="M9 8h6M9 12h6M9 16h3"/></svg></div>
+        <h3 class="why__title">Смета до начала работ</h3>
+        <p class="why__text">Согласовываем перечень и стоимость заранее. Появилось дополнительное — звоним и ждём вашего решения, а не ставим перед фактом.</p>
+      </div>
+      <div class="why__item">
+        <div class="why__ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="13" rx="2"/><path d="M7 20h10M12 17v3M7 10l2.5 2.5L12 8l2 4 3-2"/></svg></div>
+        <h3 class="why__title">Дилерское оборудование</h3>
+        <p class="why__text">Сканеры для всех блоков, стенд 3D Hunter для развал-схождения, стапель и окрасочная камера в кузовном цехе.</p>
+      </div>
+      <div class="why__item">
+        <div class="why__ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg></div>
+        <h3 class="why__title">ТО в день обращения</h3>
+        <p class="why__text">Регламентное обслуживание — за 2–4 часа, можно подождать в клиентской зоне. Запись онлайн, подтверждение звонком в тот же день.</p>
+      </div>
+      <div class="why__item">
+        <div class="why__ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l7 3v6c0 4.4-3 8.2-7 9-4-.8-7-4.6-7-9V6l7-3z"/><path d="M9 12l2 2 4-4"/></svg></div>
+        <h3 class="why__title">Гарантия сохраняется</h3>
+        <p class="why__text">Обслуживание у независимого сервиса не лишает заводской гарантии: работаем по регламенту производителя и ставим отметку в книжку.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= Техцентры ================= -->
+<section class="section section--tint" id="centers">
+  <div class="container">
+    <div class="section__head reveal">
+      <span class="eyebrow">Где нас найти</span>
+      <h2 class="section__title">Три техцентра в Москве</h2>
+      <p class="section__sub">Все площадки работают ежедневно с 8:00 до 20:00. Кузовной ремонт и окраска — на шоссе Энтузиастов.</p>
+    </div>
+    <div class="centers" id="centersGrid"></div>
+  </div>
+</section>
+
+<!-- ================= Акции ================= -->
+<section class="section" id="promos">
+  <div class="container">
+    <div class="section__head reveal">
+      <span class="eyebrow">Действующие предложения</span>
+      <h2 class="section__title">Акции</h2>
+    </div>
+
+    <div class="promos reveal">
+      <div class="promo" data-badge="ХИТ">
+        <div class="promo__val">−15%</div>
+        <h3 class="promo__title">На регламентное ТО</h3>
+        <p class="promo__text">Скидка на работы по любому виду ТО при записи через сайт. Учтена в расчёте калькулятора.</p>
+        <p class="promo__term">Действует постоянно для записи онлайн</p>
+      </div>
+      <div class="promo" data-badge="НОВЫМ">
+        <div class="promo__val">−20%</div>
+        <h3 class="promo__title">Первое обращение</h3>
+        <p class="promo__text">Скидка на слесарные работы для тех, кто приехал к нам впервые. Диагностика — бесплатно при последующем ремонте.</p>
+        <p class="promo__term">Один раз на автомобиль</p>
+      </div>
+      <div class="promo" data-badge="КЛУБ">
+        <div class="promo__val">Клуб</div>
+        <h3 class="promo__title">Постоянным клиентам</h3>
+        <p class="promo__text">Накопительная клубная скидка до 10%, приоритетная запись и бесплатный подменный автомобиль на время кузовного ремонта.</p>
+        <p class="promo__term">С третьего визита</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= Отзывы ================= -->
+<section class="section section--tint" id="reviews">
+  <div class="container">
+    <div class="section__head section__head--split reveal">
+      <div>
+        <span class="eyebrow">Отзывы клиентов</span>
+        <h2 class="section__title">Что пишут в книге отзывов</h2>
+      </div>
+      <a class="btn btn--ghost" href="#booking">Приехать и проверить</a>
+    </div>
+    <div class="reviews" id="reviewsGrid"></div>
+  </div>
+</section>
+
+<!-- ================= Онлайн-запись ================= -->
+<section class="section" id="booking">
+  <div class="container">
+    <div class="section__head reveal">
+      <span class="eyebrow">Запись за 4 шага</span>
+      <h2 class="section__title">Онлайн-запись в сервис</h2>
+      <p class="section__sub">Выберите техцентр, услугу и удобное время. Мастер-приёмщик перезвонит и подтвердит запись в течение дня.</p>
+    </div>
+
+    <div class="wizard reveal" id="wizard">
+      <div class="wizard__steps" id="wSteps">
+        <div class="wstep is-active" data-step="1"><span class="wstep__num">1</span><span class="wstep__label">Техцентр</span></div>
+        <div class="wstep" data-step="2"><span class="wstep__num">2</span><span class="wstep__label">Услуга</span></div>
+        <div class="wstep" data-step="3"><span class="wstep__num">3</span><span class="wstep__label">Дата и время</span></div>
+        <div class="wstep" data-step="4"><span class="wstep__num">4</span><span class="wstep__label">Контакты</span></div>
+      </div>
+
+      <div class="wizard__body">
+        <!-- Шаг 1 -->
+        <div class="wpane is-active" data-pane="1">
+          <h3 class="wpane__title">Куда вам удобнее приехать?</h3>
+          <p class="wpane__sub">Все три площадки работают ежедневно с 8:00 до 20:00.</p>
+          <div class="opts" id="wCenters"></div>
+        </div>
+
+        <!-- Шаг 2 -->
+        <div class="wpane" data-pane="2">
+          <h3 class="wpane__title">Что нужно сделать?</h3>
+          <p class="wpane__sub" id="wServicesHint">Выберите основную услугу — детали уточним по телефону.</p>
+          <div class="svc-chips" id="wServices"></div>
+        </div>
+
+        <!-- Шаг 3 -->
+        <div class="wpane" data-pane="3">
+          <h3 class="wpane__title">Когда вас ждать?</h3>
+          <p class="wpane__sub">Показано наличие свободных постов на ближайшие две недели.</p>
+          <div class="days" id="wDays"></div>
+          <div class="slots" id="wSlots"></div>
+          <div class="legend">
+            <span><i class="free"></i>свободно</span>
+            <span><i class="busy"></i>занято</span>
+          </div>
+        </div>
+
+        <!-- Шаг 4 -->
+        <div class="wpane" data-pane="4">
+          <h3 class="wpane__title">Как с вами связаться?</h3>
+          <p class="wpane__sub">Перезвоним в течение дня, чтобы подтвердить запись и уточнить детали.</p>
+
+          <div class="grid-2">
+            <div class="field" id="fName">
+              <label class="field__label" for="bName">Имя *</label>
+              <input class="control" id="bName" type="text" placeholder="Как к вам обращаться" autocomplete="name">
+              <div class="err">Укажите имя</div>
+            </div>
+            <div class="field" id="fPhone">
+              <label class="field__label" for="bPhone">Телефон *</label>
+              <input class="control" id="bPhone" type="tel" placeholder="+7 (___) ___-__-__" inputmode="tel" autocomplete="tel">
+              <div class="err">Введите номер полностью</div>
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <div class="field" id="fCar">
+              <label class="field__label" for="bCar">Автомобиль *</label>
+              <input class="control" id="bCar" type="text" placeholder="Mitsubishi Outlander III">
+              <div class="err">Укажите марку и модель</div>
+            </div>
+            <div class="field" id="fYear">
+              <label class="field__label" for="bYear">Год выпуска</label>
+              <input class="control" id="bYear" type="text" placeholder="2018" inputmode="numeric">
+              <div class="err"></div>
+            </div>
+          </div>
+
+          <div class="field" id="fComment">
+            <label class="field__label" for="bComment">Комментарий</label>
+            <textarea class="control" id="bComment" placeholder="Опишите проблему: посторонний звук, ошибка на панели, плановое ТО по пробегу…"></textarea>
+          </div>
+
+          <div class="field" id="fAgree">
+            <label class="check">
+              <input type="checkbox" id="bAgree">
+              <span>Согласен на обработку персональных данных. В демоверсии форма ничего не отправляет и никуда не сохраняет данные.</span>
+            </label>
+            <div class="err">Нужно согласие на обработку данных</div>
+          </div>
+        </div>
+
+        <!-- Готово -->
+        <div class="wpane" data-pane="5">
+          <div class="done">
+            <div class="done__ico">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>
+            </div>
+            <h3 class="done__title">Заявка принята</h3>
+            <p class="done__text">Мастер-приёмщик перезвонит, чтобы подтвердить запись. Напоминание придёт за день до визита.</p>
+            <div class="done__card" id="wSummaryCard"></div>
+            <p class="done__demo">Это демонстрация: заявка никуда не отправлена и нигде не сохранена.</p>
+            <div style="margin-top:22px"><button class="btn btn--ghost" id="wRestart">Записаться ещё раз</button></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="wizard__foot" id="wFoot">
+        <div class="wizard__summary" id="wSummary">Шаг 1 из 4 — выберите техцентр</div>
+        <div class="wizard__btns">
+          <button class="btn btn--ghost" id="wPrev" disabled>Назад</button>
+          <button class="btn btn--primary" id="wNext">Далее</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= Футер ================= -->
+<footer class="footer" id="contacts">
+  <div class="container">
+    <div class="footer__grid">
+      <div>
+        <a class="logo" href="#top">
+          <span class="logo__mark" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M3 17h18M5 17l1.6-5.2A3 3 0 0 1 9.5 9.6h5a3 3 0 0 1 2.9 2.2L19 17"/>
+              <circle cx="7.5" cy="17" r="1.8"/><circle cx="16.5" cy="17" r="1.8"/>
+            </svg>
+          </span>
+          <span class="logo__txt">
+            <span class="logo__name">MMC CLUB</span>
+            <span class="logo__sub">Сервис с 1998 года</span>
+          </span>
+        </a>
+        <p class="footer__text">Специализированный автотехцентр по обслуживанию и ремонту автомобилей Mitsubishi, Toyota и Lexus в Москве.</p>
+        <div class="footer__soc">
+          <a href="#" aria-label="ВКонтакте" title="ВКонтакте">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="5"/><path d="M7 9.5c.7 3.4 2.6 5 5 5h1.2v-2c1 .2 1.9 1 2.3 2H18c-.5-1.7-1.7-2.7-2.6-3 .8-.4 1.9-1.6 2.2-3.2h-1.8c-.4 1.4-1.4 2.5-2.6 2.7V9.5h-1.9v3c-1.2-.4-2.2-1.7-2.5-3H7z"/></svg>
+          </a>
+          <a href="#" aria-label="Telegram" title="Telegram">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 4.5L3.8 11c-.8.3-.8 1.4 0 1.7l4.2 1.4 1.6 4.6c.3.8 1.3.9 1.8.3l2.2-2.4 4.1 3c.6.5 1.5.1 1.7-.6L21.9 5.6c.2-.8-.6-1.4-1.3-1.1z"/><path d="M8 13.1L18.5 6.7 10 14.4l-.2 3.4"/></svg>
+          </a>
+          <a href="#" aria-label="WhatsApp" title="WhatsApp">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20l1.2-3.6A8 8 0 1 1 8 19.2L4 20z"/><path d="M9 9.5c0 3 2.5 5.5 5.5 5.5.7 0 1-.4 1-.9 0-.8-1.4-1.4-1.9-.9-.4.4-1.6-.4-2.3-1.5-.4-.8.6-1.4.6-2 0-.5-.5-1.6-1.2-1.6-.5 0-1.7.3-1.7 1.4z"/></svg>
+          </a>
+        </div>
+      </div>
+
+      <div>
+        <div class="footer__title">Услуги</div>
+        <ul class="footer__list">
+          <li><a href="#services">Техобслуживание</a></li>
+          <li><a href="#services">Слесарный ремонт</a></li>
+          <li><a href="#services">Кузовной ремонт</a></li>
+          <li><a href="#services">Компьютерная диагностика</a></li>
+          <li><a href="#services">Сход-развал 3D</a></li>
+          <li><a href="#services">Ремонт АКПП</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <div class="footer__title">Клиентам</div>
+        <ul class="footer__list">
+          <li><a href="#calc">Калькулятор ТО</a></li>
+          <li><a href="#promos">Акции</a></li>
+          <li><a href="#reviews">Отзывы</a></li>
+          <li><a href="#booking">Онлайн-запись</a></li>
+          <li><a href="#why">О сервисе</a></li>
+          <li><a href="#centers">Корпоративным клиентам</a></li>
+        </ul>
+      </div>
+
+      <div>
+        <div class="footer__title">Техцентры</div>
+        <ul class="footer__list" id="footerCenters"></ul>
+      </div>
+    </div>
+
+    <div class="footer__bottom">
+      <span>© 1998–2026 MMC CLUB. Демоверсия редизайна сайта, подготовлена для обсуждения с заказчиком.</span>
+      <span>Не является официальным дилером Mitsubishi Motors, Toyota и Lexus.</span>
+    </div>
+  </div>
+</footer>
+
+<!-- ================= Мобильная панель ================= -->
+<div class="mobar">
+  <a class="btn btn--ghost" href="tel:+74957078141">Позвонить</a>
+  <a class="btn btn--primary" href="#booking">Записаться</a>
+</div>
+
+<script src="data.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
