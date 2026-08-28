@@ -378,15 +378,16 @@ button { font-family:inherit; cursor:pointer; border:none; background:none; colo
 }
 .case-featured__chrome i { width:6px; height:6px; border-radius:50%; background:rgba(255,255,255,.25); display:block; }
 
-.case-featured__shots { position:relative; flex:1; }
+.case-featured__shots { position:relative; flex:1; cursor:pointer; user-select:none; }
+.case-featured__shots:focus-visible { outline:2px solid var(--accent); outline-offset:-2px; }
 .case-featured__shot {
     position:absolute; inset:0;
     margin:0;
-    animation:caseFade 7s ease-in-out infinite;
+    opacity:0;
+    transition:opacity .45s ease;
 }
-.case-featured__shot img { width:100%; height:100%; object-fit:cover; object-position:top; display:block; }
-.case-featured__shot--before { animation-delay:-3.5s; }
-.case-featured__shot--after  { opacity:0; }
+.case-featured__shot.is-active { opacity:1; z-index:1; }
+.case-featured__shot img { width:100%; height:100%; object-fit:cover; object-position:top; display:block; pointer-events:none; }
 
 .case-featured__tag {
     position:absolute; top:10px; left:10px; z-index:2;
@@ -396,15 +397,21 @@ button { font-family:inherit; cursor:pointer; border:none; background:none; colo
 }
 .case-featured__tag--after { background:var(--accent); }
 
-@keyframes caseFade {
-    0%, 42%  { opacity:1; }
-    50%, 92% { opacity:0; }
-    100%     { opacity:1; }
+.case-featured__hint {
+    position:absolute; bottom:10px; left:50%; transform:translateX(-50%); z-index:3;
+    display:flex; align-items:center; gap:6px;
+    font-size:11px; font-weight:600; color:#fff; white-space:nowrap;
+    padding:6px 12px; border-radius:100px;
+    background:rgba(10,10,11,.65); backdrop-filter:blur(4px);
+    border:1px solid rgba(255,255,255,.14);
+    pointer-events:none;
+    transition:opacity .25s ease;
 }
+.case-featured__hint svg { width:13px; height:13px; flex-shrink:0; }
+.case-featured__shots.is-touched .case-featured__hint { opacity:0; }
+
 @media (prefers-reduced-motion: reduce) {
-    .case-featured__shot { animation:none !important; }
-    .case-featured__shot--before { opacity:0 !important; }
-    .case-featured__shot--after  { opacity:1 !important; }
+    .case-featured__shot { transition:none; }
 }
 
 .case-featured__badge {

@@ -345,4 +345,39 @@ document.addEventListener('DOMContentLoaded', () => {
 
         window.addEventListener('resize', () => { if (running) resize(); }, { passive: true });
     }
+
+/* --- Кейс: кликабельное переключение "до/после" --- */
+document.querySelectorAll('.case-featured__shots').forEach(initCaseCompare);
+
+function initCaseCompare(shots) {
+    const before = shots.querySelector('.case-featured__shot--before');
+    const after  = shots.querySelector('.case-featured__shot--after');
+    if (!before || !after) return;
+
+    let showAfter = true;
+    let autoTimer = null;
+
+    function render() {
+        before.classList.toggle('is-active', !showAfter);
+        after.classList.toggle('is-active', showAfter);
+    }
+    function flip() { showAfter = !showAfter; render(); }
+    function stopAuto() { clearInterval(autoTimer); autoTimer = null; }
+    function startAuto() {
+        stopAuto();
+        autoTimer = setInterval(flip, 2600);
+    }
+
+    shots.setAttribute('role', 'button');
+    shots.setAttribute('tabindex', '0');
+    shots.setAttribute('aria-label', 'Сравнить старую и новую версию сайта');
+
+    shots.addEventListener('click', () => { stopAuto(); flip(); shots.classList.add('is-touched'); });
+    shots.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); stopAuto(); flip(); }
+    });
+
+    render();
+    if (!window.matchMedia('(prefers-reduced-motion: reduce)').matches) startAuto();
+}
 });
