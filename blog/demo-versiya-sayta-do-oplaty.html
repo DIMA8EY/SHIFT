@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="ru">
 <head>
     <meta charset="UTF-8">
@@ -139,8 +139,18 @@
         </div>
         <div class="container footer__bottom">
             <span>© 2026 SHIFT. Все права защищены.</span>
+            <span class="footer__legal">Сучков Дмитрий Алексеевич, самозанятый (НПД), ИНН 771895196900 ·
+                <a href="../privacy.html">Политика конфиденциальности</a> ·
+                <a href="../oferta.html">Публичная оферта</a></span>
         </div>
     </footer>
+
+    <div class="cookiebar" id="cookiebar" role="dialog" aria-label="Уведомление о cookie">
+        <p class="cookiebar__text">Мы используем cookie для веб-аналитики. Продолжая пользоваться
+            сайтом, вы соглашаетесь с этим — подробнее в
+            <a href="../privacy.html">политике конфиденциальности</a>.</p>
+        <button class="cookiebar__btn" id="cookiebarBtn">Понятно</button>
+    </div>
 
     <script>
         const burger = document.getElementById('burger');
@@ -148,6 +158,19 @@
         const header = document.getElementById('header');
         burger?.addEventListener('click', () => { burger.classList.toggle('open'); nav.classList.toggle('open'); });
         window.addEventListener('scroll', () => { header.classList.toggle('scrolled', window.scrollY > 10); });
+
+        /* Баннер cookie */
+        (function () {
+            var bar = document.getElementById('cookiebar');
+            var btn = document.getElementById('cookiebarBtn');
+            if (!bar || !btn) return;
+            if (localStorage.getItem('shift_cookie_ok') === '1') return;
+            requestAnimationFrame(function () { bar.classList.add('is-visible'); });
+            btn.addEventListener('click', function () {
+                localStorage.setItem('shift_cookie_ok', '1');
+                bar.classList.remove('is-visible');
+            });
+        })();
     </script>
 </body>
 </html>

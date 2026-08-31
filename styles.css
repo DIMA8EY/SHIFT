@@ -600,6 +600,61 @@ button { font-family:inherit; cursor:pointer; border:none; background:none; colo
 .footer__link:hover { color:var(--text); }
 .footer__link--btn { color:var(--accent); font-weight:600; }
 .footer__bottom { padding-top:26px; color:var(--muted-2); font-size:14px; }
+.footer__legal { display:block; margin-top:8px; font-size:12.5px; color:var(--muted-2); line-height:1.6; }
+.footer__legal a { color:var(--muted-2); text-decoration:underline; text-decoration-color:var(--border-2); }
+.footer__legal a:hover { color:var(--accent-2); }
+
+/* ---------- Чекбокс согласия на форме ---------- */
+.form__check {
+    display:flex;
+    align-items:flex-start;
+    gap:10px;
+    cursor:pointer;
+    font-size:12.5px;
+    color:var(--muted);
+    line-height:1.5;
+}
+.form__check input { margin-top:2px; flex-shrink:0; width:16px; height:16px; accent-color:var(--accent); cursor:pointer; }
+.form__check a { color:var(--accent-2); }
+.form__check a:hover { text-decoration:underline; }
+
+/* ---------- Баннер cookie ---------- */
+.cookiebar {
+    position:fixed;
+    left:16px; right:16px; bottom:16px;
+    z-index:300;
+    max-width:560px;
+    margin:0 auto;
+    background:var(--card);
+    border:1px solid var(--border-2);
+    border-radius:var(--radius-sm);
+    box-shadow:0 20px 50px -12px rgba(0,0,0,.5);
+    padding:18px 20px;
+    display:flex;
+    align-items:center;
+    gap:16px;
+    flex-wrap:wrap;
+    transform:translateY(140%);
+    transition:transform .4s var(--ease, ease);
+}
+.cookiebar.is-visible { transform:translateY(0); }
+.cookiebar__text { flex:1 1 240px; font-size:13px; color:var(--muted); line-height:1.55; }
+.cookiebar__text a { color:var(--accent-2); }
+.cookiebar__text a:hover { text-decoration:underline; }
+.cookiebar__btn {
+    flex-shrink:0;
+    background:var(--accent);
+    color:#fff;
+    border:none;
+    padding:10px 20px;
+    border-radius:100px;
+    font-size:13px;
+    font-weight:600;
+    cursor:pointer;
+    transition:background .2s;
+}
+.cookiebar__btn:hover { background:var(--accent-2); }
+@media (max-width:520px) { .cookiebar { padding:16px; } }
 
 /* ---------- МОДАЛКИ ---------- */
 .modal {
@@ -680,6 +735,8 @@ button { font-family:inherit; cursor:pointer; border:none; background:none; colo
     background:#0d0d10;
 }
 .form__input.invalid { border-color:#ef4444; }
+.form__check.invalid { color:#ef4444; }
+.form__check.invalid a { color:#ef4444; }
 .form__textarea { min-height:88px; resize:vertical; }
 select.form__input { appearance:none; cursor:pointer; }
 .form__note { font-size:12px; color:var(--muted-2); text-align:center; margin-top:14px; }

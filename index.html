@@ -512,6 +512,9 @@
         </div>
         <div class="container footer__bottom">
             <span>© 2026 SHIFT. Все права защищены.</span>
+            <span class="footer__legal">Сучков Дмитрий Алексеевич, самозанятый (НПД), ИНН 771895196900 ·
+                <a href="privacy.html">Политика конфиденциальности</a> ·
+                <a href="oferta.html">Публичная оферта</a></span>
         </div>
     </footer>
 
@@ -553,8 +556,13 @@
                         <textarea name="comment" class="form__input form__textarea" placeholder="Пожелания, сроки, примеры сайтов, которые нравятся"></textarea>
                     </label>
                 </div>
+                <div class="form__row">
+                    <label class="form__check">
+                        <input type="checkbox" name="consent" id="formConsent" required>
+                        <span>Согласен на <a href="privacy.html" target="_blank" rel="noopener">обработку персональных данных</a> в соответствии с политикой конфиденциальности</span>
+                    </label>
+                </div>
                 <button type="submit" class="btn btn--primary btn--block btn--lg" id="submitBtn">Отправить заявку</button>
-                <p class="form__note">Нажимая кнопку, вы соглашаетесь на обработку данных для связи с вами.</p>
             </form>
         </div>
     </div>
@@ -569,6 +577,14 @@
                 в ближайшее время, чтобы обсудить детали и подготовить демо-версию.</p>
             <button class="btn btn--primary btn--block" data-close-success>Отлично</button>
         </div>
+    </div>
+
+    <!-- БАННЕР COOKIE -->
+    <div class="cookiebar" id="cookiebar" role="dialog" aria-label="Уведомление о cookie">
+        <p class="cookiebar__text">Мы используем cookie для веб-аналитики. Продолжая пользоваться
+            сайтом, вы соглашаетесь с этим — подробнее в
+            <a href="privacy.html">политике конфиденциальности</a>.</p>
+        <button class="cookiebar__btn" id="cookiebarBtn">Понятно</button>
     </div>
 
     <script src="script.js"></script>

@@ -109,8 +109,10 @@ document.addEventListener('DOMContentLoaded', () => {
         // Валидация обязательных полей
         let valid = true;
         form.querySelectorAll('[required]').forEach(field => {
-            const ok = field.value.trim() !== '';
-            field.classList.toggle('invalid', !ok);
+            const isCheckbox = field.type === 'checkbox';
+            const ok = isCheckbox ? field.checked : field.value.trim() !== '';
+            const target = isCheckbox ? field.closest('.form__check') : field;
+            target?.classList.toggle('invalid', !ok);
             if (!ok) valid = false;
         });
         if (!valid) return;
@@ -140,6 +142,9 @@ document.addEventListener('DOMContentLoaded', () => {
     form.querySelectorAll('.form__input').forEach(field =>
         field.addEventListener('input', () => field.classList.remove('invalid'))
     );
+    document.getElementById('formConsent')?.addEventListener('change', function () {
+        this.closest('.form__check')?.classList.remove('invalid');
+    });
 
     /* ---------- Пиксельные звёзды на фоне блока тарифов ---------- */
     initPixelStarsBackground();
@@ -345,6 +350,20 @@ document.addEventListener('DOMContentLoaded', () => {
 
         window.addEventListener('resize', () => { if (running) resize(); }, { passive: true });
     }
+
+/* --- Баннер cookie --- */
+(function initCookieBanner() {
+    const bar = document.getElementById('cookiebar');
+    const btn = document.getElementById('cookiebarBtn');
+    if (!bar || !btn) return;
+    if (localStorage.getItem('shift_cookie_ok') === '1') return;
+
+    requestAnimationFrame(() => bar.classList.add('is-visible'));
+    btn.addEventListener('click', () => {
+        localStorage.setItem('shift_cookie_ok', '1');
+        bar.classList.remove('is-visible');
+    });
+})();
 
 /* --- Кейс: кликабельное переключение "до/после" --- */
 document.querySelectorAll('.case-featured__shots').forEach(initCaseCompare);
