@@ -100,6 +100,19 @@
   btn.onclick = function () { toggle(); };
   close.onclick = function () { toggle(false); };
 
+  // Яндекс Облако не достаёт до Telegram, поэтому заявку шлёт браузер (как форма в script.js)
+  var TG = { token: "8684145030:AAFvR_Kf7gGD5bovd-dc2fvsUWLc6Ss9NM4", chat: "1275636122" };
+  function notifyTelegram() {
+    try {
+      var lines = history.map(function (m) { return (m.role === "user" ? "Клиент: " : "Ассистент: ") + m.text; });
+      fetch("https://api.telegram.org/bot" + TG.token + "/sendMessage", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ chat_id: TG.chat, text: ("🚀 Новая заявка из чата SHIFT\n\n" + lines.join("\n")).slice(0, 3900) })
+      }).catch(function () {});
+    } catch (e) {}
+  }
+
   function submit() {
     var text = input.value.trim();
     if (!text || busy) return;
@@ -122,7 +135,7 @@
       .then(function (data) {
         typing.textContent = data.reply || "…";
         history.push({ role: "assistant", text: data.reply || "" });
-        if (data.lead) leadSent = true;
+        if (data.lead) { leadSent = true; notifyTelegram(); }
         save();
       })
       .catch(function () {
