@@ -1,0 +1,346 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Репетитор по русскому языку и информатике — ЕГЭ и ОГЭ онлайн</title>
+<meta name="description" content="Подготовка к ЕГЭ и ОГЭ по русскому языку и информатике, помощь со школьной программой. Онлайн, индивидуально и в группе. От 1 000 ₽ за занятие.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Onest:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #fff;
+    --muted: rgba(255,255,255,.62);
+    --line: rgba(255,255,255,.16);
+    --red: #d10a0a;
+    --deep: #0a0000;
+    --wine: #5c0000;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; overflow-x: hidden; }
+  body {
+    font-family: "Onest", system-ui, sans-serif;
+    color: var(--ink);
+    background: var(--deep);
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+  }
+  a { color: inherit; text-decoration: none; }
+  .caps { text-transform: uppercase; letter-spacing: -.01em; }
+
+  /* ---------- HERO ---------- */
+  .hero {
+    position: relative;
+    min-height: 100svh;
+    overflow: hidden;
+    background:
+      radial-gradient(120% 90% at 100% 0%, #e10d0d 0%, rgba(225,13,13,0) 55%),
+      radial-gradient(90% 80% at 55% 35%, #8a0303 0%, rgba(138,3,3,0) 70%),
+      linear-gradient(160deg, #1a0000 0%, var(--wine) 55%, #120000 100%);
+    isolation: isolate;
+  }
+  .hero::after { /* плёночное зерно */
+    content: ""; position: absolute; inset: 0; z-index: 5; pointer-events: none; opacity: .09; mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+
+  .top {
+    position: absolute; inset: 0 0 auto 0; z-index: 4;
+    display: grid; grid-template-columns: 1fr auto auto; gap: 0 clamp(32px, 8vw, 120px);
+    padding: clamp(20px, 2.4vw, 40px);
+  }
+  .logo { width: clamp(64px, 6vw, 96px); height: auto; display: block; }
+  .intro { margin-top: clamp(28px, 4vw, 56px); max-width: 360px; font-size: clamp(14px, 1.15vw, 18px); line-height: 1.3; font-weight: 400; }
+  .nav { display: flex; flex-direction: column; font-size: clamp(13px, 1.05vw, 17px); line-height: 1.5; }
+  .nav a { opacity: .95; transition: opacity .2s, transform .2s; width: fit-content; }
+  .nav a:hover { opacity: 1; transform: translateX(4px); }
+
+  /* бегущая строка за фото */
+  .marquee {
+    position: absolute; z-index: 1; left: 0; right: 0; top: 50%; transform: translateY(-50%);
+    white-space: nowrap; pointer-events: none;
+    font-size: clamp(110px, 17vw, 300px); font-weight: 400; line-height: .9; letter-spacing: -.04em;
+  }
+  .marquee span { display: inline-block; padding-right: .35em; animation: run 38s linear infinite; }
+  @keyframes run { to { transform: translateX(-100%); } }
+
+  .portrait {
+    position: absolute; z-index: 2; left: 50%; bottom: 0; transform: translateX(-50%);
+    height: 92%; aspect-ratio: 3 / 4; max-width: 70vw;
+    -webkit-mask-image: linear-gradient(to bottom, #000 70%, transparent 100%);
+            mask-image: linear-gradient(to bottom, #000 70%, transparent 100%);
+  }
+  .portrait img { width: 100%; height: 100%; object-fit: cover; object-position: top center; filter: contrast(1.05) saturate(.9); }
+  /* заглушка, пока нет фото: силуэт */
+  .portrait .ph { width: 100%; height: 100%; display: grid; place-items: end center; }
+  .portrait .ph svg { width: 86%; height: auto; opacity: .92; }
+
+  .roles {
+    position: absolute; z-index: 4; right: clamp(20px, 2.4vw, 40px); bottom: clamp(150px, 19vh, 220px);
+    text-align: right; font-size: clamp(14px, 1.15vw, 19px); line-height: 1.35;
+  }
+
+  .wave { position: absolute; z-index: 4; left: clamp(20px, 2.4vw, 40px); bottom: clamp(70px, 9vh, 96px); display: flex; gap: 3px; align-items: center; height: 40px; }
+  .wave i { width: 3px; background: var(--red); border-radius: 2px; animation: bar 1.1s ease-in-out infinite; }
+  @keyframes bar { 0%,100% { height: 20%; } 50% { height: 100%; } }
+
+  .badge {
+    position: absolute; z-index: 4; right: clamp(16px, 1.6vw, 28px); bottom: clamp(70px, 9vh, 96px);
+    display: flex; align-items: center; gap: 12px; padding: 8px 14px 8px 8px;
+    border: 1px solid var(--line); background: rgba(0,0,0,.25); backdrop-filter: blur(6px);
+    transition: background .2s, border-color .2s;
+  }
+  .badge:hover { background: rgba(0,0,0,.45); border-color: rgba(255,255,255,.4); }
+  .badge .av { width: 38px; height: 38px; background: linear-gradient(135deg, #3a0000, #a00); display: grid; place-items: center; font-weight: 600; font-size: 15px; overflow: hidden; }
+  .badge .av img { width: 100%; height: 100%; object-fit: cover; }
+  .badge small { display: flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 500; letter-spacing: .02em; }
+  .badge small::after { content: ""; width: 6px; height: 6px; border-radius: 50%; background: #2bd96b; box-shadow: 0 0 8px #2bd96b; }
+  .badge b { display: block; font-size: 17px; font-weight: 500; }
+
+  .bar {
+    position: absolute; z-index: 4; left: 0; right: 0; bottom: 0;
+    display: grid; grid-template-columns: auto 1fr auto 1fr auto 1fr auto; align-items: center;
+    padding: 0 clamp(20px, 5vw, 100px) clamp(16px, 2.6vh, 30px);
+    font-size: clamp(12px, 1.05vw, 17px); font-weight: 500;
+  }
+  .bar span { text-align: center; }
+  .bar .plus { font-size: clamp(22px, 2vw, 34px); font-weight: 300; line-height: 1; }
+
+  /* ---------- СЕКЦИИ ---------- */
+  section.block { position: relative; padding: clamp(72px, 10vw, 150px) clamp(20px, 5vw, 100px); border-top: 1px solid var(--line); }
+  .eyebrow { display: flex; align-items: center; gap: 14px; font-size: 13px; color: var(--muted); margin-bottom: clamp(28px, 4vw, 56px); }
+  .eyebrow::before { content: "+"; font-size: 22px; color: var(--ink); font-weight: 300; }
+  .big { font-size: clamp(38px, 6.4vw, 108px); font-weight: 400; line-height: .98; letter-spacing: -.035em; max-width: 14ch; }
+  .big em { font-style: normal; color: var(--red); }
+  .lead { margin-top: 28px; max-width: 56ch; font-size: clamp(16px, 1.3vw, 20px); line-height: 1.45; color: var(--muted); }
+
+  .facts { margin-top: clamp(48px, 6vw, 90px); display: grid; grid-template-columns: repeat(auto-fit, minmax(210px, 1fr)); border-top: 1px solid var(--line); }
+  .fact { padding: 28px 24px 28px 0; border-bottom: 1px solid var(--line); }
+  .fact strong { display: block; font-size: clamp(44px, 4.6vw, 76px); font-weight: 400; letter-spacing: -.04em; line-height: 1; }
+  .fact span { display: block; margin-top: 10px; color: var(--muted); font-size: 15px; line-height: 1.35; }
+
+  .rows { border-top: 1px solid var(--line); }
+  .row {
+    display: grid; grid-template-columns: 80px 1.2fr 2fr; gap: 24px; align-items: baseline;
+    padding: clamp(24px, 3vw, 40px) 0; border-bottom: 1px solid var(--line); transition: background .25s, padding .25s;
+  }
+  .row:hover { background: linear-gradient(90deg, rgba(209,10,10,.16), transparent 70%); padding-left: 16px; }
+  .row .n { color: var(--muted); font-size: 14px; }
+  .row h3 { font-size: clamp(26px, 3vw, 48px); font-weight: 400; letter-spacing: -.03em; line-height: 1; }
+  .row p { color: var(--muted); font-size: clamp(15px, 1.15vw, 18px); line-height: 1.45; }
+  .tags { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 14px; }
+  .tags b { font-weight: 500; font-size: 13px; padding: 6px 12px; border: 1px solid var(--line); color: var(--ink); }
+
+  .grades { margin-top: clamp(40px, 5vw, 70px); display: flex; flex-wrap: wrap; gap: 10px; }
+  .grades span { font-size: clamp(16px, 1.4vw, 22px); padding: 12px 20px; border: 1px solid var(--line); border-radius: 999px; }
+
+  .price {
+    display: grid; grid-template-columns: 1fr auto; gap: 40px; align-items: end;
+    background: radial-gradient(80% 140% at 100% 100%, #b30707 0%, transparent 60%), #140000;
+  }
+  .price .sum { font-size: clamp(64px, 11vw, 190px); font-weight: 400; letter-spacing: -.05em; line-height: .9; white-space: nowrap; }
+  .price .sum small { font-size: .32em; letter-spacing: -.02em; color: var(--muted); }
+  .price ul { list-style: none; margin-top: 28px; color: var(--muted); font-size: 16px; line-height: 1.9; }
+  .price li::before { content: "+  "; color: var(--ink); }
+
+  .btn {
+    display: inline-flex; align-items: center; gap: 14px; padding: 20px 30px;
+    background: var(--ink); color: #120000; font-weight: 500; font-size: 17px;
+    transition: background .2s, color .2s, gap .2s;
+  }
+  .btn:hover { background: var(--red); color: var(--ink); gap: 22px; }
+  .btn.ghost { background: transparent; color: var(--ink); border: 1px solid var(--line); }
+  .btn.ghost:hover { border-color: var(--ink); background: transparent; }
+
+  .contact { text-align: left; overflow: hidden; }
+  .contact .big { max-width: none; }
+  .contact .cta { margin-top: 48px; display: flex; flex-wrap: wrap; gap: 14px; }
+
+  footer { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 12px; padding: 28px clamp(20px, 5vw, 100px); border-top: 1px solid var(--line); color: var(--muted); font-size: 13px; }
+
+  .reveal { opacity: 0; transform: translateY(28px); transition: opacity .9s ease, transform .9s ease; }
+  .reveal.in { opacity: 1; transform: none; }
+
+  /* ---------- МОБИЛЬНЫЕ ---------- */
+  @media (max-width: 820px) {
+    .top { grid-template-columns: 1fr auto; }
+    .nav.social { display: none; }
+    .intro { max-width: 70vw; }
+    .portrait { height: 70%; max-width: 100vw; }
+    .marquee { top: 58%; }
+    .roles { bottom: 128px; }
+    .wave { display: none; }
+    .badge { bottom: 64px; }
+    .bar { padding-left: 16px; padding-right: 16px; font-size: 11px; }
+    .row { grid-template-columns: 1fr; gap: 10px; }
+    .row .n { display: none; }
+    .price { grid-template-columns: 1fr; }
+    .price .sum { white-space: normal; font-size: 19vw; }
+    .price .sum small { display: block; margin-top: 8px; font-size: 20px; }
+  }
+  @media (max-width: 480px) {
+    .nav.main { font-size: 12px; }
+    .intro { font-size: 14px; max-width: 62vw; }
+    .roles { font-size: 13px; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .marquee span, .wave i { animation: none; }
+    .reveal { opacity: 1; transform: none; transition: none; }
+    html { scroll-behavior: auto; }
+  }
+</style>
+</head>
+<body>
+
+<header class="hero" id="top">
+  <div class="top">
+    <div>
+      <!-- монограмма «Р» — замените на свой логотип при желании -->
+      <svg class="logo" viewBox="0 0 100 100" fill="none" stroke="#fff" stroke-width="2.2" aria-label="Логотип">
+        <path d="M30 88V14h22c14 0 24 8 24 21s-10 21-24 21H30"/>
+        <path d="M30 56c-12 4-20 14-22 30M52 56c10 6 16 16 18 30M8 30c8 2 14 8 16 16M92 30c-8 2-14 8-16 16"/>
+      </svg>
+      <p class="intro">Объясняю русский язык и&nbsp;информатику так, что становится понятно. Готовлю к&nbsp;ЕГЭ и&nbsp;ОГЭ, помогаю со&nbsp;школьной программой&nbsp;— онлайн, в&nbsp;удобное время.</p>
+    </div>
+    <nav class="nav main caps" aria-label="Разделы">
+      <a href="#top">Главная</a>
+      <a href="#about">Обо мне</a>
+      <a href="#subjects">Предметы</a>
+      <a href="#format">Как проходят</a>
+      <a href="#price">Стоимость</a>
+      <a href="#contact">Контакты</a>
+    </nav>
+    <nav class="nav social caps" aria-label="Связь">
+      <a href="https://www.avito.ru/moskva/predlozheniya_uslug/repetitor_po_russkomu_yazyku_i_informatike_egeoge_8439437386" target="_blank" rel="noopener">Авито</a>
+      <a href="#contact">Записаться</a>
+    </nav>
+  </div>
+
+  <div class="marquee caps" aria-hidden="true">
+    <span>Понятно. Уверенно. К&nbsp;результату.</span><span>Понятно. Уверенно. К&nbsp;результату.</span>
+  </div>
+
+  <div class="portrait">
+    <!-- Положите фото преподавателя рядом с файлом под именем photo.jpg (лучше без фона, вертикальное) -->
+    <img src="photo.jpg" alt="Репетитор по русскому языку и информатике" onerror="this.replaceWith(document.getElementById('ph').content.cloneNode(true))">
+  </div>
+  <template id="ph">
+    <div class="ph" aria-hidden="true">
+      <svg viewBox="0 0 300 400"><defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2a0000"/><stop offset="1" stop-color="#050000"/></linearGradient></defs>
+        <circle cx="150" cy="120" r="62" fill="url(#g)"/><path d="M28 400c4-110 56-170 122-170s118 60 122 170z" fill="url(#g)"/></svg>
+    </div>
+  </template>
+
+  <div class="roles caps">
+    Русский язык<br>Информатика<br>ЕГЭ · ОГЭ · школа
+  </div>
+
+  <div class="wave" aria-hidden="true"></div>
+
+  <a class="badge" href="#contact">
+    <span class="av"><img src="photo.jpg" alt="" onerror="this.parentNode.textContent='Р'"></span>
+    <span><small class="caps">Онлайн</small><b>Записаться</b></span>
+  </a>
+
+  <div class="bar caps" aria-hidden="true">
+    <span class="plus">+</span><span>Понятно</span><span class="plus">+</span><span>Уверенно</span><span class="plus">+</span><span>К результату</span><span class="plus">+</span>
+  </div>
+</header>
+
+<main>
+  <section class="block" id="about">
+    <div class="eyebrow caps">Обо мне</div>
+    <h2 class="big reveal">Знания сегодня&nbsp;— <em>больше возможностей</em> завтра</h2>
+    <p class="lead reveal">Я студент РУДН и&nbsp;сам недавно сдавал ЕГЭ, поэтому хорошо помню, где обычно возникают трудности. Объясняю качественно и&nbsp;доходчиво, без&nbsp;зубрёжки: сначала разбираемся, потом закрепляем.</p>
+    <div class="facts">
+      <div class="fact reveal"><strong>85</strong><span>средний балл за ЕГЭ</span></div>
+      <div class="fact reveal"><strong>1+</strong><span>год опыта преподавания</span></div>
+      <div class="fact reveal"><strong>РУДН</strong><span>студент университета</span></div>
+      <div class="fact reveal"><strong>7/7</strong><span>занятия в любой день недели</span></div>
+    </div>
+  </section>
+
+  <section class="block" id="subjects">
+    <div class="eyebrow caps">Предметы</div>
+    <div class="rows">
+      <div class="row reveal">
+        <span class="n">01</span>
+        <h3>Русский язык</h3>
+        <div><p>Подготовка к&nbsp;ЕГЭ и&nbsp;ОГЭ: тестовая часть, сочинение и&nbsp;изложение. Орфография и&nbsp;пунктуация по&nbsp;школьной программе.</p><div class="tags"><b>ЕГЭ</b><b>ОГЭ</b><b>Сочинение</b><b>Грамотность</b></div></div>
+      </div>
+      <div class="row reveal">
+        <span class="n">02</span>
+        <h3>Информатика</h3>
+        <div><p>Подготовка к&nbsp;ЕГЭ и&nbsp;ОГЭ: разбор заданий, логика, программирование. Объясняю на&nbsp;понятных примерах.</p><div class="tags"><b>ЕГЭ</b><b>ОГЭ</b><b>Программирование</b></div></div>
+      </div>
+      <div class="row reveal">
+        <span class="n">03</span>
+        <h3>Школьная программа</h3>
+        <div><p>Помощь с&nbsp;текущими темами, домашними заданиями и&nbsp;контрольными, если нужно подтянуть успеваемость.</p><div class="tags"><b>Домашние задания</b><b>Контрольные</b></div></div>
+      </div>
+    </div>
+    <div class="grades">
+      <span>Дошкольники</span><span>1–4 классы</span><span>5–7 классы</span><span>8–9 классы</span><span>10–11 классы</span>
+    </div>
+  </section>
+
+  <section class="block" id="format">
+    <div class="eyebrow caps">Как проходят занятия</div>
+    <h2 class="big reveal">Онлайн, <em>вовлекающе</em> и&nbsp;по&nbsp;делу</h2>
+    <div class="facts">
+      <div class="fact reveal"><strong>1:1</strong><span>индивидуальные занятия или&nbsp;в&nbsp;группе</span></div>
+      <div class="fact reveal"><strong>Доска</strong><span>интерактивная доска и&nbsp;графический планшет</span></div>
+      <div class="fact reveal"><strong>Игра</strong><span>игровые и&nbsp;вовлекающие методы</span></div>
+      <div class="fact reveal"><strong>Экспресс</strong><span>ускоренная подготовка, если до&nbsp;экзамена мало времени</span></div>
+    </div>
+    <p class="lead reveal">Можно заниматься и&nbsp;на&nbsp;иностранном языке&nbsp;— по&nbsp;запросу.</p>
+  </section>
+
+  <section class="block price" id="price">
+    <div>
+      <div class="eyebrow caps">Стоимость</div>
+      <div class="sum reveal">от 1&nbsp;000&nbsp;₽ <small>/ занятие</small></div>
+      <ul>
+        <li>Онлайн, из&nbsp;любой точки</li>
+        <li>Любой день недели, время согласуем</li>
+        <li>Оплата перед занятием</li>
+      </ul>
+    </div>
+    <a class="btn" href="#contact">Записаться →</a>
+  </section>
+
+  <section class="block contact" id="contact">
+    <div class="eyebrow caps">Контакты</div>
+    <h2 class="big reveal">Запишитесь на&nbsp;<em>первое занятие</em></h2>
+    <p class="lead reveal">Напишите, какой предмет и&nbsp;класс, когда экзамен и&nbsp;что вызывает сложности. Отвечу и&nbsp;предложу удобное время.</p>
+    <div class="cta">
+      <a class="btn" href="https://www.avito.ru/moskva/predlozheniya_uslug/repetitor_po_russkomu_yazyku_i_informatike_egeoge_8439437386" target="_blank" rel="noopener">Написать на Авито →</a>
+      <!-- Добавьте реальные контакты, когда будут:
+      <a class="btn ghost" href="https://t.me/USERNAME" target="_blank" rel="noopener">Telegram</a>
+      <a class="btn ghost" href="tel:+7XXXXXXXXXX">Позвонить</a> -->
+    </div>
+  </section>
+</main>
+
+<footer>
+  <span>Репетитор по русскому языку и информатике · ЕГЭ · ОГЭ</span>
+  <span>Документы проверены на Авито</span>
+</footer>
+
+<script>
+  // полоски «звуковой волны» внизу слева
+  const wave = document.querySelector('.wave');
+  for (let i = 0; i < 32; i++) {
+    const b = document.createElement('i');
+    b.style.animationDelay = (Math.random() * -1.1).toFixed(2) + 's';
+    b.style.animationDuration = (0.7 + Math.random() * 0.8).toFixed(2) + 's';
+    wave.appendChild(b);
+  }
+  // плавное появление блоков
+  const io = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); } }), { threshold: 0.15 });
+  document.querySelectorAll('.reveal').forEach((el) => io.observe(el));
+</script>
+</body>
+</html>
