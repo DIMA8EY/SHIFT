@@ -1,0 +1,1414 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex, nofollow">
+<meta name="description" content="Прототип кабинета системы контроля качества звонков. Демонстрационные данные.">
+<title>Момент — кабинет</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* Кабинет: тёмный рельс навигации слева, светлое рабочее поле справа, экраны переключаются без перезагрузки */
+:root {
+  --bg: #f6f7fb; --card: #ffffff; --sunk: #f2f4f7;
+  --ink: #101828; --ink2: #475467; --ink3: #667085;
+  --line: #e4e7ec; --line2: #eff1f5;
+  --nav: #141829; --nav-ink: #e9ecf7; --nav-ink2: #8a93b4; --nav-act: #262d4d; --nav-line: #232842;
+  --acc: #4338ca; --acc-on: #ffffff; --acc-soft: #ecedfc; --acc-dim: #8b96f7;
+  --bad: #b42318; --bad-soft: #fee4e2;
+  --warn: #b54708; --warn-soft: #fef0c7;
+  --good: #067647; --good-soft: #dcfae6;
+  --f: "Golos Text", system-ui, -apple-system, sans-serif;
+  --m: "JetBrains Mono", ui-monospace, "Courier New", monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #14161c; --card: #1b1f28; --sunk: #191e26;
+    --ink: #ecf0f6; --ink2: #98a6b8; --ink3: #76869a;
+    --line: #2a313d; --line2: #222933;
+    --nav: #0f1220; --nav-ink: #e9ecf7; --nav-ink2: #818bae; --nav-act: #222847; --nav-line: #1c2138;
+    --acc: #818cf8; --acc-on: #14161c; --acc-soft: #241f52; --acc-dim: #6366f1;
+    --bad: #f97066; --bad-soft: #3a1b18;
+    --warn: #fdb022; --warn-soft: #3a2a10;
+    --good: #47cd89; --good-soft: #0e2a1d;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #14161c; --card: #1b1f28; --sunk: #191e26;
+  --ink: #ecf0f6; --ink2: #98a6b8; --ink3: #76869a;
+  --line: #2a313d; --line2: #222933;
+  --nav: #0f1220; --nav-ink: #e9ecf7; --nav-ink2: #818bae; --nav-act: #222847; --nav-line: #1c2138;
+  --acc: #818cf8; --acc-on: #14161c; --acc-soft: #241f52; --acc-dim: #6366f1;
+  --bad: #f97066; --bad-soft: #3a1b18;
+  --warn: #fdb022; --warn-soft: #3a2a10;
+  --good: #47cd89; --good-soft: #0e2a1d;
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+html, body { height: 100%; }
+body { margin: 0; background: var(--bg); color: var(--ink); font-family: var(--f); font-size: 14.5px; line-height: 1.5; -webkit-font-smoothing: antialiased; }
+button, input, select { font: inherit; color: inherit; }
+button { cursor: pointer; }
+:focus-visible { outline: 2px solid var(--acc); outline-offset: 2px; border-radius: 3px; }
+.mono { font-family: var(--m); font-variant-numeric: tabular-nums; }
+
+/* ---------- ВХОД ---------- */
+#auth { min-height: 100%; display: grid; place-items: center; padding: 32px max(16px, env(safe-area-inset-left,0px)); }
+.auth-box { width: 100%; max-width: 560px; }
+.brand { display: flex; align-items: center; gap: 11px; }
+.logo { width: 34px; height: 34px; border-radius: 9px; background: var(--acc); display: grid; place-items: center; flex: none; }
+.logo svg { width: 19px; height: 19px; }
+.brand b { font-size: 19px; font-weight: 700; letter-spacing: -.02em; }
+.brand i { font-style: normal; font-family: var(--m); font-size: 10.5px; color: var(--ink3); letter-spacing: .08em; text-transform: uppercase; }
+#auth h1 { font-size: clamp(26px, 4.6vw, 36px); font-weight: 700; letter-spacing: -.025em; margin: 26px 0 8px; line-height: 1.1; }
+#auth .sub { color: var(--ink2); margin: 0 0 24px; }
+.roles { display: grid; gap: 10px; }
+.role {
+  display: grid; grid-template-columns: 20px minmax(0,1fr); gap: 13px; align-items: start; text-align: left;
+  background: var(--card); border: 1.5px solid var(--line); border-radius: 11px; padding: 15px 17px; width: 100%;
+}
+.role:hover { border-color: var(--acc-dim); }
+.role[aria-pressed="true"] { border-color: var(--acc); background: var(--acc-soft); }
+.role .rd { width: 18px; height: 18px; border-radius: 50%; border: 2px solid var(--line); margin-top: 2px; }
+.role[aria-pressed="true"] .rd { border-color: var(--acc); border-width: 5px; }
+.role b { display: block; font-weight: 600; }
+.role span { display: block; color: var(--ink2); font-size: 13.5px; margin-top: 2px; }
+.fields { display: grid; gap: 10px; margin: 18px 0; }
+.inp { width: 100%; background: var(--card); border: 1.5px solid var(--line); border-radius: 9px; padding: 11px 13px; }
+.inp:focus { border-color: var(--acc); outline: none; }
+.btn { background: var(--acc); color: var(--acc-on); border: 1.5px solid var(--acc); border-radius: 9px; padding: 12px 20px; font-weight: 600; }
+.btn:hover { filter: brightness(1.08); }
+.btn.ghost { background: transparent; color: var(--ink); border-color: var(--line); }
+.btn.ghost:hover { border-color: var(--ink3); filter: none; }
+.btn.sm { padding: 8px 13px; font-size: 13.5px; border-radius: 7px; }
+.demo-note { margin: 16px 0 0; font-size: 13px; color: var(--ink3); }
+
+/* ---------- ОБОЛОЧКА ---------- */
+#app { display: none; min-height: 100%; }
+#app.on { display: grid; grid-template-columns: 228px minmax(0, 1fr); }
+@media (max-width: 900px) { #app.on { grid-template-columns: minmax(0, 1fr); } }
+aside {
+  min-width: 0;
+  background: var(--nav); color: var(--nav-ink); display: flex; flex-direction: column;
+  padding: 16px 12px calc(14px + env(safe-area-inset-bottom, 0px));
+  padding-left: max(12px, env(safe-area-inset-left, 0px));
+  position: sticky; top: 0; height: 100vh;
+}
+@media (max-width: 900px) { aside { position: static; height: auto; } }
+aside .brand { padding: 4px 8px 16px; }
+aside .brand b, aside .brand i { color: var(--nav-ink); }
+aside .brand i { color: var(--nav-ink2); }
+nav { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+@media (max-width: 900px) { nav { flex-direction: row; overflow-x: auto; } }
+.nv {
+  display: flex; align-items: center; gap: 10px; background: none; border: 0; color: var(--nav-ink2);
+  padding: 9px 10px; border-radius: 8px; text-align: left; font-size: 14px; white-space: nowrap; width: 100%;
+}
+@media (max-width: 900px) { .nv { width: auto; } }
+.nv:hover { color: var(--nav-ink); background: var(--nav-line); }
+.nv[aria-current="true"] { background: var(--nav-act); color: var(--nav-ink); font-weight: 600; }
+.nv svg { width: 16px; height: 16px; flex: none; opacity: .9; }
+.nv .cnt { margin-left: auto; font-family: var(--m); font-size: 11px; background: var(--nav-line); padding: 2px 6px; border-radius: 5px; }
+.acct { margin-top: auto; border-top: 1px solid var(--nav-line); padding-top: 12px; font-size: 12.5px; color: var(--nav-ink2); }
+@media (max-width: 900px) { .acct { display: none; } }
+.acct b { display: block; color: var(--nav-ink); font-size: 13.5px; font-weight: 600; }
+.acct dl { display: grid; grid-template-columns: 1fr auto; gap: 3px 8px; margin: 10px 0 0; font-family: var(--m); font-size: 11.5px; }
+.acct dt { color: var(--nav-ink2); } .acct dd { margin: 0; color: var(--nav-ink); }
+.acct .btn.ghost { color: var(--nav-ink); border-color: var(--nav-line); background: transparent; }
+.acct .btn.ghost:hover { border-color: var(--nav-ink2); background: var(--nav-line); }
+
+main { min-width: 0; display: flex; flex-direction: column; }
+.top {
+  position: sticky; top: env(safe-area-inset-top, 0px); z-index: 9; background: var(--bg);
+  border-bottom: 1px solid var(--line); display: flex; flex-wrap: wrap; align-items: center; gap: 10px;
+  padding: 11px max(16px, env(safe-area-inset-right,0px)) 11px max(16px, env(safe-area-inset-left,0px));
+}
+.top h1 { font-size: 18px; font-weight: 700; letter-spacing: -.015em; margin: 0; margin-right: auto; }
+.chipbar { display: flex; gap: 4px; background: var(--sunk); border-radius: 8px; padding: 3px; }
+.chipbar button { background: none; border: 0; padding: 6px 11px; border-radius: 6px; font-size: 13px; color: var(--ink2); }
+.chipbar button[aria-pressed="true"] { background: var(--card); color: var(--ink); font-weight: 600; box-shadow: 0 1px 2px rgba(16,24,40,.08); }
+.demo-flag { font-family: var(--m); font-size: 10.5px; letter-spacing: .08em; text-transform: uppercase; color: var(--warn); background: var(--warn-soft); padding: 5px 9px; border-radius: 6px; }
+.wrap { min-width: 0; padding: 20px max(16px, env(safe-area-inset-right,0px)) 48px max(16px, env(safe-area-inset-left,0px)); display: flex; flex-direction: column; gap: 16px; }
+.screen { display: none; flex-direction: column; gap: 16px; }
+.screen.on { display: flex; }
+
+/* ---------- БЛОКИ ---------- */
+.card { min-width: 0; background: var(--card); border: 1px solid var(--line); border-radius: 11px; }
+.card.p { padding: 17px; }
+.ch { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; padding: 15px 17px; border-bottom: 1px solid var(--line2); }
+.ch h2 { font-size: 15px; font-weight: 600; margin: 0; }
+.ch .hint { font-size: 12.5px; color: var(--ink3); }
+.kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(190px, 100%), 1fr)); gap: 12px; }
+.kpi { background: var(--card); border: 1px solid var(--line); border-radius: 11px; padding: 15px 16px; }
+.kpi .k { font-size: 12.5px; color: var(--ink3); }
+.kpi .v { font-size: 27px; font-weight: 700; letter-spacing: -.02em; margin-top: 5px; font-family: var(--m); }
+.kpi .d { font-size: 12.5px; margin-top: 5px; display: flex; align-items: center; gap: 5px; }
+.up { color: var(--good); } .down { color: var(--bad); }
+.grid { display: grid; gap: 16px; }
+.g2 { grid-template-columns: repeat(auto-fit, minmax(min(310px, 100%), 1fr)); }
+.g3 { grid-template-columns: repeat(auto-fit, minmax(min(230px, 100%), 1fr)); }
+
+/* таблица */
+.tw { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; font-size: 13.5px; min-width: 860px; }
+th { text-align: left; font-family: var(--m); font-size: 10.5px; letter-spacing: .07em; text-transform: uppercase; color: var(--ink3); font-weight: 400; padding: 10px 12px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+td { padding: 11px 12px; border-bottom: 1px solid var(--line2); vertical-align: top; }
+tbody tr { cursor: pointer; }
+tbody tr:hover { background: var(--sunk); }
+.st { display: inline-grid; place-items: center; width: 22px; height: 22px; border-radius: 6px; font-family: var(--m); font-size: 11px; font-weight: 500; }
+.st.ok { background: var(--good-soft); color: var(--good); }
+.st.wn { background: var(--warn-soft); color: var(--warn); }
+.st.bd { background: var(--bad-soft); color: var(--bad); }
+.st.na { background: var(--sunk); color: var(--ink3); }
+.sc { font-family: var(--m); font-weight: 500; }
+.tag { display: inline-block; font-size: 12px; padding: 3px 8px; border-radius: 6px; white-space: nowrap; }
+.tag.bad { background: var(--bad-soft); color: var(--bad); }
+.tag.warn { background: var(--warn-soft); color: var(--warn); }
+.tag.good { background: var(--good-soft); color: var(--good); }
+.tag.mute { background: var(--sunk); color: var(--ink2); }
+.empty { padding: 50px 20px; text-align: center; color: var(--ink3); }
+
+/* фильтры */
+.filters { display: flex; flex-wrap: wrap; gap: 7px; align-items: center; padding: 13px 17px; border-bottom: 1px solid var(--line2); }
+.filters select, .filters input { background: var(--card); border: 1px solid var(--line); border-radius: 7px; padding: 7px 10px; font-size: 13px; }
+.flab { font-family: var(--m); font-size: 10.5px; letter-spacing: .08em; text-transform: uppercase; color: var(--ink3); margin-right: 2px; }
+
+/* плеер */
+.player { padding: 17px; min-width: 0; }
+.wave { display: flex; align-items: center; gap: 2px; height: 64px; cursor: pointer; position: relative; overflow: hidden; min-width: 0; }
+@media (max-width: 560px) { .wave { gap: 1px; } }
+.wave i { flex: 1 1 0; background: var(--line); border-radius: 2px; min-width: 1px; }
+.wave i.on { background: var(--acc); }
+.wave i.loss { background: var(--bad); }
+.plrow { display: flex; align-items: center; gap: 13px; margin-top: 12px; }
+.pbtn { width: 40px; height: 40px; border-radius: 50%; background: var(--acc); color: var(--acc-on); border: 0; display: grid; place-items: center; flex: none; }
+.pbtn svg { width: 14px; height: 14px; fill: currentColor; }
+.tcode { font-family: var(--m); font-size: 13px; color: var(--ink2); }
+.lossbar { margin-top: 13px; background: var(--bad-soft); color: var(--bad); border-radius: 9px; padding: 11px 14px; font-size: 13.5px; display: flex; gap: 10px; align-items: baseline; }
+.lossbar b { font-family: var(--m); flex: none; }
+
+/* расшифровка */
+.tr { max-height: 420px; overflow-y: auto; padding: 6px 0; }
+.ln { display: grid; grid-template-columns: 46px 68px minmax(0,1fr); gap: 11px; padding: 8px 17px; font-size: 13.5px; }
+.ln:hover { background: var(--sunk); }
+.ln.cur { background: var(--acc-soft); }
+.ln.lossline { box-shadow: inset 3px 0 0 var(--bad); }
+.ln .t { font-family: var(--m); font-size: 12px; color: var(--ink3); }
+.ln .w { font-size: 12.5px; color: var(--ink3); }
+.ln.mgr .w { color: var(--acc); font-weight: 600; }
+
+/* карта оценок */
+.rub { display: flex; flex-direction: column; }
+.ru { display: grid; grid-template-columns: 24px minmax(0,1fr) auto; gap: 11px; padding: 12px 17px; border-bottom: 1px solid var(--line2); align-items: start; }
+.ru:last-child { border-bottom: 0; }
+.ru .q { display: block; margin-top: 4px; font-size: 13px; color: var(--ink2); font-style: italic; }
+.ru .q cite { font-style: normal; font-family: var(--m); font-size: 11.5px; color: var(--ink3); margin-left: 6px; }
+
+/* проблемы */
+.pr { display: grid; grid-template-columns: minmax(0,1fr) auto; gap: 14px; padding: 15px 17px; border-bottom: 1px solid var(--line2); align-items: start; }
+.pr:last-child { border-bottom: 0; }
+.pr b { font-size: 14.5px; }
+.pr .meta { display: flex; flex-wrap: wrap; gap: 6px 14px; margin-top: 7px; font-size: 12.5px; color: var(--ink2); }
+.pr .money { font-family: var(--m); font-weight: 500; color: var(--bad); }
+.pr .act { display: flex; flex-direction: column; gap: 7px; align-items: flex-end; }
+@media (max-width: 620px) {
+  .pr { grid-template-columns: minmax(0,1fr); }
+  .pr .act { flex-direction: row; flex-wrap: wrap; align-items: center; }
+  .pr .act span[style*="text-align:right"] { text-align: left !important; }
+}
+.bars { display: flex; flex-direction: column; gap: 9px; }
+.brow { display: grid; grid-template-columns: 94px minmax(0,1fr) 54px; gap: 10px; align-items: center; font-size: 13px; }
+.brow .track { display: block; height: 10px; background: var(--sunk); border-radius: 5px; overflow: hidden; }
+.brow .fill { display: block; height: 10px; border-radius: 5px; background: var(--acc); }
+.brow .fill.was { background: var(--acc-dim); }
+.brow .val { font-family: var(--m); font-size: 12.5px; text-align: right; color: var(--ink2); }
+
+/* интеграции */
+.int { display: grid; grid-template-columns: 42px minmax(0,1fr) auto; gap: 13px; padding: 15px 17px; border-bottom: 1px solid var(--line2); align-items: center; }
+.int:last-child { border-bottom: 0; }
+.ico { width: 42px; height: 42px; border-radius: 10px; background: var(--sunk); display: grid; place-items: center; font-family: var(--m); font-size: 13px; font-weight: 500; color: var(--ink2); }
+.int b { display: block; font-size: 14.5px; }
+.int span { display: block; font-size: 12.5px; color: var(--ink3); margin-top: 2px; }
+
+/* загрузка */
+.drop { border: 2px dashed var(--line); border-radius: 12px; padding: 36px 20px; text-align: center; background: var(--card); }
+.drop.over { border-color: var(--acc); background: var(--acc-soft); }
+.drop b { display: block; font-size: 16px; font-weight: 600; }
+.drop span { display: block; color: var(--ink3); font-size: 13.5px; margin-top: 5px; }
+.q-item { display: grid; grid-template-columns: minmax(0,1fr) minmax(90px,150px) auto; gap: 13px; padding: 13px 17px; border-bottom: 1px solid var(--line2); align-items: center; font-size: 13.5px; }
+.q-item:last-child { border-bottom: 0; }
+.prog { height: 6px; background: var(--sunk); border-radius: 3px; overflow: hidden; }
+.prog i { display: block; height: 6px; background: var(--acc); border-radius: 3px; transition: width .3s; }
+
+/* экран потерь */
+.hero { padding: 20px 22px; }
+.hero .big { font-family: var(--m); font-size: clamp(30px, 8vw, 46px); font-weight: 500; letter-spacing: -.025em; color: var(--bad); line-height: 1.05; }
+.hero .cap { font-size: 13px; color: var(--ink3); margin-top: 7px; }
+.calc { margin-top: 15px; border-top: 1px solid var(--line2); padding-top: 13px; }
+.calc summary { cursor: pointer; font-size: 13px; color: var(--acc); font-weight: 500; }
+.calc .fx { display: grid; grid-template-columns: minmax(0,1fr) auto; gap: 6px 12px; margin-top: 11px; font-size: 13px; }
+.calc .fx span:nth-child(even) { font-family: var(--m); color: var(--ink); white-space: nowrap; }
+.calc .fx span:nth-child(odd) { color: var(--ink2); }
+.calc .fx .tot { border-top: 1px solid var(--line); padding-top: 7px; font-weight: 600; }
+.vb { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); gap: 7px; height: 164px; padding: 16px 17px 0; }
+.vb .c { display: grid; grid-template-rows: 17px minmax(0,1fr) 19px; min-width: 0; }
+.vb .c i { align-self: end; display: block; width: 100%; background: var(--bad-soft); border: 1px solid var(--bad); border-bottom: 0; border-radius: 5px 5px 0 0; }
+.vb .c.now i { background: var(--bad); }
+.vb .c b, .vb .c u { font-family: var(--m); font-weight: 400; font-size: 11px; color: var(--ink3); text-align: center; text-decoration: none; align-self: center; overflow: hidden; }
+.vb .c.now b { color: var(--bad); font-weight: 500; }
+
+/* цикл исправления */
+.steps { display: flex; flex-wrap: wrap; align-items: center; gap: 2px 0; margin-top: 13px; }
+.step { display: flex; align-items: center; gap: 7px; font-size: 12.5px; color: var(--ink3); }
+.step .dot { width: 17px; height: 17px; border-radius: 50%; border: 1.5px solid var(--line); display: grid; place-items: center; flex: none; font-size: 9px; font-weight: 700; line-height: 1; }
+.step.done { color: var(--ink2); }
+.step.done .dot { background: var(--good); border-color: var(--good); color: var(--acc-on); }
+.step.fail { color: var(--bad); }
+.step.fail .dot { background: var(--bad); border-color: var(--bad); color: var(--acc-on); }
+.steps .arr { color: var(--ink3); margin: 0 10px; flex: none; }
+@media (max-width: 620px) {
+  .steps { flex-direction: column; align-items: flex-start; gap: 5px; }
+  .steps .arr { display: none; }
+}
+.vrd { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 13px; }
+.vrd button { background: var(--card); border: 1px solid var(--line); border-radius: 7px; padding: 6px 11px; font-size: 12.5px; color: var(--ink2); }
+.vrd button[aria-pressed="true"] { border-color: currentColor; font-weight: 600; }
+.vrd button.g[aria-pressed="true"] { color: var(--good); background: var(--good-soft); }
+.vrd button.w[aria-pressed="true"] { color: var(--warn); background: var(--warn-soft); }
+.vrd button.b[aria-pressed="true"] { color: var(--bad); background: var(--bad-soft); }
+
+/* отчёт */
+.modal.wide { max-width: 580px; max-height: calc(100vh - 40px); overflow-y: auto; }
+.rep3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(170px,100%),1fr)); gap: 11px; margin: 14px 0; }
+.rep3 div { background: var(--sunk); border-radius: 9px; padding: 13px 14px; min-width: 0; }
+.rep3 .wide2 { grid-column: 1 / -1; }
+.rep3 .k { font-size: 11.5px; color: var(--ink3); }
+.rep3 .v { font-family: var(--m); font-size: clamp(17px, 4.6vw, 21px); font-weight: 500; margin-top: 4px; letter-spacing: -.02em; white-space: nowrap; }
+.rep3 .vt { font-size: 15px; font-weight: 600; margin-top: 4px; }
+.sheet { background: var(--sunk); border: 1px solid var(--line); border-radius: 10px; padding: 16px 17px; }
+.sheet h4 { margin: 0; font-size: 15px; }
+
+/* модалка */
+.ov { position: fixed; inset: 0; background: rgba(8,11,20,.55); display: grid; place-items: center; padding: 20px; z-index: 50; }
+.modal { background: var(--card); border-radius: 13px; width: 100%; max-width: 430px; padding: 22px; border: 1px solid var(--line); }
+.modal h3 { margin: 0 0 6px; font-size: 17px; font-weight: 700; }
+.modal p { margin: 0 0 16px; color: var(--ink2); font-size: 13.5px; }
+.modal .row { display: flex; gap: 9px; justify-content: flex-end; margin-top: 18px; }
+.lbl { display: block; font-size: 12.5px; color: var(--ink2); margin: 0 0 5px; }
+.ff { margin-bottom: 12px; }
+
+.listnum { display: grid; grid-template-columns: 24px minmax(0,1fr); gap: 11px; padding: 11px 17px; border-bottom: 1px solid var(--line2); align-items: start; }
+.listnum:last-child { border-bottom: 0; }
+.listnum i { font-style: normal; font-family: var(--m); font-size: 12px; color: var(--ink3); padding-top: 2px; }
+.listnum .meta { display: flex; flex-wrap: wrap; gap: 3px 15px; margin-top: 7px; font-size: 12.5px; color: var(--ink2); }
+.listnum .meta .money { font-family: var(--m); font-weight: 500; color: var(--bad); }
+.sub2 { font-size: 13px; color: var(--ink2); margin-top: 3px; }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
+</head>
+<body>
+<!-- ======================= ВХОД ======================= -->
+<div id="auth">
+  <div class="auth-box">
+    <div class="brand">
+      <span class="logo"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round"><path d="M3 12h3l2.5-7 4 14 2.5-9 1.8 4H21"/></svg></span>
+      <span><b>Момент</b> <i>рабочее название</i></span>
+    </div>
+    <h1>ИИ находит момент, в котором ушла сделка</h1>
+    <p class="sub">Не оценки по десятибалльной шкале, а конкретная секунда разговора, цитата и то, что нужно сделать. Войдите под нужной ролью — интерфейс и цифры будут разные.</p>
+    <div class="roles" id="roles">
+      <button class="role" type="button" data-role="owner" aria-pressed="true"><span class="rd"></span><span><b>Основатель</b><span>Деньги: сколько теряем, на чём, стало ли лучше</span></span></button>
+      <button class="role" type="button" data-role="rop" aria-pressed="false"><span class="rd"></span><span><b>Руководитель отдела продаж</b><span>Кого разбирать сегодня, какие проблемы в приоритете</span></span></button>
+      <button class="role" type="button" data-role="mgr" aria-pressed="false"><span class="rd"></span><span><b>Менеджер по продажам</b><span>Мои звонки, мои две ошибки, что исправить</span></span></button>
+    </div>
+    <div class="fields">
+      <input class="inp" id="email" type="email" placeholder="Рабочая почта" value="de@mskstandard.ru" autocomplete="username">
+      <input class="inp" id="pass" type="password" placeholder="Пароль" value="demo1234" autocomplete="current-password">
+    </div>
+    <div style="display:flex;gap:9px;flex-wrap:wrap">
+      <button class="btn" id="enter" type="button">Войти</button>
+      <button class="btn ghost" id="reg" type="button">Зарегистрировать компанию</button>
+    </div>
+    <p class="demo-note">Демонстрационный прототип. Данные вымышленные, анализа и интеграций на самом деле не происходит — экраны показывают, как это будет выглядеть.</p>
+  </div>
+</div>
+
+<!-- ======================= КАБИНЕТ ======================= -->
+<div id="app">
+  <aside>
+    <div class="brand">
+      <span class="logo"><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round"><path d="M3 12h3l2.5-7 4 14 2.5-9 1.8 4H21"/></svg></span>
+      <span><b>Момент</b></span>
+    </div>
+    <nav id="nav"></nav>
+    <div class="acct">
+      <b id="acctName">Дмитрий</b>
+      <span id="acctRole">Основатель</span>
+      <dl>
+        <dt>Тариф</dt><dd>Пилот</dd>
+        <dt>Минут</dt><dd>1 240</dd>
+        <dt>Звонков</dt><dd>144</dd>
+        <dt>Активно до</dt><dd>30.11</dd>
+      </dl>
+      <button class="btn ghost sm" id="out" type="button" style="margin-top:12px;width:100%">Выйти</button>
+    </div>
+  </aside>
+
+  <main>
+    <div class="top">
+      <h1 id="ttl">Дашборд</h1>
+      <span class="demo-flag">демо-данные</span>
+      <div class="chipbar" id="period">
+        <button type="button" data-p="w" aria-pressed="true">Неделя</button>
+        <button type="button" data-p="m" aria-pressed="false">Месяц</button>
+        <button type="button" data-p="q" aria-pressed="false">Квартал</button>
+      </div>
+      <button class="btn sm" id="rep" type="button" style="display:none">Отчёт за неделю</button>
+      <div class="chipbar" id="roleSw" title="Только для демонстрации"></div>
+    </div>
+    <div class="wrap" id="screens"></div>
+  </main>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  /* ===================== ДАННЫЕ (вымышленные) ===================== */
+  var MGRS = [
+    { id: "m1", n: "Орлов А.", calls: 42, next: 71, score: 78 },
+    { id: "m2", n: "Белова М.", calls: 38, next: 63, score: 72 },
+    { id: "m3", n: "Гусев Д.", calls: 35, next: 20, score: 48 },
+    { id: "m4", n: "Рыбак И.", calls: 29, next: 34, score: 56 }
+  ];
+  var S = { ok: ["ok", "+"], wn: ["wn", "~"], bd: ["bd", "−"], na: ["na", "·"] };
+  var CALLS = [
+    { id: 1, d: "16.10", t: "11:24", m: "Гусев Д.", deal: "Банкротство — Сидоров", dir: "вход", dur: "0:52", sc: 24, st: ["bd","bd","bd","wn","bd","bd"], res: "Нет следующего шага", risk: "bad", loss: 8, pot: 120000, out: "lost", amt: 120000, stg: "Закрыто не реализовано", dt: "16.10" },
+    { id: 2, d: "16.10", t: "10:51", m: "Белова М.", deal: "Банкротство — Кравцова", dir: "вход", dur: "7:12", sc: 81, st: ["ok","ok","ok","ok","wn","ok"], res: "Встреча 18.10 в 14:00", risk: "good", loss: null, pot: 0, out: "open", amt: 95000, stg: "Встреча назначена", dt: "" },
+    { id: 3, d: "16.10", t: "10:08", m: "Орлов А.", deal: "Списание долгов — Юсупов", dir: "вход", dur: "5:40", sc: 74, st: ["ok","ok","wn","ok","ok","ok"], res: "Выслать расчёт до 17.10", risk: "good", loss: null, pot: 0, out: "open", amt: 110000, stg: "Расчёт отправлен", dt: "" },
+    { id: 4, d: "15.10", t: "17:33", m: "Гусев Д.", deal: "Банкротство — Пётр В.", dir: "вход", dur: "1:46", sc: 31, st: ["ok","bd","bd","wn","bd","bd"], res: "«Перезвоните, как решите»", risk: "bad", loss: 64, pot: 120000, out: "lost", amt: 120000, stg: "Закрыто не реализовано", dt: "15.10" },
+    { id: 5, d: "15.10", t: "16:02", m: "Рыбак И.", deal: "Банкротство — Ильина", dir: "вход", dur: "3:18", sc: 52, st: ["ok","wn","bd","wn","bd","bd"], res: "Нет следующего шага", risk: "warn", loss: 112, pot: 95000, out: "stall", amt: 95000, stg: "Первичный контакт", dt: "без движения 9 дней" },
+    { id: 6, d: "15.10", t: "14:47", m: "Белова М.", deal: "Банкротство — Тагиров", dir: "исход", dur: "4:05", sc: 69, st: ["ok","ok","wn","wn","ok","ok"], res: "Перезвон 17.10", risk: "good", loss: null, pot: 0, out: "open", amt: 85000, stg: "Переговоры", dt: "" },
+    { id: 7, d: "15.10", t: "12:19", m: "Орлов А.", deal: "Консультация — Назаров", dir: "вход", dur: "6:51", sc: 77, st: ["ok","ok","ok","wn","ok","ok"], res: "Договор на согласовании", risk: "good", loss: null, pot: 0, out: "won", amt: 140000, stg: "Успешно реализовано", dt: "16.10" },
+    { id: 8, d: "14.10", t: "18:10", m: "Гусев Д.", deal: "Банкротство — Ковалёв", dir: "вход", dur: "0:44", sc: 19, st: ["bd","bd","na","bd","na","bd"], res: "Назвал цену и попрощался", risk: "bad", loss: 6, pot: 120000, out: "lost", amt: 120000, stg: "Закрыто не реализовано", dt: "14.10" },
+    { id: 9, d: "14.10", t: "15:36", m: "Рыбак И.", deal: "Списание долгов — Мишина", dir: "вход", dur: "2:58", sc: 46, st: ["wn","ok","bd","ok","bd","bd"], res: "«Я подумаю»", risk: "bad", loss: 96, pot: 95000, out: "lost", amt: 95000, stg: "Закрыто не реализовано", dt: "16.10" },
+    { id: 10, d: "14.10", t: "11:02", m: "Белова М.", deal: "Банкротство — Ершов", dir: "вход", dur: "8:24", sc: 86, st: ["ok","ok","ok","ok","ok","ok"], res: "Встреча 16.10, пришёл", risk: "good", loss: null, pot: 0, out: "won", amt: 130000, stg: "Успешно реализовано", dt: "16.10" },
+    { id: 11, d: "13.10", t: "16:55", m: "Орлов А.", deal: "Банкротство — Лапин", dir: "вход", dur: "4:33", sc: 66, st: ["ok","wn","wn","ok","wn","ok"], res: "Перезвон 15.10", risk: "warn", loss: null, pot: 0, out: "stall", amt: 85000, stg: "Переговоры", dt: "без движения 3 дня" },
+    { id: 12, d: "13.10", t: "13:21", m: "Гусев Д.", deal: "Консультация — без имени", dir: "вход", dur: "1:12", sc: 28, st: ["ok","bd","bd","wn","na","bd"], res: "Контакт не взят", risk: "bad", loss: 22, pot: 120000, out: "lost", amt: 120000, stg: "Закрыто не реализовано", dt: "13.10" }
+  ];
+  var STAGES = ["ПРИВЕТ.", "ПОТРЕБ.", "БОЛЬ", "ПРЕЗЕНТ.", "ВОЗР.", "ЗАКРЫТ."];
+  /* У каждой проблемы — цикл: выявлена → действие РОПа → перемер → вердикт.
+     verdict ставится только после перемера на новой выборке; до него он пустой. */
+  var PROBLEMS = [
+    { id: "p1", t: "Следующий шаг не назначен", f: 68, deals: 14, money: 840000, st: "work", due: "замер через 6 дней",
+      why: "Разговор заканчивается на «перезвоните, как решите». Инициатива уходит клиенту.", ex: "звонок 4 · 01:04 · Гусев Д.",
+      act: "Фраза «Я наберу вас в четверг в 11, удобно?» добавлена в скрипт и в разбор на планёрке 09.10",
+      steps: [["Выявлена", "02.10", 1], ["Передана руководителю", "03.10", 1], ["Действие сделано", "09.10", 1], ["Перемер на 40 звонках", "22.10", 0], ["Вердикт", "", 0]],
+      verdict: "" },
+    { id: "p2", t: "Цена называется до выявления задачи", f: 54, deals: 7, money: 420000, st: "new", due: "",
+      why: "Менеджер отвечает цифрой на первый же вопрос и теряет повод задать вопросы.", ex: "звонок 1 · 00:08 · Гусев Д.",
+      act: "", steps: [["Выявлена", "16.10", 1], ["Передана руководителю", "", 0], ["Действие сделано", "", 0], ["Перемер на 40 звонках", "", 0], ["Вердикт", "", 0]],
+      verdict: "" },
+    { id: "p3", t: "Возражение не отрабатывается ни одним вопросом", f: 47, deals: 5, money: 300000, st: "new", due: "",
+      why: "На «дорого» и «я подумаю» менеджер соглашается и прощается.", ex: "звонок 9 · 01:36 · Рыбак И.",
+      act: "", steps: [["Выявлена", "16.10", 1], ["Передана руководителю", "", 0], ["Действие сделано", "", 0], ["Перемер на 40 звонках", "", 0], ["Вердикт", "", 0]],
+      verdict: "" },
+    { id: "p4", t: "Менеджер говорит больше 70% времени", f: 39, deals: 0, money: 0, st: "watch", due: "в сумму потерь не входит",
+      why: "Монолог вместо диалога. Прямых потерь не посчитать, поэтому в сумму потерь эта проблема не входит.", ex: "звонок 5 · весь разговор",
+      act: "", steps: [["Выявлена", "28.09", 1], ["Оставлена под наблюдением", "28.09", 1], ["Действие сделано", "", 0], ["Перемер на 40 звонках", "", 0], ["Вердикт", "", 0]],
+      verdict: "" },
+    { id: "p5", t: "Второй канал связи не взят", f: 22, was: 61, deals: 0, money: 150000, st: "fixed", due: "было 61% две недели назад",
+      why: "После правки скрипта доля упала втрое. Проверено на новой выборке.", ex: "замер 02.10 → 16.10",
+      act: "В карточку сделки добавлено обязательное поле «мессенджер», менеджер не может закрыть звонок без него",
+      steps: [["Выявлена", "18.09", 1], ["Передана руководителю", "19.09", 1], ["Действие сделано", "02.10", 1], ["Перемер на 40 звонках", "16.10", 1], ["Вердикт", "16.10", 1]],
+      verdict: "fixed" },
+    { id: "p6", t: "Договорённость не повторяется вслух в конце", f: 41, was: 44, deals: 0, money: 0, st: "fixed", due: "перемер 14.10 — без изменений",
+      why: "Менеджер прощается, не повторив, что и когда произойдёт дальше. Клиент уходит без зафиксированной картины.",
+      ex: "замер 30.09 → 14.10",
+      act: "Напоминание в скрипте на экране менеджера",
+      steps: [["Выявлена", "30.09", 1], ["Передана руководителю", "30.09", 1], ["Действие сделано", "03.10", 1], ["Перемер на 40 звонках", "14.10", 1], ["Вердикт", "14.10", -1]],
+      verdict: "nochange" }
+  ];
+  /* Расчёт потерь: только проигранные сделки, где в оценочной карте подтверждена ошибка.
+     Коэффициент возвратности 50% — допущение, его видно пользователю и его можно менять. */
+  var MONTH = { calls: 144, lost: 38, attributed: 26, avg: 120000, recov: 0.5, prev: 1800000 };
+  function lossTotal() { return Math.round(MONTH.attributed * MONTH.avg * MONTH.recov); }
+  var LOSSMO = [
+    { m: "Май", v: 2280000 }, { m: "Июн", v: 2160000 }, { m: "Июл", v: 2040000 },
+    { m: "Авг", v: 1920000 }, { m: "Сен", v: 1800000 }, { m: "Окт", v: 1560000 }
+  ];
+  var OUTC = { won: ["good", "выиграна"], lost: ["bad", "проиграна"], stall: ["warn", "зависла"], open: ["mute", "в работе"] };
+  var TRANSCRIPT = [
+    { t: 0, w: "Менеджер", mgr: true, x: "Алло." },
+    { t: 3, w: "Клиент", x: "Здравствуйте. Я по поводу банкротства, хотел узнать, сколько это стоит." },
+    { t: 8, w: "Менеджер", mgr: true, x: "Банкротство под ключ у нас от ста двадцати тысяч." },
+    { t: 13, w: "Клиент", x: "Ого. А это сразу всё платить?" },
+    { t: 17, w: "Менеджер", mgr: true, x: "Можно в рассрочку, на год." },
+    { t: 21, w: "Клиент", x: "А по времени сколько занимает?" },
+    { t: 25, w: "Менеджер", mgr: true, x: "От шести до десяти месяцев, зависит от суда." },
+    { t: 31, w: "Клиент", x: "Понятно… Дороговато, конечно. Я подумаю." },
+    { t: 37, w: "Менеджер", mgr: true, x: "Хорошо, думайте." },
+    { t: 41, w: "Клиент", x: "Спасибо." },
+    { t: 44, w: "Менеджер", mgr: true, x: "Всего доброго." },
+    { t: 48, w: "", x: "— конец разговора, 0:52 —" }
+  ];
+  var RUBRIC = [
+    { c: "А1", t: "Представился: компания и имя", v: "bd", q: "«Алло.»", at: "00:00" },
+    { c: "А2", t: "Узнал и назвал имя клиента", v: "bd", q: "имя клиента не прозвучало ни разу", at: "" },
+    { c: "А3", t: "Перехватил инициативу вопросом", v: "bd", q: "менеджер не задал ни одного вопроса", at: "" },
+    { c: "Б1", t: "Выяснил задачу, а не только запрос", v: "bd", q: "«Банкротство под ключ у нас от ста двадцати тысяч.»", at: "00:08" },
+    { c: "Б2", t: "Выяснил срок и срочность", v: "bd", q: "про срок спросил клиент, а не менеджер", at: "00:21" },
+    { c: "Б3", t: "Нащупал бюджет или ориентир", v: "bd", q: "сумма названа без вопроса о возможностях клиента", at: "00:08" },
+    { c: "Б4", t: "Узнал, с чем сравнивает и откуда пришёл", v: "na", q: "нет данных в расшифровке", at: "" },
+    { c: "В1", t: "Говорил под задачу клиента", v: "wn", q: "ответы по делу, но вне контекста ситуации клиента", at: "" },
+    { c: "В2", t: "Отработал возражение хотя бы вопросом", v: "bd", q: "«Дороговато… Я подумаю.» — «Хорошо, думайте.»", at: "00:31" },
+    { c: "В3", t: "Не обещал невыполнимого", v: "ok", q: "сроки названы с оговоркой «зависит от суда»", at: "00:25" },
+    { c: "Г1", t: "Назначил следующий шаг с датой", v: "bd", q: "шага нет, разговор закрыт клиентом", at: "00:37" },
+    { c: "Г2", t: "Зафиксировал договорённость вслух", v: "bd", q: "договорённости не было", at: "" },
+    { c: "Г3", t: "Взял второй канал связи", v: "bd", q: "остался только входящий номер", at: "" }
+  ];
+  var TREND = [38, 41, 37, 44, 46, 43, 51, 58];
+  var INTEGR = [
+    { g: "CRM", n: "amoCRM", s: "Сделки, этапы воронки, ответственный", st: "on", k: "amo" },
+    { g: "CRM", n: "Битрикс24", s: "Сделки, задачи, карточка клиента", st: "off", k: "B24" },
+    { g: "CRM", n: "RetailCRM", s: "Заказы и статусы", st: "off", k: "RCM" },
+    { g: "Телефония", n: "Манго Телеком", s: "Записи звонков, номера, направление", st: "on", k: "МТ" },
+    { g: "Телефония", n: "Телфин", s: "Записи звонков и статистика", st: "off", k: "ТФ" },
+    { g: "Телефония", n: "Sipuni", s: "Записи и события воронки", st: "off", k: "SP" },
+    { g: "Телефония", n: "Билайн Облачная АТС", s: "Записи разговоров", st: "off", k: "БЛ" },
+    { g: "Телефония", n: "МТС Exolve", s: "Записи и журнал вызовов", st: "off", k: "МС" }
+  ];
+
+  /* ===================== УТИЛИТЫ ===================== */
+  var $ = function (s, r) { return (r || document).querySelector(s); };
+  function h(tag, attrs, kids) {
+    var e = document.createElement(tag);
+    if (attrs) for (var k in attrs) {
+      if (k === "class") e.className = attrs[k];
+      else if (k === "html") e.innerHTML = attrs[k];
+      else if (k.slice(0, 2) === "on") e.addEventListener(k.slice(2), attrs[k]);
+      else if (attrs[k] != null) e.setAttribute(k, attrs[k]);
+    }
+    (kids || []).forEach(function (c) { if (c) e.appendChild(typeof c === "string" ? document.createTextNode(c) : c); });
+    return e;
+  }
+  function rub(v) { return h("span", { class: "st " + v }, [S[v][1]]); }
+  function money(n) { return n.toLocaleString("ru-RU") + " ₽"; }
+  function mmss(s) { return Math.floor(s / 60) + ":" + String(s % 60).padStart(2, "0"); }
+  var state = { role: "owner", screen: "dash", call: null, period: "w" };
+  var ROLE_NAME = { owner: "Основатель", rop: "Руководитель продаж", mgr: "Менеджер" };
+
+  /* ===================== ВХОД ===================== */
+  $("#roles").addEventListener("click", function (e) {
+    var b = e.target.closest(".role"); if (!b) return;
+    Array.prototype.forEach.call(this.children, function (c) { c.setAttribute("aria-pressed", String(c === b)); });
+    state.role = b.dataset.role;
+  });
+  $("#enter").addEventListener("click", login);
+  $("#reg").addEventListener("click", function () {
+    modal("Регистрация компании", "В рабочей версии здесь создаётся организация, подтверждается почта и подписывается соглашение об обработке персональных данных — до того, как загружена первая запись.", [
+      ["Название компании", "ООО «Пример»"], ["ИНН", "7712345678"], ["Рабочая почта", "director@example.ru"]
+    ], "Создать и войти", login);
+  });
+  $("#pass").addEventListener("keydown", function (e) { if (e.key === "Enter") login(); });
+
+  function login() {
+    $("#auth").style.display = "none";
+    $("#app").classList.add("on");
+    $("#acctName").textContent = state.role === "mgr" ? "Гусев Д." : "Дмитрий";
+    $("#acctRole").textContent = ROLE_NAME[state.role];
+    buildRoleSwitch();
+    repBtn();
+    go(state.role === "mgr" ? "dash" : "dash");
+  }
+  $("#out").addEventListener("click", function () {
+    $("#app").classList.remove("on"); $("#auth").style.display = "grid";
+  });
+
+  function buildRoleSwitch() {
+    var box = $("#roleSw"); box.innerHTML = "";
+    ["owner", "rop", "mgr"].forEach(function (r) {
+      box.appendChild(h("button", {
+        type: "button", "aria-pressed": String(r === state.role),
+        onclick: function () { state.role = r; $("#acctRole").textContent = ROLE_NAME[r]; $("#acctName").textContent = r === "mgr" ? "Гусев Д." : "Дмитрий"; buildRoleSwitch(); repBtn(); go("dash"); }
+      }, [{ owner: "Основатель", rop: "РОП", mgr: "Менеджер" }[r]]));
+    });
+  }
+
+  function repBtn() { $("#rep").style.display = state.role === "mgr" ? "none" : ""; }
+  $("#rep").addEventListener("click", weekReport);
+
+  /* ===================== НАВИГАЦИЯ ===================== */
+  var ICONS = {
+    dash: "M3 13h7V3H3v10zm0 8h7v-6H3v6zm11 0h7V11h-7v10zm0-18v6h7V3h-7z",
+    calls: "M4 4h6l2 5-3 2a12 12 0 006 6l2-3 5 2v6a16 16 0 01-18-18z",
+    probl: "M12 2L2 20h20L12 2zm0 7v5m0 3v1",
+    up: "M12 19V5m-7 7l7-7 7 7",
+    team: "M16 20v-2a4 4 0 00-8 0v2M12 11a4 4 0 100-8 4 4 0 000 8z",
+    plug: "M9 3v6m6-6v6M6 9h12v4a6 6 0 01-12 0V9z",
+    rub: "M5 4h14M5 10h14M5 16h9",
+    loss: "M3 7l6 6 4-4 8 8M21 10v7h-7"
+  };
+  var NAV = [
+    { k: "dash", t: "Дашборд", i: "dash", r: ["owner", "rop", "mgr"] },
+    { k: "loss", t: "Потери", i: "loss", r: ["owner", "rop"] },
+    { k: "calls", t: "Звонки", i: "calls", r: ["owner", "rop"], cnt: CALLS.length },
+    { k: "calls", t: "Мои звонки", i: "calls", r: ["mgr"], cnt: 4 },
+    { k: "probl", t: "Проблемы", i: "probl", r: ["owner", "rop"], cnt: 3 },
+    { k: "upload", t: "Загрузить", i: "up", r: ["owner", "rop"] },
+    { k: "team", t: "Команда", i: "team", r: ["owner", "rop"] },
+    { k: "integr", t: "Интеграции", i: "plug", r: ["owner", "rop"] },
+    { k: "rubric", t: "Оценочная карта", i: "rub", r: ["owner", "rop"] }
+  ];
+  function buildNav() {
+    var n = $("#nav"); n.innerHTML = "";
+    NAV.filter(function (x) { return x.r.indexOf(state.role) >= 0; }).forEach(function (x) {
+      var b = h("button", { class: "nv", type: "button", "aria-current": String(state.screen === x.k), onclick: function () { go(x.k); } }, [
+        h("span", { html: '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="' + ICONS[x.i] + '"/></svg>' }),
+        x.t
+      ]);
+      if (x.cnt) b.appendChild(h("span", { class: "cnt" }, [String(x.cnt)]));
+      n.appendChild(b);
+    });
+  }
+  function go(k) {
+    state.screen = k; buildNav(); render();
+    $("#period").style.display = (k === "loss" || k === "call") ? "none" : "";
+    window.scrollTo({ top: 0, behavior: "auto" });
+  }
+
+  $("#period").addEventListener("click", function (e) {
+    var b = e.target.closest("button"); if (!b) return;
+    Array.prototype.forEach.call(this.children, function (c) { c.setAttribute("aria-pressed", String(c === b)); });
+    state.period = b.dataset.p; render();
+  });
+
+  /* ===================== ЭКРАНЫ ===================== */
+  var TITLES = { dash: "Дашборд", loss: "Потери", calls: "Звонки", call: "Разбор звонка", probl: "Проблемы", upload: "Загрузить записи", team: "Команда", integr: "Интеграции", rubric: "Оценочная карта" };
+
+  function render() {
+    $("#ttl").textContent = state.screen === "calls" && state.role === "mgr" ? "Мои звонки" : TITLES[state.screen];
+    var r = $("#screens"); r.innerHTML = "";
+    ({ dash: scrDash, loss: scrLoss, calls: scrCalls, call: scrCall, probl: scrProbl, upload: scrUpload, team: scrTeam, integr: scrIntegr, rubric: scrRubric }[state.screen] || scrDash)(r);
+  }
+
+  /* --- дашборд --- */
+  function scrDash(r) {
+    if (state.role === "owner") return dashOwner(r);
+    if (state.role === "rop") return dashRop(r);
+    return dashMgr(r);
+  }
+
+  function kpi(k, v, d, cls) {
+    return h("div", { class: "kpi" }, [h("div", { class: "k" }, [k]), h("div", { class: "v" }, [v]), d ? h("div", { class: "d " + (cls || "") }, [d]) : null]);
+  }
+
+  function trendChart() {
+    var w = 560, ht = 130, pad = 8, max = 70, min = 25;
+    var pts = TREND.map(function (v, i) {
+      return [pad + i * (w - pad * 2) / (TREND.length - 1), ht - 18 - (v - min) / (max - min) * (ht - 40)];
+    });
+    var d = pts.map(function (p, i) { return (i ? "L" : "M") + p[0].toFixed(1) + " " + p[1].toFixed(1); }).join(" ");
+    var area = d + " L" + pts[pts.length - 1][0].toFixed(1) + " " + (ht - 18) + " L" + pts[0][0].toFixed(1) + " " + (ht - 18) + " Z";
+    return h("div", { class: "card" }, [
+      h("div", { class: "ch" }, [h("h2", {}, ["Доля звонков с назначенным следующим шагом"]), h("span", { class: "hint" }, ["8 недель · по неделям"])]),
+      h("div", { style: "padding:14px 17px", html:
+        '<svg viewBox="0 0 ' + w + ' ' + ht + '" style="display:block;width:100%;height:auto" role="img" aria-label="Рост доли звонков с назначенным следующим шагом с 38% до 58% за восемь недель">' +
+        '<path d="' + area + '" fill="var(--acc)" opacity="0.1"/>' +
+        '<path d="' + d + '" fill="none" stroke="var(--acc)" stroke-width="2" stroke-linejoin="round"/>' +
+        pts.map(function (p, i) { return i === pts.length - 1 ? '<circle cx="' + p[0].toFixed(1) + '" cy="' + p[1].toFixed(1) + '" r="4.5" fill="var(--acc)" stroke="var(--card)" stroke-width="2"/>' : ""; }).join("") +
+        '<text x="' + (pts[0][0]) + '" y="' + (ht - 4) + '" font-family="var(--m)" font-size="11" fill="var(--ink3)">8 недель назад</text>' +
+        '<text x="' + w + '" y="' + (ht - 4) + '" text-anchor="end" font-family="var(--m)" font-size="11" fill="var(--ink3)">эта неделя</text>' +
+        '<text x="' + (pts[0][0]) + '" y="' + (pts[0][1] - 10) + '" font-family="var(--m)" font-size="12" fill="var(--ink3)">38%</text>' +
+        '<text x="' + w + '" y="' + (pts[pts.length-1][1] - 12) + '" text-anchor="end" font-family="var(--m)" font-size="13" font-weight="500" fill="var(--ink)">58%</text>' +
+        '</svg>' })
+    ]);
+  }
+
+  function topProblems(limit) {
+    return h("div", { class: "card" }, [
+      h("div", { class: "ch" }, [h("h2", {}, ["Что стоит дороже всего"]), h("span", { class: "hint" }, ["оценка по вашей воронке"])]),
+      h("div", {}, PROBLEMS.filter(function (p) { return p.money > 0 && p.st !== "fixed"; }).slice(0, limit || 3).map(function (p, i) {
+        return h("div", { class: "listnum" }, [
+          h("i", {}, [String(i + 1).padStart(2, "0")]),
+          h("div", {}, [
+            h("b", {}, [p.t]),
+            h("div", { class: "sub2" }, [p.f + "% звонков · " + p.ex]),
+            h("div", { class: "sub2", style: "margin-top:5px" }, [h("span", { class: "mono", style: "color:var(--bad);font-weight:500" }, [money(p.money)]), " в месяц — верхняя граница"])
+          ])
+        ]);
+      }))
+    ]);
+  }
+
+  function dashOwner(r) {
+    r.appendChild(h("div", { class: "kpis" }, [
+      kpi("Потери за месяц, оценка", mln(lossTotal()), "↓ " + Math.round((MONTH.prev - lossTotal()) / 1000) + " тыс. к прошлому месяцу", "up"),
+      kpi("Звонков разобрано", "144", "100% записанных", ""),
+      kpi("Со следующим шагом", "58%", "↑ 20 п.п. за 8 недель", "up"),
+      kpi("Проблем в работе", "1 из 3", "одна проверена и закрыта", "")
+    ]));
+    r.appendChild(lossHero(true));
+    r.appendChild(trendChart());
+    r.appendChild(h("div", { class: "grid g2" }, [topProblems(3), closedLoop()]));
+    r.appendChild(integrState());
+  }
+
+  function closedLoop() {
+    var p = PROBLEMS[4];
+    return h("div", { class: "card" }, [
+      h("div", { class: "ch" }, [h("h2", {}, ["Проверено после исправления"]), h("span", { class: "tag good" }, ["замкнутый цикл"])]),
+      h("div", { class: "p", style: "padding:17px" }, [
+        h("b", {}, [p.t]),
+        h("p", { class: "sub2", style: "margin:6px 0 14px" }, [p.why]),
+        h("div", { class: "bars" }, [
+          h("div", { class: "brow" }, [h("span", {}, ["Было, 02.10"]), h("span", { class: "track" }, [h("span", { class: "fill was", style: "width:" + p.was + "%" })]), h("span", { class: "val" }, [p.was + "%"])]),
+          h("div", { class: "brow" }, [h("span", {}, ["Стало, 16.10"]), h("span", { class: "track" }, [h("span", { class: "fill", style: "width:" + p.f + "%" })]), h("span", { class: "val" }, [p.f + "%"])])
+        ]),
+        h("p", { class: "sub2", style: "margin-top:13px" }, ["Замер на новой выборке из 40 звонков по той же оценочной карте. Это и отличает систему от разового аудита: исправление проверяется, а не остаётся обещанием."])
+      ])
+    ]);
+  }
+
+  function dashRop(r) {
+    var queue = CALLS.filter(function (c) { return c.risk === "bad"; }).slice(0, 4);
+    r.appendChild(h("div", { class: "kpis" }, [
+      kpi("Разобрать сегодня", String(queue.length), "звонки с потерянной сделкой", "down"),
+      kpi("Со следующим шагом", "58%", "цель на неделю — 65%", ""),
+      kpi("Слабое звено", "Гусев Д.", "20% против 71% у Орлова", "down"),
+      kpi("Проблема в работе", "Следующий шаг", "замер через 6 дней", "")
+    ]));
+    r.appendChild(h("div", { class: "card" }, [
+      h("div", { class: "ch" }, [h("h2", {}, ["Очередь разбора"]), h("span", { class: "hint" }, ["звонки, где сделка была и ушла"])]),
+      h("div", {}, queue.map(function (c) {
+        return h("div", { class: "listnum", style: "cursor:pointer", onclick: function () { state.call = c.id; go("call"); } }, [
+          h("i", {}, [mmss(c.loss || 0)]),
+          h("div", {}, [
+            h("b", {}, [c.deal]),
+            h("div", { class: "sub2" }, [c.m + " · " + c.d + " " + c.t + " · " + c.dur]),
+            h("div", { class: "sub2", style: "margin-top:4px;color:var(--bad)" }, ["Момент потери на " + mmss(c.loss || 0) + " · " + c.res])
+          ])
+        ]);
+      }))
+    ]));
+    r.appendChild(h("div", { class: "grid g2" }, [mgrBars(), topProblems(3)]));
+  }
+
+  function mgrBars() {
+    return h("div", { class: "card" }, [
+      h("div", { class: "ch" }, [h("h2", {}, ["Доля звонков с назначенным шагом"]), h("span", { class: "hint" }, ["по менеджерам"])]),
+      h("div", { style: "padding:17px" }, [h("div", { class: "bars" }, MGRS.map(function (m) {
+        return h("div", { class: "brow" }, [
+          h("span", {}, [m.n]),
+          h("span", { class: "track" }, [h("span", { class: "fill", style: "width:" + m.next + "%;background:" + (m.next < 40 ? "var(--bad)" : "var(--acc)") })]),
+          h("span", { class: "val" }, [m.next + "%"])
+        ]);
+      }))])
+    ]);
+  }
+
+  function dashMgr(r) {
+    var mine = CALLS.filter(function (c) { return c.m === "Гусев Д."; });
+    r.appendChild(h("div", { class: "kpis" }, [
+      kpi("Моих звонков за неделю", String(mine.length), "", ""),
+      kpi("Со следующим шагом", "20%", "в команде в среднем 58%", "down"),
+      kpi("Средняя оценка", "26", "из 100 по оценочной карте", "down"),
+      kpi("Главная ошибка", "Цена сразу", "в 3 звонках из 4", "down")
+    ]));
+    r.appendChild(h("div", { class: "card" }, [
+      h("div", { class: "ch" }, [h("h2", {}, ["Две вещи, которые стоит исправить"]), h("span", { class: "hint" }, ["не весь список, а то, что даст больше всего"])]),
+      h("div", {}, [
+        h("div", { class: "listnum" }, [h("i", {}, ["01"]), h("div", {}, [
+          h("b", {}, ["Не называйте цену, пока не задали три вопроса"]),
+          h("div", { class: "sub2" }, ["В звонке от 16.10 цена прозвучала на восьмой секунде. После неё разговор уже не вернулся к задаче клиента."]),
+          h("button", { class: "btn ghost sm", style: "margin-top:9px", type: "button", onclick: function () { state.call = 1; go("call"); } }, ["Открыть этот звонок"])
+        ])]),
+        h("div", { class: "listnum" }, [h("i", {}, ["02"]), h("div", {}, [
+          h("b", {}, ["Заканчивайте разговор датой и временем"]),
+          h("div", { class: "sub2" }, ["«Я наберу вас в четверг в 11, удобно?» — одна фраза. У Орлова она есть в 71% звонков, у вас в 20%."]),
+          h("div", { class: "sub2", style: "margin-top:6px;color:var(--ink3)" }, ["Эта формулировка взята из ваших же удачных звонков, а не из чужого скрипта."])
+        ])])
+      ])
+    ]));
+    r.appendChild(callsTable(mine, true));
+  }
+
+  function integrState() {
+    var on = INTEGR.filter(function (i) { return i.st === "on"; });
+    return h("div", { class: "card" }, [
+      h("div", { class: "ch" }, [h("h2", {}, ["Источники данных"]), h("button", { class: "btn ghost sm", type: "button", onclick: function () { go("integr"); } }, ["Настроить"])]),
+      h("div", {}, on.map(function (i) {
+        return h("div", { class: "int" }, [h("span", { class: "ico" }, [i.k]), h("div", {}, [h("b", {}, [i.n]), h("span", {}, [i.s])]), h("span", { class: "tag good" }, ["подключено"])]);
+      }).concat([h("div", { class: "int" }, [
+        h("span", { class: "ico" }, ["+"]),
+        h("div", {}, [h("b", {}, ["Ещё 6 доступных систем"]), h("span", {}, ["Битрикс24, RetailCRM, Телфин, Sipuni, Билайн, МТС"])]),
+        h("button", { class: "btn ghost sm", type: "button", onclick: function () { go("integr"); } }, ["Открыть"])
+      ])]))
+    ]);
+  }
+
+  /* --- звонки --- */
+  function callsTable(rows, compact) {
+    var head = ["ДАТА / МЕНЕДЖЕР", "СДЕЛКА", "ИСХОД СДЕЛКИ", "НАПР.", "ДЛИТ.", "ОЦЕНКА"].concat(STAGES).concat(["МОМЕНТ ПОТЕРИ", "РЕЗУЛЬТАТ"]);
+    if (compact) head = head.filter(function (x) { return x !== "НАПР."; });
+    var t = h("table", {}, [
+      h("thead", {}, [h("tr", {}, head.map(function (x) { return h("th", {}, [x]); }))]),
+      h("tbody", {}, rows.map(function (c) {
+        var tds = [
+          h("td", {}, [h("div", { class: "mono", style: "font-size:12.5px" }, [c.d + " " + c.t]), h("div", { style: "color:var(--ink3);font-size:12.5px" }, [c.m])]),
+          h("td", {}, [c.deal]),
+          h("td", {}, [
+            h("span", { class: "tag " + OUTC[c.out][0] }, [OUTC[c.out][1]]),
+            h("div", { class: "mono", style: "font-size:11.5px;color:var(--ink3);margin-top:3px" }, [money(c.amt)])
+          ])
+        ];
+        if (!compact) tds.push(h("td", {}, [h("span", { class: "tag mute" }, [c.dir])]));
+        tds.push(h("td", { class: "mono" }, [c.dur]));
+        tds.push(h("td", {}, [h("span", { class: "sc", style: "color:" + (c.sc < 40 ? "var(--bad)" : c.sc < 65 ? "var(--warn)" : "var(--good)") }, [String(c.sc)])]));
+        c.st.forEach(function (v) { tds.push(h("td", {}, [rub(v)])); });
+        tds.push(h("td", {}, [c.loss != null ? h("span", { class: "tag bad mono" }, [mmss(c.loss)]) : h("span", { style: "color:var(--ink3)" }, ["—"])]));
+        tds.push(h("td", {}, [h("span", { class: "tag " + (c.risk === "bad" ? "bad" : c.risk === "warn" ? "warn" : "good") }, [c.res])]));
+        return h("tr", { onclick: function () { state.call = c.id; go("call"); } }, tds);
+      }))
+    ]);
+    return h("div", { class: "card" }, [
+      h("div", { class: "ch" }, [h("h2", {}, ["Разобранные звонки"]), h("span", { class: "hint" }, [rows.length + " записей · нажмите строку"])]),
+      h("div", { class: "tw" }, [t])
+    ]);
+  }
+
+  function scrCalls(r) {
+    var rows = state.role === "mgr" ? CALLS.filter(function (c) { return c.m === "Гусев Д."; }) : CALLS.slice();
+    var f = h("div", { class: "filters" }, [
+      h("span", { class: "flab" }, ["Фильтры"]),
+      sel("Все менеджеры", ["Все менеджеры"].concat(MGRS.map(function (m) { return m.n; })), function (v) { apply(v, "m"); }),
+      sel("Все результаты", ["Все результаты", "Сделка ушла", "Риск", "Шаг назначен"], function (v) { apply(v, "r"); }),
+      sel("Любой исход сделки", ["Любой исход сделки", "проиграна", "выиграна", "зависла", "в работе"], function (v) { apply(v, "o"); }),
+      sel("Любая длительность", ["Любая длительность", "до 1 минуты", "1–5 минут", "больше 5 минут"], function () {}),
+      sel("Все направления", ["Все направления", "вход", "исход"], function (v) { apply(v, "d"); }),
+      h("input", { class: "inp", style: "width:210px;padding:7px 10px;font-size:13px", placeholder: "Телефон, сделка, слово в разговоре", oninput: function (e) { apply(e.target.value, "q"); } })
+    ]);
+    var box = h("div", {});
+    r.appendChild(h("div", { class: "card" }, [f]));
+    r.appendChild(box);
+    var filt = { m: "Все менеджеры", r: "Все результаты", d: "Все направления", o: "Любой исход сделки", q: "" };
+    function apply(v, k) {
+      filt[k] = v;
+      var out = rows.filter(function (c) {
+        if (filt.m !== "Все менеджеры" && c.m !== filt.m) return false;
+        if (filt.d !== "Все направления" && c.dir !== filt.d) return false;
+        if (filt.r === "Сделка ушла" && c.risk !== "bad") return false;
+        if (filt.r === "Риск" && c.risk !== "warn") return false;
+        if (filt.r === "Шаг назначен" && c.risk !== "good") return false;
+        if (filt.o !== "Любой исход сделки" && OUTC[c.out][1] !== filt.o) return false;
+        if (filt.q && (c.deal + " " + c.m + " " + c.res).toLowerCase().indexOf(filt.q.toLowerCase()) < 0) return false;
+        return true;
+      });
+      box.innerHTML = "";
+      box.appendChild(out.length ? callsTable(out, state.role === "mgr") : h("div", { class: "card" }, [h("div", { class: "empty" }, [
+        h("b", { style: "display:block;color:var(--ink);font-size:15px" }, ["Под фильтры ничего не попало"]),
+        h("div", { style: "margin-top:6px" }, ["Снимите часть условий — или проверьте, что выбран нужный период в шапке."])
+      ])]));
+    }
+    apply("", "q");
+  }
+  function sel(ph, opts, cb) {
+    return h("select", { onchange: function (e) { cb(e.target.value); } }, opts.map(function (o) { return h("option", {}, [o]); }));
+  }
+
+  /* --- карточка звонка --- */
+  function scrCall(r) {
+    var c = CALLS.filter(function (x) { return x.id === state.call; })[0] || CALLS[0];
+    var total = 52, playing = false, pos = 0, timer = null;
+
+    r.appendChild(h("div", { style: "display:flex;gap:9px;align-items:center;flex-wrap:wrap" }, [
+      h("button", { class: "btn ghost sm", type: "button", onclick: function () { go("calls"); } }, ["← К списку"]),
+      h("b", { style: "font-size:16px" }, [c.deal]),
+      h("span", { class: "tag mute" }, [c.m]),
+      h("span", { class: "tag mute mono" }, [c.d + " " + c.t + " · " + c.dur]),
+      h("span", { class: "tag " + (c.sc < 40 ? "bad" : c.sc < 65 ? "warn" : "good") }, ["оценка " + c.sc + " из 100"])
+    ]));
+
+    r.appendChild(dealCard(c));
+
+    // плеер
+    var bars = [], wave = h("div", { class: "wave", role: "slider", "aria-label": "Позиция в записи", tabindex: "0" });
+    var seed = 7;
+    for (var i = 0; i < 110; i++) {
+      seed = (seed * 9301 + 49297) % 233280;
+      var hgt = 16 + (seed / 233280) * 46;
+      var b = h("i", { style: "height:" + hgt.toFixed(0) + "px" });
+      if (c.loss != null && Math.abs(i / 110 * total - c.loss) < 1.2) b.classList.add("loss");
+      bars.push(b); wave.appendChild(b);
+    }
+    var tc = h("span", { class: "tcode" }, ["0:00 / " + c.dur]);
+    function paint() {
+      var k = pos / total * bars.length;
+      bars.forEach(function (b, i) { b.classList.toggle("on", i <= k && !b.classList.contains("loss")); });
+      tc.textContent = mmss(Math.round(pos)) + " / " + c.dur;
+      var cur = -1;
+      TRANSCRIPT.forEach(function (l, i) { if (pos >= l.t) cur = i; });
+      Array.prototype.forEach.call(trBox.children, function (el, i) { el.classList.toggle("cur", i === cur); });
+    }
+    function seek(e) {
+      var rr = wave.getBoundingClientRect();
+      pos = Math.max(0, Math.min(total, (e.clientX - rr.left) / rr.width * total));
+      paint();
+    }
+    wave.addEventListener("click", seek);
+    var pbtn = h("button", { class: "pbtn", type: "button", "aria-label": "Воспроизвести", html: '<svg viewBox="0 0 12 14"><path d="M0 0l12 7-12 7z"/></svg>' });
+    pbtn.addEventListener("click", function () {
+      playing = !playing;
+      pbtn.innerHTML = playing ? '<svg viewBox="0 0 12 14"><path d="M0 0h4v14H0zM8 0h4v14H8z"/></svg>' : '<svg viewBox="0 0 12 14"><path d="M0 0l12 7-12 7z"/></svg>';
+      clearInterval(timer);
+      if (playing) timer = setInterval(function () {
+        pos += 0.25; if (pos >= total) { pos = total; playing = false; pbtn.innerHTML = '<svg viewBox="0 0 12 14"><path d="M0 0l12 7-12 7z"/></svg>'; clearInterval(timer); }
+        paint();
+      }, 100);
+    });
+
+    var pl = h("div", { class: "card" }, [
+      h("div", { class: "player" }, [
+        wave,
+        h("div", { class: "plrow" }, [pbtn, tc, h("span", { style: "margin-left:auto;font-size:12.5px;color:var(--ink3)" }, ["демо: звук не воспроизводится, бежит только позиция"])]),
+        c.loss != null ? h("div", { class: "lossbar" }, [
+          h("b", {}, [mmss(c.loss)]),
+          h("span", {}, ["Момент потери. Здесь разговор перестал двигаться к сделке: цена названа до того, как менеджер выяснил задачу. Всё, что было дальше, уже не вернуло инициативу."])
+        ]) : null
+      ])
+    ]);
+    r.appendChild(pl);
+
+    // расшифровка + карта
+    var trBox = h("div", { class: "tr" });
+    TRANSCRIPT.forEach(function (l) {
+      var cls = "ln" + (l.mgr ? " mgr" : "") + (c.loss != null && Math.abs(l.t - c.loss) < 1 ? " lossline" : "");
+      trBox.appendChild(h("div", { class: cls, onclick: function () { pos = l.t; paint(); } }, [
+        h("span", { class: "t" }, [mmss(l.t)]), h("span", { class: "w" }, [l.w]), h("span", {}, [l.x])
+      ]));
+    });
+
+    r.appendChild(h("div", { class: "grid g2" }, [
+      h("div", { class: "card" }, [h("div", { class: "ch" }, [h("h2", {}, ["Расшифровка"]), h("span", { class: "hint" }, ["нажмите строку — перемотает"])]), trBox]),
+      h("div", { class: "card" }, [
+        h("div", { class: "ch" }, [h("h2", {}, ["Оценочная карта"]), h("span", { class: "hint" }, ["каждый вывод с цитатой"])]),
+        h("div", { class: "rub" }, RUBRIC.map(function (x) {
+          return h("div", { class: "ru" }, [
+            h("span", { class: "mono", style: "font-size:12px;color:var(--ink3)" }, [x.c]),
+            h("div", {}, [h("span", {}, [x.t]), h("span", { class: "q" }, [x.q, x.at ? h("cite", {}, [x.at]) : null])]),
+            rub(x.v)
+          ]);
+        }))
+      ])
+    ]));
+
+    r.appendChild(h("div", { class: "card p" }, [
+      h("div", { style: "font-family:var(--m);font-size:10.5px;letter-spacing:.09em;text-transform:uppercase;color:var(--ink3)" }, ["Что изменило бы исход"]),
+      h("p", { style: "margin:9px 0 0;font-size:15.5px" }, ["На 00:03, вместо суммы — один вопрос: «Расскажите коротко, какая сейчас ситуация с долгами и кредиторами?» Цена после этого звучит как решение задачи, а не как ценник."]),
+      h("p", { class: "sub2", style: "margin-top:10px" }, ["У Беловой М. в 8 звонках из 10 цена называется после трёх уточняющих вопросов, и доля назначенных встреч у неё втрое выше. Формулировка взята из её звонка от 14.10, 02:11."])
+    ]));
+    paint();
+  }
+
+  /* --- проблемы --- */
+  var PST = { new: ["mute", "новая"], work: ["warn", "в работе"], watch: ["mute", "наблюдение"], fixed: ["good", "перемер сделан"] };
+  var VRD = {
+    fixed: ["g", "закрыта"], work: ["w", "в работе"], nochange: ["b", "не улучшилась"]
+  };
+
+  /* Цикл исправления. Вердикт появляется только после перемера на новой выборке.
+     «Не улучшилась» — такой же законный исход, как «закрыта»: иначе система
+     превращается в генератор хороших новостей. */
+  function stepRow(p) {
+    var kids = [];
+    p.steps.forEach(function (st, i) {
+      if (i) kids.push(h("span", { class: "arr" }, ["→"]));
+      var cls = st[2] === 1 ? "step done" : st[2] === -1 ? "step fail" : "step";
+      kids.push(h("span", { class: cls }, [
+        h("span", { class: "dot" }, [st[2] === 1 ? "✓" : st[2] === -1 ? "✕" : ""]),
+        h("span", {}, [st[0] + (st[1] ? " · " + st[1] : "")])
+      ]));
+    });
+    return h("div", { class: "steps" }, kids);
+  }
+
+  function verdictRow(p) {
+    if (!p.steps[3][2]) {
+      return p.steps[2][2] ? h("p", { class: "sub2", style: "margin:11px 0 0;color:var(--ink3)" }, [
+        "Действие отмечено, но вердикта пока нет: его ставит перемер на новой выборке, а не отметка руководителя."
+      ]) : null;
+    }
+    var box = h("div", { class: "vrd" }, []);
+    ["fixed", "work", "nochange"].forEach(function (k) {
+      box.appendChild(h("button", {
+        class: VRD[k][0], type: "button", "aria-pressed": String(p.verdict === k),
+        onclick: function () { p.verdict = k; render(); }
+      }, [VRD[k][1]]));
+    });
+    var was = p.was != null ? p.was : p.f;
+    var delta = was - p.f;
+    return h("div", {}, [
+      h("div", { class: "bars", style: "margin-top:13px" }, [
+        h("div", { class: "brow" }, [h("span", {}, ["До действия"]), h("span", { class: "track" }, [h("span", { class: "fill was", style: "width:" + was + "%" })]), h("span", { class: "val" }, [was + "%"])]),
+        h("div", { class: "brow" }, [h("span", {}, ["После перемера"]), h("span", { class: "track" }, [h("span", { class: "fill", style: "width:" + p.f + "%;background:" + (delta > 5 ? "var(--good)" : "var(--bad)") })]), h("span", { class: "val" }, [p.f + "%"])])
+      ]),
+      h("p", { class: "sub2", style: "margin:10px 0 0" }, [
+        delta > 5
+          ? "Частота упала на " + delta + " п.п. на новой выборке из 40 звонков. Исправление подтверждено."
+          : "Разница " + delta + " п.п. — в пределах погрешности выборки. Действие не сработало, нужно другое. Проблема возвращается в очередь, а не закрывается."
+      ]),
+      box
+    ]);
+  }
+
+  function scrProbl(r) {
+    r.appendChild(h("div", { class: "card p" }, [
+      h("b", { style: "font-size:15px" }, ["Приоритет, а не список замечаний"]),
+      h("p", { class: "sub2", style: "margin-top:6px" }, ["Система не вываливает сорок мелочей. Она показывает то, что повторяется чаще всего и стоит дороже всего, предлагает действие и через две недели сама пересчитывает частоту на новой выборке. Пока перемер не сделан, проблема не считается исправленной. Если перемер показал, что ничего не изменилось, система так и говорит."])
+    ]));
+    r.appendChild(h("div", { class: "card" }, [
+      h("div", { class: "ch" }, [h("h2", {}, ["Проблемы отдела"]), h("span", { class: "hint" }, ["144 звонка за месяц"])]),
+      h("div", {}, PROBLEMS.map(function (p) {
+        return h("div", { class: "pr" }, [
+          h("div", {}, [
+            h("b", {}, [p.t]),
+            h("div", { class: "sub2", style: "margin-top:5px" }, [p.why]),
+            h("div", { class: "meta" }, [
+              h("span", {}, ["Частота: ", h("b", { class: "mono" }, [p.f + "%"])]),
+              p.money ? h("span", { class: "money" }, [money(p.money) + " / мес"]) : h("span", {}, ["Прямых потерь не считаем"]),
+              p.deals ? h("span", {}, [plu(p.deals, "ушедшая сделка", "ушедшие сделки", "ушедших сделок")]) : null,
+              h("span", { style: "color:var(--ink3)" }, [p.ex])
+            ]),
+            stepRow(p),
+            p.act ? h("p", { class: "sub2", style: "margin:11px 0 0" }, [h("b", { style: "font-weight:500;color:var(--ink2)" }, ["Что сделал руководитель: "]), p.act]) : null,
+            verdictRow(p)
+          ]),
+          h("div", { class: "act" }, [
+            h("span", { class: "tag " + PST[p.st][0] }, [PST[p.st][1]]),
+            p.verdict ? h("span", { class: "tag " + (p.verdict === "fixed" ? "good" : p.verdict === "nochange" ? "bad" : "warn") }, [VRD[p.verdict][1]]) : null,
+            p.due ? h("span", { style: "font-size:12px;color:var(--ink3);text-align:right" }, [p.due]) : null,
+            p.st === "new" ? h("button", {
+              class: "btn sm", type: "button", onclick: function () {
+                p.st = "work"; p.due = "перемер через 14 дней";
+                p.steps[1][2] = 1; p.steps[1][1] = "16.10";
+                modal("Проблема взята в работу", "Система зафиксировала текущее значение " + p.f + "% как точку отсчёта. Через 14 дней она пересчитает его на новой выборке из 40 звонков и покажет разницу. До перемера вердикт не выставляется.", [], "Понятно", function () { render(); });
+              }
+            }, ["Взять в работу"]) : null,
+            p.st === "work" && !p.steps[2][2] ? h("button", {
+              class: "btn ghost sm", type: "button", onclick: function () {
+                modal("Отметить действие сделанным", "Опишите, что именно изменили. Эта запись попадёт в отчёт владельцу рядом с результатом перемера — чтобы было видно не только проблему, но и что по ней сделали.", [["Что сделали", "Правка в скрипте, разбор на планёрке"]], "Отметить", function () {
+                  p.steps[2][2] = 1; p.steps[2][1] = "16.10";
+                  if (!p.act) p.act = "Правка в скрипте, разбор на планёрке — отмечено 16.10";
+                  render();
+                });
+              }
+            }, ["Действие сделано"]) : null
+          ])
+        ]);
+      }))
+    ]));
+  }
+
+  /* --- загрузка --- */
+  function scrUpload(r) {
+    var queue = [];
+    var drop = h("div", { class: "drop" }, [
+      h("b", {}, ["Перетащите записи сюда"]),
+      h("span", {}, ["mp3, wav, m4a — до 500 МБ. Или выгрузятся сами, если подключена телефония."]),
+      h("div", { style: "margin-top:14px;display:flex;gap:9px;justify-content:center;flex-wrap:wrap" }, [
+        h("button", { class: "btn sm", type: "button", onclick: pick }, ["Выбрать файлы"]),
+        h("button", { class: "btn ghost sm", type: "button", onclick: function () { go("integr"); } }, ["Подключить телефонию"])
+      ])
+    ]);
+    var inp = h("input", { type: "file", multiple: "", accept: "audio/*", style: "display:none", onchange: function (e) { add(Array.prototype.slice.call(e.target.files)); } });
+    function pick() { inp.click(); }
+    ["dragover", "dragenter"].forEach(function (ev) { drop.addEventListener(ev, function (e) { e.preventDefault(); drop.classList.add("over"); }); });
+    ["dragleave", "drop"].forEach(function (ev) { drop.addEventListener(ev, function (e) { e.preventDefault(); drop.classList.remove("over"); }); });
+    drop.addEventListener("drop", function (e) { add(Array.prototype.slice.call(e.dataTransfer.files)); });
+
+    var list = h("div", {});
+    var card = h("div", { class: "card" }, [
+      h("div", { class: "ch" }, [h("h2", {}, ["Очередь анализа"]), h("span", { class: "hint" }, ["разбор одного звонка — около минуты"])]),
+      list
+    ]);
+    card.hidden = true;
+
+    function add(files) {
+      if (!files.length) return;
+      card.hidden = false;
+      files.forEach(function (f) {
+        var pr = h("i", { style: "width:3%" });
+        var statusEl = h("span", { class: "tag mute" }, ["в очереди"]);
+        list.appendChild(h("div", { class: "q-item" }, [
+          h("div", {}, [h("b", {}, [f.name]), h("div", { class: "sub2 mono" }, [(f.size / 1048576).toFixed(1) + " МБ"])]),
+          h("div", { class: "prog" }, [pr]), statusEl
+        ]));
+        var v = 3, steps = ["расшифровка", "разбор по карте", "поиск момента потери"];
+        var tm = setInterval(function () {
+          v += 4 + Math.random() * 7;
+          if (v >= 100) {
+            v = 100; clearInterval(tm);
+            statusEl.className = "tag good"; statusEl.textContent = "демо: разбор не выполнялся";
+          } else {
+            statusEl.className = "tag warn";
+            statusEl.textContent = steps[Math.min(2, Math.floor(v / 34))];
+          }
+          pr.style.width = v + "%";
+        }, 320);
+      });
+    }
+
+    r.appendChild(h("div", { class: "card p" }, [
+      h("b", { style: "font-size:15px" }, ["Прежде чем загружать чужие записи"]),
+      h("p", { class: "sub2", style: "margin-top:6px" }, ["Записи разговоров — персональные данные. Соглашение с клиентом подписывается до передачи, а не после. Если расшифровку обрабатывает внешняя модель, это передача данных третьему лицу, и её нужно указать в соглашении отдельным пунктом."])
+    ]));
+    r.appendChild(drop); r.appendChild(inp); r.appendChild(card);
+  }
+
+  /* --- команда --- */
+  function scrTeam(r) {
+    var people = [
+      { n: "Дмитрий С.", e: "de@mskstandard.ru", r: "Основатель", s: "активен" },
+      { n: "Анна К.", e: "anna@mskstandard.ru", r: "Руководитель продаж", s: "активен" },
+      { n: "Орлов А.", e: "orlov@mskstandard.ru", r: "Менеджер", s: "активен" },
+      { n: "Белова М.", e: "belova@mskstandard.ru", r: "Менеджер", s: "активен" },
+      { n: "Гусев Д.", e: "gusev@mskstandard.ru", r: "Менеджер", s: "активен" },
+      { n: "Рыбак И.", e: "rybak@mskstandard.ru", r: "Менеджер", s: "приглашение отправлено" }
+    ];
+    r.appendChild(h("div", { class: "card" }, [
+      h("div", { class: "ch" }, [h("h2", {}, ["Сотрудники"]), h("button", { class: "btn sm", type: "button", onclick: function () {
+        modal("Пригласить сотрудника", "На почту уйдёт ссылка. Менеджер видит только свои звонки и свои ошибки — чужие записи ему не доступны.", [["Имя", "Новый сотрудник"], ["Рабочая почта", "name@company.ru"]], "Отправить приглашение", null);
+      } }, ["Пригласить"])]),
+      h("div", {}, people.map(function (p) {
+        return h("div", { class: "int" }, [
+          h("span", { class: "ico" }, [p.n[0]]),
+          h("div", {}, [h("b", {}, [p.n]), h("span", {}, [p.e + " · " + p.r])]),
+          h("span", { class: "tag " + (p.s === "активен" ? "good" : "warn") }, [p.s])
+        ]);
+      }))
+    ]));
+    r.appendChild(h("div", { class: "card p" }, [
+      h("b", { style: "font-size:15px" }, ["Что видит каждая роль"]),
+      h("div", { class: "grid g3", style: "margin-top:12px" }, [
+        h("div", {}, [h("b", {}, ["Основатель"]), h("p", { class: "sub2" }, ["Деньги, динамика, что проверено. Не лезет в отдельные звонки."])]),
+        h("div", {}, [h("b", {}, ["Руководитель продаж"]), h("p", { class: "sub2" }, ["Очередь разбора, рейтинг, проблемы и план. Видит все звонки."])]),
+        h("div", {}, [h("b", {}, ["Менеджер"]), h("p", { class: "sub2" }, ["Только свои звонки и две свои ошибки. Чужих записей и чужого рейтинга не видит."])])
+      ]),
+      h("p", { class: "sub2", style: "margin-top:12px;color:var(--ink3)" }, ["Менеджер не видит общий рейтинг намеренно: публичная таблица лидеров ухудшает отношение к контролю качества и провоцирует подгонять разговоры под метрику."])
+    ]));
+  }
+
+  /* --- интеграции --- */
+  function scrIntegr(r) {
+    ["CRM", "Телефония"].forEach(function (g) {
+      r.appendChild(h("div", { class: "card" }, [
+        h("div", { class: "ch" }, [h("h2", {}, [g]), h("span", { class: "hint" }, [g === "CRM" ? "сделки, этапы, ответственный" : "записи разговоров и журнал вызовов"])]),
+        h("div", {}, INTEGR.filter(function (i) { return i.g === g; }).map(function (i) {
+          return h("div", { class: "int" }, [
+            h("span", { class: "ico" }, [i.k]),
+            h("div", {}, [h("b", {}, [i.n]), h("span", {}, [i.s])]),
+            i.st === "on"
+              ? h("div", { style: "display:flex;gap:8px;align-items:center" }, [h("span", { class: "tag good" }, ["подключено"]), h("button", { class: "btn ghost sm", type: "button", onclick: function () { i.st = "off"; render(); } }, ["Отключить"])])
+              : h("button", { class: "btn sm", type: "button", onclick: function () {
+                  modal("Подключить " + i.n, g === "CRM"
+                    ? "Нужен ключ интеграции и адрес портала. Система будет читать сделки и этапы, чтобы связывать звонки с результатом, и ничего не изменяет в вашей CRM."
+                    : "Нужен ключ API. Система будет забирать новые записи раз в 15 минут. Старые записи можно выгрузить разово за выбранный период.",
+                    [["Ключ API", ""], [g === "CRM" ? "Адрес портала" : "Логин / ID аккаунта", ""]], "Подключить", function () { i.st = "on"; render(); });
+                } }, ["Подключить"])
+          ]);
+        }))
+      ]));
+    });
+    r.appendChild(h("div", { class: "card p" }, [
+      h("b", { style: "font-size:15px" }, ["Если интеграции нет"]),
+      h("p", { class: "sub2", style: "margin-top:6px" }, ["Загрузите записи вручную — результат тот же, просто придётся выгружать самому. Для первого разбора этого достаточно: 8–10 записей подряд дают честную картину."]),
+      h("button", { class: "btn ghost sm", type: "button", style: "margin-top:11px", onclick: function () { go("upload"); } }, ["Перейти к загрузке"])
+    ]));
+  }
+
+  /* --- оценочная карта --- */
+  function scrRubric(r) {
+    var BLOCKS = [
+      { n: "А. Начало разговора", w: 15, items: RUBRIC.slice(0, 3) },
+      { n: "Б. Выявление потребности", w: 30, items: RUBRIC.slice(3, 7) },
+      { n: "В. Презентация и возражения", w: 25, items: RUBRIC.slice(7, 10) },
+      { n: "Г. Закрытие", w: 30, items: RUBRIC.slice(10) }
+    ];
+    r.appendChild(h("div", { class: "card p" }, [
+      h("b", { style: "font-size:15px" }, ["Карта под ваш отдел, а не универсальная"]),
+      h("p", { class: "sub2", style: "margin-top:6px" }, ["У юристов, автосалона и медцентра хороший звонок выглядит по-разному. Пункты и веса меняются здесь — и анализ сразу считается по новой карте. Старые звонки можно пересчитать."])
+    ]));
+    BLOCKS.forEach(function (b) {
+      r.appendChild(h("div", { class: "card" }, [
+        h("div", { class: "ch" }, [
+          h("h2", {}, [b.n]),
+          h("div", { style: "display:flex;gap:9px;align-items:center" }, [
+            h("span", { class: "hint mono" }, ["вес " + b.w]),
+            h("button", { class: "btn ghost sm", type: "button", onclick: function () { modal("Изменить блок «" + b.n + "»", "В рабочей версии вес блока и формулировки пунктов меняются здесь. Сумма весов всех блоков должна давать 100.", [["Вес блока", String(b.w)]], "Сохранить", null); } }, ["Изменить"])
+          ])
+        ]),
+        h("div", {}, b.items.map(function (x) {
+          return h("div", { class: "ru" }, [
+            h("span", { class: "mono", style: "font-size:12px;color:var(--ink3)" }, [x.c]),
+            h("div", {}, [h("span", {}, [x.t])]),
+            h("label", { style: "display:flex;gap:7px;align-items:center;font-size:12.5px;color:var(--ink3)" }, [
+              h("input", { type: "checkbox", checked: "", style: "accent-color:var(--acc)" }), "учитывать"
+            ])
+          ]);
+        }))
+      ]));
+    });
+  }
+
+
+  /* Сделка из amoCRM рядом с разбором: оценка разговора сама по себе ничего не стоит,
+     пока не видно, чем дело кончилось. */
+  function dealCard(c) {
+    var o = OUTC[c.out];
+    return h("div", { class: "card" }, [
+      h("div", { class: "ch" }, [h("h2", {}, ["Сделка в amoCRM"]), h("span", { class: "hint" }, ["связано по номеру и времени звонка"])]),
+      h("div", { class: "int" }, [
+        h("span", { class: "ico" }, ["amo"]),
+        h("div", {}, [
+          h("b", {}, [c.deal]),
+          h("span", {}, ["Этап: " + c.stg + (c.dt ? " · " + (c.out === "stall" ? c.dt : "изменён " + c.dt) : "")])
+        ]),
+        h("div", { style: "display:flex;gap:7px;align-items:center;flex-wrap:wrap;justify-content:flex-end" }, [
+          h("span", { class: "mono", style: "font-size:13px;color:var(--ink2)" }, [money(c.amt)]),
+          h("span", { class: "tag " + o[0] }, [o[1]])
+        ])
+      ]),
+      h("p", { class: "sub2", style: "padding:13px 17px 16px;margin:0" }, [
+        c.out === "lost"
+          ? "Сделка закрыта без результата. Этот звонок — последний контакт по ней, поэтому ошибки из разбора отнесены к потере: " + money(c.amt) + " × 50% возвратности."
+          : c.out === "won"
+          ? "Сделка закрыта успешно. Разговор попадает в эталонную выборку: именно на таких звонках система учится отличать выигранную сделку от проигранной."
+          : c.out === "stall"
+          ? "Сделка не двигается: " + c.dt + ". В потери не записана — исход ещё не определён, и система не считает деньги раньше времени."
+          : "Сделка в работе. Пока она не закрыта, этот звонок в расчёт потерь не входит."
+      ])
+    ]);
+  }
+
+  /* ===================== ПОТЕРИ ===================== */
+  function plu(n, one, few, many) {
+    var a = n % 10, b = n % 100;
+    if (a === 1 && b !== 11) return n + " " + one;
+    if (a >= 2 && a <= 4 && (b < 12 || b > 14)) return n + " " + few;
+    return n + " " + many;
+  }
+  function mln(n) {
+    return (n / 1000000).toFixed(2).replace(".", ",") + " млн ₽";
+  }
+
+  /* Главный блок владельца: одна сумма и открытая формула под ней.
+     Формула видна целиком, чтобы цифру можно было проверить, а не принять на веру. */
+  function lossHero(compact) {
+    var tot = lossTotal(), diff = MONTH.prev - tot;
+    var box = h("div", { class: "card hero" }, [
+      h("div", { class: "k", style: "font-size:12.5px;color:var(--ink3)" }, ["Потеряно за октябрь, оценка"]),
+      h("div", { class: "big" }, ["≈ " + money(tot)]),
+      h("div", { class: "cap" }, [
+        "Это не ошибки, а деньги: сумма сделок, которые ушли, и в разговорах по которым подтверждена ошибка из оценочной карты. ",
+        h("span", { style: "color:var(--good)" }, ["На " + money(diff) + " меньше, чем в сентябре."])
+      ]),
+      h("details", { class: "calc" }, [
+        h("summary", {}, ["Как получилась эта сумма"]),
+        h("div", { class: "fx" }, [
+          h("span", {}, ["Разобрано звонков за месяц"]), h("span", {}, [String(MONTH.calls)]),
+          h("span", {}, ["Сделок закрыто без результата"]), h("span", {}, [String(MONTH.lost)]),
+          h("span", {}, ["Из них с подтверждённой ошибкой в разговоре"]), h("span", {}, [String(MONTH.attributed)]),
+          h("span", {}, ["Средний чек по этим сделкам"]), h("span", {}, [money(MONTH.avg)]),
+          h("span", {}, ["Доля, которую считаем возвратной"]), h("span", {}, [Math.round(MONTH.recov * 100) + "%"]),
+          h("span", { class: "tot" }, [String(MONTH.attributed) + " × " + money(MONTH.avg) + " × " + Math.round(MONTH.recov * 100) + "%"]),
+          h("span", { class: "tot" }, [money(tot)])
+        ]),
+        h("p", { class: "sub2", style: "margin:12px 0 0" }, [
+          "Ещё " + plu(MONTH.lost - MONTH.attributed, "сделка ушла", "сделки ушли", "сделок ушли") + " без подтверждённой причины в разговоре — они в сумму не входят. ",
+          "Коэффициент возвратности 50% — допущение, а не измерение; он задаётся в настройках и его видно здесь всегда."
+        ])
+      ])
+    ]);
+    if (compact) box.appendChild(h("div", { style: "padding:0 22px 20px" }, [
+      h("button", { class: "btn ghost sm", type: "button", onclick: function () { go("loss"); } }, ["Разобрать потери по причинам →"])
+    ]));
+    return box;
+  }
+
+  function lossChart() {
+    var max = Math.max.apply(null, LOSSMO.map(function (x) { return x.v; }));
+    var label = LOSSMO.map(function (x) { return x.m + " " + mln(x.v); }).join(", ");
+    return h("div", { class: "card" }, [
+      h("div", { class: "ch" }, [h("h2", {}, ["Сколько теряли → сколько теряем"]), h("span", { class: "hint" }, ["млн ₽ в месяц"])]),
+      h("div", { class: "vb", role: "img", "aria-label": "Оценка потерь по месяцам: " + label },
+        LOSSMO.map(function (x, i) {
+          var last = i === LOSSMO.length - 1;
+          return h("div", { class: "c" + (last ? " now" : "") }, [
+            h("b", {}, [(x.v / 1000000).toFixed(2).replace(".", ",")]),
+            h("i", { style: "height:" + Math.round(x.v / max * 100) + "%" }),
+            h("u", {}, [x.m])
+          ]);
+        })
+      ),
+      h("p", { class: "sub2", style: "padding:11px 17px 16px;margin:0" }, [
+        "Шесть месяцев по одной и той же оценочной карте, поэтому месяцы сравнимы между собой. Смена карты обнулит историю — система предупредит об этом отдельно."
+      ])
+    ]);
+  }
+
+  /* Привязка к сделке: считаем прямо по данным, без заранее вписанных выводов. */
+  function dealPattern() {
+    var won = CALLS.filter(function (c) { return c.out === "won"; });
+    var lost = CALLS.filter(function (c) { return c.out === "lost"; });
+    function okShare(arr, i) { return arr.length ? Math.round(arr.filter(function (c) { return c.st[i] === "ok"; }).length / arr.length * 100) : 0; }
+    function avg(arr) { return arr.length ? Math.round(arr.reduce(function (a, c) { return a + c.sc; }, 0) / arr.length) : 0; }
+    var rows = STAGES.map(function (st, i) { return { st: st, w: okShare(won, i), l: okShare(lost, i) }; })
+      .sort(function (a, b) { return (b.w - b.l) - (a.w - a.l); });
+    return h("div", { class: "card" }, [
+      h("div", { class: "ch" }, [h("h2", {}, ["Чем разговор в выигранной сделке отличается от проигранной"]), h("span", { class: "tag mute" }, ["из amoCRM"])]),
+      h("div", { style: "padding:14px 17px 0" }, [h("div", { class: "kpis", style: "grid-template-columns:repeat(auto-fit,minmax(min(130px,100%),1fr))" }, [
+        kpi("Средняя оценка, выигранные", String(avg(won)), plu(won.length, "сделка", "сделки", "сделок") + " в выборке", "up"),
+        kpi("Средняя оценка, проигранные", String(avg(lost)), plu(lost.length, "сделка", "сделки", "сделок") + " в выборке", "down")
+      ])]),
+      h("div", { class: "tw" }, [h("table", {}, [
+        h("thead", {}, [h("tr", {}, ["ЭТАП РАЗГОВОРА", "ВЫИГРАНО", "ПРОИГРАНО", "РАЗРЫВ"].map(function (x) { return h("th", {}, [x]); }))]),
+        h("tbody", {}, rows.map(function (x) {
+          return h("tr", {}, [
+            h("td", {}, [x.st]),
+            h("td", { class: "mono", style: "color:var(--good)" }, [x.w + "%"]),
+            h("td", { class: "mono", style: "color:var(--bad)" }, [x.l + "%"]),
+            h("td", {}, [x.w - x.l >= 80 ? h("span", { class: "tag bad mono" }, [(x.w - x.l) + " п.п."]) : h("span", { class: "mono", style: "color:var(--ink3)" }, [(x.w - x.l) + " п.п."])])
+          ]);
+        }))
+      ])]),
+      h("p", { class: "sub2", style: "padding:13px 17px 16px;margin:0" }, [
+        "В выборке " + plu(won.length, "выигранная сделка", "выигранные сделки", "выигранных сделок") + " и "
+        + plu(lost.length, "проигранная", "проигранные", "проигранных") + ". На таком объёме это наблюдение, а не вывод: "
+        + "чтобы система назвала закономерность, нужно не меньше 30 сделок в каждой группе. Счётчик наберётся примерно за шесть недель."
+      ])
+    ]);
+  }
+
+  function scrLoss(r) {
+    r.appendChild(lossHero(false));
+    r.appendChild(lossChart());
+    r.appendChild(h("div", { class: "card" }, [
+      h("div", { class: "ch" }, [h("h2", {}, ["Из чего состоят потери"]), h("span", { class: "hint" }, ["сделки × чек × возвратность"])]),
+      h("div", {}, PROBLEMS.filter(function (p) { return p.money > 0 && p.st !== "fixed"; }).map(function (p, i) {
+        return h("div", { class: "listnum", style: "cursor:pointer", onclick: function () { go("probl"); } }, [
+          h("i", {}, [String(i + 1).padStart(2, "0")]),
+          h("div", {}, [
+            h("b", {}, [p.t]),
+            h("div", { class: "sub2", style: "margin-top:4px" }, [p.why]),
+            h("div", { class: "meta" }, [
+              h("span", { class: "money" }, [money(p.money) + " / мес"]),
+              h("span", {}, [plu(p.deals, "ушедшая сделка", "ушедшие сделки", "ушедших сделок") + " с этой ошибкой"]),
+              h("span", {}, ["частота ", h("b", { class: "mono" }, [p.f + "%"])])
+            ])
+          ])
+        ]);
+      }).concat([h("div", { class: "listnum" }, [
+        h("i", {}, ["—"]),
+        h("div", {}, [
+          h("b", { style: "color:var(--ink2)" }, ["Причина не установлена"]),
+          h("div", { class: "sub2", style: "margin-top:4px" }, [
+            plu(MONTH.lost - MONTH.attributed, "сделка закрылась", "сделки закрылись", "сделок закрылись") + " без результата, но ошибки из оценочной карты в разговоре не нашлось. "
+            + "Система не придумывает им причину и не считает их в потерях."
+          ])
+        ])
+      ])]))
+    ]));
+    r.appendChild(dealPattern());
+    r.appendChild(h("div", { class: "card p" }, [
+      h("b", { style: "font-size:15px" }, ["Что уже перестали терять"]),
+      h("p", { class: "sub2", style: "margin-top:6px" }, [
+        "Проблема «второй канал связи не взят» закрыта после перемера: 61% → 22%. По той же формуле это " + money(150000)
+        + " в месяц, которые больше не уходят. Эта сумма снята из текущих потерь, а не добавлена к результату дважды."
+      ]),
+      h("button", { class: "btn ghost sm", style: "margin-top:12px", type: "button", onclick: function () { go("probl"); } }, ["Открыть цикл исправления"])
+    ]));
+  }
+
+  /* ===================== ОТЧЁТ ЗА НЕДЕЛЮ ===================== */
+  function weekReport() {
+    var top = PROBLEMS.filter(function (x) { return x.money > 0 && x.st !== "fixed"; })[0];
+    var body = h("div", {}, [
+      h("div", { class: "sheet" }, [
+        h("h4", {}, ["Момент · отчёт за неделю 10–16 октября"]),
+        h("div", { class: "rep3" }, [
+          h("div", {}, [h("div", { class: "k" }, ["Потери за месяц, оценка"]), h("div", { class: "v", style: "color:var(--bad)" }, [mln(lossTotal())])]),
+          h("div", {}, [h("div", { class: "k" }, ["Следующий шаг назначен"]), h("div", { class: "v", style: "color:var(--good)" }, ["58%  +6"])]),
+          h("div", { class: "wide2" }, [h("div", { class: "k" }, ["Главная причина потерь"]), h("div", { class: "vt" }, [top.t]),
+            h("div", { class: "k", style: "margin-top:4px" }, [money(top.money) + " в месяц · " + plu(top.deals, "ушедшая сделка", "ушедшие сделки", "ушедших сделок")])])
+        ]),
+        h("p", { class: "sub2", style: "margin:0" }, [
+          "Доля звонков с назначенным следующим шагом выросла с 52% до 58%. Проблема «второй канал связи» закрыта после перемера. "
+          + "Проблема «договорённость вслух» перемер не прошла — руководителю предложено другое действие."
+        ])
+      ]),
+      h("p", { class: "sub2", style: "margin:15px 0 7px" }, ["Три числа и один абзац. Открывать кабинет, чтобы это прочитать, не нужно."]),
+      h("div", { class: "ff" }, [h("span", { class: "lbl" }, ["Кому отправить"]), h("input", { class: "inp", id: "repMail", value: "director@example.ru" })]),
+      h("label", { style: "display:flex;gap:9px;align-items:flex-start;font-size:13px;color:var(--ink2)" }, [
+        h("input", { type: "checkbox", id: "repAuto", checked: "checked", style: "margin-top:3px;flex:none" }),
+        h("span", {}, ["Присылать каждый понедельник в 9:00, пока я не отключу"])
+      ])
+    ]);
+    sheetModal("Отчёт за неделю", body, "Отправить на почту", function () {
+      var mail = ($("#repMail") || {}).value || "director@example.ru";
+      var auto = ($("#repAuto") || {}).checked;
+      modal("Отчёт отправлен", "В демонстрации письмо не уходит. В рабочей версии на " + mail + " придёт то же письмо, что показано в предпросмотре"
+        + (auto ? ", и дальше оно будет приходить каждый понедельник в 9:00." : "; автоматическая отправка выключена."), [], "Понятно", null);
+    });
+  }
+
+  function sheetModal(title, bodyNode, okText, onOk) {
+    var ov = h("div", { class: "ov" }, [
+      h("div", { class: "modal wide", role: "dialog", "aria-modal": "true", "aria-label": title }, [
+        h("h3", {}, [title]), bodyNode,
+        h("div", { class: "row" }, [
+          h("button", { class: "btn ghost", type: "button", onclick: close }, ["Закрыть"]),
+          h("button", { class: "btn", type: "button", onclick: function () { var f = onOk; close(); if (f) f(); } }, [okText])
+        ])
+      ])
+    ]);
+    function close() { ov.remove(); document.removeEventListener("keydown", esc); }
+    function esc(e) { if (e.key === "Escape") close(); }
+    ov.addEventListener("click", function (e) { if (e.target === ov) close(); });
+    document.addEventListener("keydown", esc);
+    document.body.appendChild(ov);
+    var f = ov.querySelector("input, button"); if (f) f.focus();
+  }
+
+  /* ===================== МОДАЛКА ===================== */
+  function modal(title, text, fields, okText, onOk) {
+    var ff = (fields || []).map(function (f) {
+      return h("div", { class: "ff" }, [h("span", { class: "lbl" }, [f[0]]), h("input", { class: "inp", value: f[1] || "", placeholder: f[1] || "" })]);
+    });
+    var ov = h("div", { class: "ov" }, [
+      h("div", { class: "modal", role: "dialog", "aria-modal": "true" }, [
+        h("h3", {}, [title]), h("p", {}, [text])
+      ].concat(ff).concat([
+        h("div", { class: "row" }, [
+          h("button", { class: "btn ghost", type: "button", onclick: close }, ["Отмена"]),
+          h("button", { class: "btn", type: "button", onclick: function () { close(); if (onOk) onOk(); } }, [okText || "Готово"])
+        ])
+      ]))
+    ]);
+    function close() { ov.remove(); document.removeEventListener("keydown", esc); }
+    function esc(e) { if (e.key === "Escape") close(); }
+    ov.addEventListener("click", function (e) { if (e.target === ov) close(); });
+    document.addEventListener("keydown", esc);
+    document.body.appendChild(ov);
+    var first = ov.querySelector("input") || ov.querySelector("button");
+    if (first) first.focus();
+  }
+
+  buildNav();
+})();
+</script>
+</body>
+</html>
