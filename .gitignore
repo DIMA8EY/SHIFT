@@ -21,3 +21,7 @@ out/
 # Системное
 .DS_Store
 Thumbs.db
+
+# Архив для отправки: собирается из исходников, в гите ему не место
+moment-vse-narabotki.zip
+*.zip
