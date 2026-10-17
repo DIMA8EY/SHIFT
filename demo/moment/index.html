@@ -205,7 +205,7 @@ tbody tr:hover { background: var(--sunk); }
 
 /* расшифровка */
 .tr { max-height: 420px; overflow-y: auto; padding: 6px 0; }
-.ln { display: grid; grid-template-columns: 46px 68px minmax(0,1fr); gap: 11px; padding: 8px 17px; font-size: 13.5px; }
+.ln { display: grid; grid-template-columns: 46px 86px minmax(0,1fr); gap: 11px; padding: 8px 17px; font-size: 13.5px; }
 .ln:hover { background: var(--sunk); }
 .ln.cur { background: var(--acc-soft); }
 .ln.lossline { box-shadow: inset 3px 0 0 var(--bad); }
@@ -233,11 +233,11 @@ tbody tr:hover { background: var(--sunk); }
   .pr .act span[style*="text-align:right"] { text-align: left !important; }
 }
 .bars { display: flex; flex-direction: column; gap: 9px; }
-.brow { display: grid; grid-template-columns: 94px minmax(0,1fr) 54px; gap: 10px; align-items: center; font-size: 13px; }
+.brow { display: grid; grid-template-columns: 94px minmax(0,1fr) minmax(54px, auto); gap: 10px; align-items: center; font-size: 13px; }
 .brow .track { display: block; height: 10px; background: var(--sunk); border-radius: 5px; overflow: hidden; }
 .brow .fill { display: block; height: 10px; border-radius: 5px; background: var(--acc); }
 .brow .fill.was { background: var(--acc-dim); }
-.brow .val { font-family: var(--m); font-size: 12.5px; text-align: right; color: var(--ink2); }
+.brow .val { font-family: var(--m); font-size: 12.5px; text-align: right; color: var(--ink2); white-space: nowrap; }
 
 /* интеграции */
 .int { display: grid; grid-template-columns: 42px minmax(0,1fr) auto; gap: 13px; padding: 15px 17px; border-bottom: 1px solid var(--line2); align-items: center; }
@@ -341,6 +341,27 @@ tbody tr:hover { background: var(--sunk); }
 .verd ul li { margin-bottom: 5px; }
 .verd h5 { margin: 0; font-size: 13px; text-transform: uppercase; letter-spacing: .05em; }
 
+/* облако, голос, загрузка */
+.demo-flag.live { background: var(--good-soft); color: var(--good); }
+.cloudbtn { position: relative; }
+.cloudbtn i { position: absolute; top: 5px; right: 5px; width: 9px; height: 9px; border-radius: 50%; background: var(--ink3); border: 2px solid var(--card); }
+.cloudbtn.ok i { background: var(--good); }
+.cloudbtn.bad i { background: var(--bad); }
+.status { font-size: 13px; color: var(--ink2); line-height: 1.45; }
+.status.err { color: var(--bad); }
+.status.good { color: var(--good); }
+.drop.off { opacity: .5; }
+.drop.off .btn { pointer-events: none; }
+.micbar { display: flex; gap: 14px; align-items: center; flex-wrap: wrap; padding: 0 17px 15px; }
+.micbar .txt { flex: 1 1 220px; min-width: 0; }
+.mic { width: 62px; height: 62px; border-radius: 50%; background: var(--acc); color: var(--acc-on); display: grid; place-items: center; border: 0; flex: none; }
+.mic svg { width: 26px; height: 26px; }
+.mic:disabled { opacity: .4; cursor: not-allowed; }
+.mic.rec { background: var(--bad); color: #fff; animation: micpulse 1.3s infinite; }
+@keyframes micpulse { 0% { box-shadow: 0 0 0 0 rgba(180,35,24,.5); } 70% { box-shadow: 0 0 0 15px rgba(180,35,24,0); } 100% { box-shadow: 0 0 0 0 rgba(180,35,24,0); } }
+@media (prefers-reduced-motion: reduce) { .mic.rec { animation: none; } }
+.sendrow[hidden], .micbar [hidden] { display: none; }
+
 /* подсказки после звонка */
 .tips { padding: 15px 17px 17px; }
 .tips ol { margin: 10px 0 0; padding-left: 21px; font-size: 14px; color: var(--ink2); }
@@ -423,6 +444,7 @@ tbody tr:hover { background: var(--sunk); }
         <button type="button" data-p="q" aria-pressed="false">Квартал</button>
       </div>
       <button class="btn sm" id="rep" type="button" style="display:none">Отчёт за неделю</button>
+      <button class="icobtn cloudbtn" id="cloud" type="button" aria-label="Подключение к облаку" title="Подключение к облаку"></button>
       <button class="icobtn" id="theme" type="button" aria-label="Переключить тему" title="Светлая или тёмная тема"></button>
       <div class="chipbar" id="roleSw" title="Только для демонстрации"></div>
     </div>
@@ -663,7 +685,7 @@ tbody tr:hover { background: var(--sunk); }
     { k: "probl", t: "Проблемы", i: "probl", r: ["owner", "rop"], cnt: 3 },
     { k: "fixes", t: "Исправления", i: "fix", r: ["rop"] },
     { k: "train", t: "Тренажёр", i: "train", r: ["mgr"] },
-    { k: "upload", t: "Загрузить", i: "up", r: ["owner", "rop"] },
+    { k: "upload", t: "Загрузить", i: "up", r: ["owner", "rop", "mgr"] },
     { k: "team", t: "Команда", i: "team", r: ["owner", "rop"] },
     { k: "integr", t: "Интеграции", i: "plug", r: ["owner", "rop"] },
     { k: "rubric", t: "Оценочная карта", i: "rub", r: ["owner", "rop"] }
@@ -681,7 +703,11 @@ tbody tr:hover { background: var(--sunk); }
   }
   function go(k) {
     state.screen = k; buildNav(); render();
-    $("#period").style.display = (k === "loss" || k === "call" || k === "fixes" || k === "train") ? "none" : "";
+    $("#period").style.display = (k === "loss" || k === "call" || k === "fixes" || k === "train" || k === "upload") ? "none" : "";
+    var live = cloudReady() && (k === "upload" || k === "train");
+    var fl = document.querySelector(".demo-flag");
+    fl.textContent = live ? "рабочая функция" : "демо-данные";
+    fl.classList.toggle("live", live);
     window.scrollTo({ top: 0, behavior: "auto" });
   }
 
@@ -696,6 +722,7 @@ tbody tr:hover { background: var(--sunk); }
 
   function render() {
     $("#ttl").textContent = state.screen === "calls" && state.role === "mgr" ? "Мои звонки" : TITLES[state.screen];
+    runLeave();
     var r = $("#screens"); r.innerHTML = "";
     ({ dash: scrDash, loss: scrLoss, fixes: scrFixes, train: scrTrain, calls: scrCalls, call: scrCall, probl: scrProbl, upload: scrUpload, team: scrTeam, integr: scrIntegr, rubric: scrRubric }[state.screen] || scrDash)(r);
   }
@@ -1159,60 +1186,335 @@ tbody tr:hover { background: var(--sunk); }
     ]));
   }
 
+  /* ===================== ОБЛАКО ===================== */
+  /* Сайт сам ничего не распознаёт и не оценивает: звук режется в браузере на куски по 25 секунд,
+     каждый кусок уходит в облачную функцию, а ключи Яндекса живут только там. Ссылка и код
+     функции хранятся в этом браузере и в файл не вписываются. */
+  function lsGet(k) { try { return localStorage.getItem(k) || ""; } catch (e) { return ""; } }
+  function lsSet(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+  var CLOUD = { url: lsGet("moment-api-url"), code: lsGet("moment-api-code"), state: "none", info: null };
+  function cloudReady() { return /^https:\/\/[^\s]+$/i.test(CLOUD.url); }
+
+  function api(action, payload, ms) {
+    if (!cloudReady()) return Promise.reject(new Error("Облако не подключено: нажмите значок облака в шапке."));
+    var ctl = new AbortController();
+    var timer = setTimeout(function () { ctl.abort(); }, ms || 90000);
+    return fetch(CLOUD.url, {
+      method: "POST", headers: { "Content-Type": "application/json" }, signal: ctl.signal,
+      body: JSON.stringify(Object.assign({ action: action, code: CLOUD.code }, payload || {}))
+    }).then(function (res) {
+      return res.json().catch(function () { return {}; }).then(function (j) {
+        clearTimeout(timer);
+        if (!res.ok) { var e = new Error(j.message || ("Ошибка " + res.status)); e.code = j.error; e.status = res.status; throw e; }
+        return j;
+      });
+    }).catch(function (e) {
+      clearTimeout(timer);
+      if (e && e.name === "AbortError") { var t = new Error("Функция не ответила вовремя."); t.code = "timeout"; throw t; }
+      if (e instanceof TypeError) { var n = new Error("Не удалось связаться с функцией. Проверьте ссылку и что функция публичная."); n.code = "network"; throw n; }
+      throw e;
+    });
+  }
+
+  function paintCloud() {
+    var b = $("#cloud"); if (!b) return;
+    b.className = "icobtn cloudbtn" + (CLOUD.state === "ok" ? " ok" : CLOUD.state === "bad" ? " bad" : "");
+    b.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M7 18a4 4 0 010-8 5 5 0 019.6-1.2A4 4 0 1117 18H7z"/></svg><i></i>';
+    b.title = CLOUD.state === "ok" ? "Облако подключено" : cloudReady() ? "Облако: нужна проверка" : "Облако не подключено";
+  }
+
+  /* Что показать по ответу ping. Ping ничего не тратит и Яндекс не вызывает:
+     он проверяет только настройки функции. Роли аккаунта выяснятся на первом настоящем запросе. */
+  function pingText(p) {
+    if (p.needs_code && !p.code_ok) return ["bad", "Неверный или не введён код доступа."];
+    if (p.auth === "none") return ["bad", "Функция отвечает, но у неё нет доступа к Яндексу: привяжите сервисный аккаунт."];
+    if (!p.folder) return ["bad", "На функции не задана переменная YC_FOLDER_ID: без неё не заработает разбор."];
+    return ["ok", "Функция настроена. Роли аккаунта проверяются первым настоящим запросом, а не этой кнопкой."];
+  }
+
+  function cloudPing() {
+    if (!cloudReady()) { CLOUD.state = "none"; paintCloud(); return Promise.resolve(["bad", "Укажите ссылку, которая начинается с https://"]); }
+    return api("ping", {}, 15000).then(function (p) {
+      var t = pingText(p); CLOUD.state = t[0]; CLOUD.info = p; paintCloud(); return t;
+    }, function (e) {
+      CLOUD.state = "bad"; paintCloud(); return ["bad", e.message];
+    });
+  }
+
+  function cloudModal() {
+    var url = h("input", { class: "inp", value: CLOUD.url, placeholder: "https://functions.yandexcloud.net/…", "aria-label": "Ссылка на функцию", autocomplete: "off", spellcheck: "false" });
+    var code = h("input", { class: "inp", type: "password", value: CLOUD.code, placeholder: "если задавали на функции", "aria-label": "Код доступа", autocomplete: "off" });
+    var out = h("p", { class: "status", style: "margin:12px 0 0;min-height:20px" }, [""]);
+    var saveBtn = h("button", { class: "btn sm", type: "button", style: "margin-top:12px" }, ["Сохранить и проверить"]);
+    saveBtn.addEventListener("click", function () {
+      CLOUD.url = url.value.trim(); CLOUD.code = code.value;
+      lsSet("moment-api-url", CLOUD.url); lsSet("moment-api-code", CLOUD.code);
+      out.className = "status"; out.textContent = "Проверяю…";
+      cloudPing().then(function (t) { out.className = "status" + (t[0] === "ok" ? " good" : " err"); out.textContent = t[1]; });
+    });
+    var body = h("div", {}, [
+      h("p", { class: "sub2", style: "margin:0 0 14px" }, [
+        "Распознавание речи, озвучка клиента в тренажёре и разбор звонков работают через вашу облачную функцию в Yandex Cloud. Здесь хранится только её ссылка и код доступа. Ключи Яндекса на этот сайт не попадают."
+      ]),
+      h("div", { class: "ff" }, [h("span", { class: "lbl" }, ["Ссылка на функцию"]), url]),
+      h("div", { class: "ff" }, [h("span", { class: "lbl" }, ["Код доступа"]), code]),
+      saveBtn, out
+    ]);
+    sheetModal("Подключение к облаку", body, "Готово", null);
+  }
+
+  /* ===================== ЗВУК В БРАУЗЕРЕ ===================== */
+  var SR = 16000, CHUNK_S = 25, MAX_MIN = 20, MAX_FILE_MB = 60, SILENCE = 0.004;
+
+  function decodeBlob(blob) {
+    return blob.arrayBuffer().then(function (buf) {
+      var C = window.AudioContext || window.webkitAudioContext;
+      if (!C) throw new Error("Этот браузер не умеет разбирать звук. Откройте страницу в Chrome, Edge или Firefox.");
+      var ctx;
+      try { ctx = new C({ sampleRate: SR }); } catch (e) { ctx = new C(); }
+      return new Promise(function (res, rej) {
+        var p = ctx.decodeAudioData(buf, res, rej);
+        if (p && p.catch) p.catch(function () {});
+      }).then(function (a) { try { ctx.close(); } catch (e) {} return a; }, function () {
+        try { ctx.close(); } catch (e) {}
+        throw new Error("Не удалось прочитать запись: такой формат браузер не открывает. Попробуйте mp3 или wav.");
+      });
+    });
+  }
+
+  function channel16k(audio, ch) {
+    var src = audio.getChannelData(Math.min(ch, audio.numberOfChannels - 1));
+    if (audio.sampleRate === SR) return Promise.resolve(src);
+    var off = new OfflineAudioContext(1, Math.max(1, Math.ceil(audio.duration * SR)), SR);
+    var mono = off.createBuffer(1, src.length, audio.sampleRate);
+    mono.copyToChannel(src, 0);
+    var node = off.createBufferSource(); node.buffer = mono; node.connect(off.destination); node.start();
+    return off.startRendering().then(function (r) { return r.getChannelData(0); });
+  }
+
+  function rms(f, a, b) {
+    var s = 0, n = b - a;
+    for (var i = a; i < b; i += 4) s += f[i] * f[i];
+    return Math.sqrt(s / Math.max(1, n / 4));
+  }
+
+  function pcmB64(f, a, b) {
+    var out = new Int16Array(b - a);
+    for (var i = 0; i < out.length; i++) {
+      var x = Math.max(-1, Math.min(1, f[a + i]));
+      out[i] = x < 0 ? x * 0x8000 : x * 0x7fff;
+    }
+    var bytes = new Uint8Array(out.buffer), bin = "";
+    for (var k = 0; k < bytes.length; k += 0x8000) bin += String.fromCharCode.apply(null, bytes.subarray(k, k + 0x8000));
+    return btoa(bin);
+  }
+
+  function sttChunk(data, a, b) {
+    var payload = { audio: pcmB64(data, a, b) };
+    function once() { return api("stt", payload, 45000); }
+    return once().catch(function (e) {
+      var again = !e.code || ["network", "timeout", "yandex_busy", "yandex_error"].indexOf(e.code) >= 0;
+      if (!again) throw e;
+      return new Promise(function (r) { setTimeout(r, 900); }).then(once);
+    }).then(function (j) { return (j.text || "").trim(); });
+  }
+
+  function pool(items, n, fn) {
+    var i = 0, failed = null;
+    function next() {
+      if (failed || i >= items.length) return Promise.resolve();
+      return fn(items[i++]).then(next, function (e) { failed = failed || e; });
+    }
+    var ws = [];
+    for (var k = 0; k < Math.min(n, items.length); k++) ws.push(next());
+    return Promise.all(ws).then(function () { if (failed) throw failed; });
+  }
+
+  /* Стерео-запись телефонии даёт разделение ролей бесплатно: один канал менеджер, другой клиент.
+     Моно придётся разбирать без разметки, модель определяет роли по смыслу, и это заметно хуже. */
+  function transcribeAudio(audio, mgrSide, onProgress) {
+    var stereo = audio.numberOfChannels >= 2;
+    var srcs = stereo
+      ? [{ ch: 0, who: mgrSide === "left" ? "manager" : "client" }, { ch: 1, who: mgrSide === "left" ? "client" : "manager" }]
+      : [{ ch: 0, who: "unknown" }];
+    return Promise.all(srcs.map(function (s) {
+      return channel16k(audio, s.ch).then(function (d) { s.data = d; return s; });
+    })).then(function (list) {
+      var tasks = [], step = CHUNK_S * SR;
+      list.forEach(function (s) {
+        for (var a = 0; a < s.data.length; a += step) {
+          var b = Math.min(s.data.length, a + step);
+          if (b - a < SR * 0.3) continue;          // обрывок короче 0,3 секунды
+          if (rms(s.data, a, b) < SILENCE) continue; // тишина: за неё не платим
+          tasks.push({ who: s.who, at: Math.round(a / SR), data: s.data, a: a, b: b });
+        }
+      });
+      if (!tasks.length) throw new Error("В записи не нашлось речи.");
+      var done = 0, out = [];
+      return pool(tasks, 3, function (t) {
+        return sttChunk(t.data, t.a, t.b).then(function (text) {
+          done++; onProgress(done, tasks.length, stereo);
+          if (text) out.push({ at: t.at, who: t.who, text: text });
+        });
+      }).then(function () {
+        out.sort(function (x, y) { return x.at - y.at; });
+        if (!out.length) throw new Error("Речь не распозналась. Проверьте, что запись русская и слышна.");
+        return { lines: out, stereo: stereo };
+      });
+    });
+  }
+
+  /* ---- вывод результата разбора (загрузка и тренажёр) ---- */
+  var FV = { ok: "ok", warn: "wn", bad: "bd", na: "na" };
+  function findingRows(findings) {
+    return h("div", { class: "rub" }, findings.map(function (f) {
+      var v = FV[f.verdict] || "na";
+      return h("div", { class: "ru" }, [
+        h("span", { class: "mono", style: "font-size:12px;color:var(--ink3)" }, [f.code]),
+        h("div", {}, [
+          h("span", {}, [f.title]),
+          f.why ? h("span", { class: "q", style: "font-style:normal" }, [f.why]) : null,
+          f.quote ? h("span", { class: "q" }, ["«" + f.quote + "»", f.at != null ? h("cite", {}, [mmss(f.at)]) : null]) : null,
+          f.demoted ? h("span", { class: "q", style: "font-style:normal;color:var(--bad)" }, [f.demoted]) : null
+        ]),
+        h("span", { class: "st " + v }, [S[v][1]])
+      ]);
+    }));
+  }
+
+  function resultCards(res, o) {
+    var col = res.score < 40 ? "var(--bad)" : res.score < 65 ? "var(--warn)" : "var(--good)";
+    var kids = [];
+    kids.push(h("div", { class: "card" }, [
+      h("div", { class: "ch" }, [h("h2", {}, [o.title]), h("span", { class: "hint" }, [o.hint || ""])]),
+      h("div", { style: "padding:17px" }, [
+        h("div", { style: "display:flex;gap:12px;align-items:baseline" }, [
+          h("span", { class: "mono", style: "font-size:44px;font-weight:500;letter-spacing:-.03em;color:" + col }, [String(res.score)]),
+          h("span", { class: "sub2" }, ["из 100"])
+        ]),
+        res.lossAt != null ? h("div", { class: "lossbar" }, [h("b", {}, [mmss(res.lossAt)]), h("span", {}, ["Разговор перестал двигаться к сделке: здесь провален один из главных пунктов карты."])]) : null,
+        h("div", { class: "bars", style: "margin-top:15px" }, res.blocks.map(function (b) {
+          return h("div", { class: "brow" }, [
+            h("span", {}, [b.block]),
+            h("span", { class: "track" }, [h("span", { class: "fill", style: "width:" + (b.percent || 0) + "%" })]),
+            h("span", { class: "val" }, [b.percent == null ? "нет данных" : b.percent + "%"])
+          ]);
+        }))
+      ])
+    ]));
+    kids.push(h("div", { class: "card" }, [
+      h("div", { class: "ch" }, [h("h2", {}, ["Оценочная карта"]), h("span", { class: "hint" }, ["каждый вывод с цитатой"])]),
+      findingRows(res.findings)
+    ]));
+    if (o.lines) {
+      kids.push(h("div", { class: "card" }, [
+        h("div", { class: "ch" }, [h("h2", {}, ["Расшифровка"]), h("span", { class: "hint" }, [o.stereo ? "роли разделены по каналам" : "моно: роли не разделены"])]),
+        h("div", { class: "tr" }, o.lines.map(function (l) {
+          return h("div", { class: "ln" + (l.who === "manager" ? " mgr" : "") + (res.lossAt != null && l.at === res.lossAt ? " lossline" : "") }, [
+            h("span", { class: "t" }, [mmss(l.at)]),
+            h("span", { class: "w" }, [l.who === "manager" ? "Менеджер" : l.who === "client" ? "Клиент" : "—"]),
+            h("span", {}, [l.text])
+          ]);
+        }))
+      ]));
+    }
+    kids.push(h("div", { class: "card p" }, [
+      h("p", { class: "sub2", style: "margin:0" }, [
+        "Оценку посчитал код по фиксированным весам, а не модель: один и тот же разговор даёт одно число. Положительный вывод остаётся, только если его цитата найдена дословно в репликах менеджера"
+        + (res.rejected ? " (снято проверкой: " + res.rejected + ")" : "")
+        + ". Пункт со знаком «·» значит, что по записи судить нельзя, а не что менеджер ошибся. Разбор сделал " + res.model + "."
+      ])
+    ]));
+    return kids;
+  }
+
+  /* При смене экрана останавливаем звук и микрофон. */
+  var leaveHooks = [];
+  function onLeave(fn) { leaveHooks.push(fn); }
+  function runLeave() { var l = leaveHooks; leaveHooks = []; l.forEach(function (f) { try { f(); } catch (e) {} }); }
+
   /* --- загрузка --- */
   function scrUpload(r) {
-    var queue = [];
+    var busy = false;
+    var consent = h("input", { type: "checkbox", style: "margin-top:3px;flex:none", onchange: refresh });
+    var side = h("select", { "aria-label": "Канал менеджера" }, [h("option", { value: "left" }, ["левом канале"]), h("option", { value: "right" }, ["правом канале"])]);
+    var inp = h("input", { type: "file", accept: "audio/*", style: "display:none", onchange: function (e) { var f = e.target.files[0]; e.target.value = ""; if (f) run(f); } });
+    var pickBtn = h("button", { class: "btn sm", type: "button", onclick: function () { inp.click(); } }, ["Выбрать запись"]);
     var drop = h("div", { class: "drop" }, [
-      h("b", {}, ["Перетащите записи сюда"]),
-      h("span", {}, ["mp3, wav, m4a — до 500 МБ. Или выгрузятся сами, если подключена телефония."]),
-      h("div", { style: "margin-top:14px;display:flex;gap:9px;justify-content:center;flex-wrap:wrap" }, [
-        h("button", { class: "btn sm", type: "button", onclick: pick }, ["Выбрать файлы"]),
-        h("button", { class: "btn ghost sm", type: "button", onclick: function () { go("integr"); } }, ["Подключить телефонию"])
-      ])
+      h("b", {}, ["Перетащите запись сюда"]),
+      h("span", {}, ["mp3, wav, m4a, ogg. До " + MAX_FILE_MB + " МБ и " + MAX_MIN + " минут. Один звонок за раз."]),
+      h("div", { style: "margin-top:14px;display:flex;gap:9px;justify-content:center;flex-wrap:wrap" }, [pickBtn])
     ]);
-    var inp = h("input", { type: "file", multiple: "", accept: "audio/*", style: "display:none", onchange: function (e) { add(Array.prototype.slice.call(e.target.files)); } });
-    function pick() { inp.click(); }
-    ["dragover", "dragenter"].forEach(function (ev) { drop.addEventListener(ev, function (e) { e.preventDefault(); drop.classList.add("over"); }); });
+    ["dragover", "dragenter"].forEach(function (ev) { drop.addEventListener(ev, function (e) { e.preventDefault(); if (open()) drop.classList.add("over"); }); });
     ["dragleave", "drop"].forEach(function (ev) { drop.addEventListener(ev, function (e) { e.preventDefault(); drop.classList.remove("over"); }); });
-    drop.addEventListener("drop", function (e) { add(Array.prototype.slice.call(e.dataTransfer.files)); });
+    drop.addEventListener("drop", function (e) { var f = e.dataTransfer.files[0]; if (f && open()) run(f); });
 
-    var list = h("div", {});
-    var card = h("div", { class: "card" }, [
-      h("div", { class: "ch" }, [h("h2", {}, ["Очередь анализа"]), h("span", { class: "hint" }, ["разбор одного звонка — около минуты"])]),
-      list
-    ]);
-    card.hidden = true;
+    var gate = h("div", {});
+    var out = h("div", { class: "grid", style: "gap:16px" });
 
-    function add(files) {
-      if (!files.length) return;
-      card.hidden = false;
-      files.forEach(function (f) {
-        var pr = h("i", { style: "width:3%" });
-        var statusEl = h("span", { class: "tag mute" }, ["в очереди"]);
-        list.appendChild(h("div", { class: "q-item" }, [
-          h("div", {}, [h("b", {}, [f.name]), h("div", { class: "sub2 mono" }, [(f.size / 1048576).toFixed(1) + " МБ"])]),
-          h("div", { class: "prog" }, [pr]), statusEl
-        ]));
-        var v = 3, steps = ["расшифровка", "разбор по карте", "поиск момента потери"];
-        var tm = setInterval(function () {
-          v += 4 + Math.random() * 7;
-          if (v >= 100) {
-            v = 100; clearInterval(tm);
-            statusEl.className = "tag good"; statusEl.textContent = "демо: разбор не выполнялся";
-          } else {
-            statusEl.className = "tag warn";
-            statusEl.textContent = steps[Math.min(2, Math.floor(v / 34))];
-          }
-          pr.style.width = v + "%";
-        }, 320);
-      });
+    function open() { return consent.checked && cloudReady() && !busy; }
+    function refresh() {
+      drop.classList.toggle("off", !open());
+      pickBtn.disabled = !open();
+      gate.innerHTML = "";
+      if (!cloudReady()) gate.appendChild(h("div", { class: "card p" }, [
+        h("b", { style: "font-size:15px" }, ["Облако не подключено"]),
+        h("p", { class: "sub2", style: "margin-top:6px" }, ["Без облачной функции сайт не может ни расшифровать запись, ни разобрать её. Вставьте ссылку на функцию: она создаётся один раз, инструкция лежит рядом с файлом в папке moment-api."]),
+        h("button", { class: "btn sm", style: "margin-top:12px", type: "button", onclick: cloudModal }, ["Подключить облако"])
+      ]));
+    }
+
+    function run(file) {
+      if (!open()) return;
+      if (file.size > MAX_FILE_MB * 1048576) { fail(file, "Файл больше " + MAX_FILE_MB + " МБ."); return; }
+      busy = true; refresh(); out.innerHTML = "";
+      var bar = h("i", { style: "width:3%" });
+      var st = h("span", { class: "tag warn" }, ["читаю запись"]);
+      var note = h("p", { class: "sub2", style: "padding:0 17px 14px;margin:0" }, [""]);
+      var row = h("div", { class: "card" }, [
+        h("div", { class: "q-item" }, [
+          h("div", {}, [h("b", {}, [file.name]), h("div", { class: "sub2 mono" }, [(file.size / 1048576).toFixed(1) + " МБ"])]),
+          h("div", { class: "prog" }, [bar]), st
+        ]), note
+      ]);
+      out.appendChild(row);
+      function step(text, pct) { st.className = "tag warn"; st.textContent = text; bar.style.width = pct + "%"; }
+
+      decodeBlob(file).then(function (audio) {
+        if (audio.duration > MAX_MIN * 60) throw new Error("Запись длиннее " + MAX_MIN + " минут. Разрежьте её или загрузите нужный фрагмент.");
+        note.textContent = "Длительность " + mmss(Math.round(audio.duration)) + (audio.numberOfChannels >= 2 ? ", стерео: роли разделяются по каналам." : ", моно: роли придётся определять по смыслу, разбор будет менее точным.");
+        step("распознаю речь", 8);
+        return transcribeAudio(audio, side.value, function (d, n) { step("распознаю речь: " + d + " из " + n, 8 + 72 * d / n); }).then(function (tr) {
+          step("разбираю по оценочной карте", 85);
+          return api("analyze", { lines: tr.lines, duration: Math.round(audio.duration) }, 120000).then(function (res) { return { res: res, tr: tr, audio: audio }; });
+        });
+      }).then(function (x) {
+        step("готово", 100); st.className = "tag good";
+        out.appendChild(h("div", {}, resultCards(x.res, { title: "Разбор: " + file.name, hint: mmss(Math.round(x.audio.duration)), lines: x.tr.lines, stereo: x.tr.stereo })));
+        out.lastChild.className = "grid"; out.lastChild.style.gap = "16px";
+      }).catch(function (e) {
+        st.className = "tag bad"; st.textContent = "не получилось";
+        note.style.color = "var(--bad)"; note.textContent = e.message || "Неизвестная ошибка.";
+      }).then(function () { busy = false; refresh(); });
+    }
+    function fail(file, msg) {
+      out.innerHTML = "";
+      out.appendChild(h("div", { class: "card p" }, [h("b", {}, [file.name]), h("p", { class: "sub2", style: "margin-top:6px;color:var(--bad)" }, [msg])]));
     }
 
     r.appendChild(h("div", { class: "card p" }, [
-      h("b", { style: "font-size:15px" }, ["Прежде чем загружать чужие записи"]),
-      h("p", { class: "sub2", style: "margin-top:6px" }, ["Записи разговоров — персональные данные. Соглашение с клиентом подписывается до передачи, а не после. Если расшифровку обрабатывает внешняя модель, это передача данных третьему лицу, и её нужно указать в соглашении отдельным пунктом."])
+      h("b", { style: "font-size:15px" }, ["Прежде чем загружать записи"]),
+      h("p", { class: "sub2", style: "margin-top:6px" }, [
+        "Запись разговора содержит персональные данные. Распознавание и разбор идут в Yandex Cloud. По умолчанию Яндекс сохраняет запросы к SpeechKit у себя: отключите логирование в настройках сервиса до загрузки чужих записей. Тексты разговоров в журнал вашей функции не пишутся."
+      ]),
+      h("label", { style: "display:flex;gap:9px;align-items:flex-start;margin-top:13px;font-size:13.5px;color:var(--ink2)" }, [
+        consent,
+        h("span", {}, ["С владельцем записи есть соглашение на обработку, а логирование SpeechKit отключено."])
+      ]),
+      h("div", { style: "margin-top:13px;font-size:13.5px;color:var(--ink2)" }, ["Если запись стерео, менеджер записан в ", side, ". Для моно это не нужно."])
     ]));
-    r.appendChild(drop); r.appendChild(inp); r.appendChild(card);
+    r.appendChild(gate); r.appendChild(drop); r.appendChild(inp); r.appendChild(out);
+    refresh();
   }
 
   /* --- команда --- */
@@ -1602,82 +1904,178 @@ tbody tr:hover { background: var(--sunk); }
     { c: "Ну давайте в четверг. Телеграм мой запишите, там удобнее.", tip: "Повторите договорённость вслух и зафиксируйте второй канал." }
   ];
 
+  /* ---- голос клиента ---- */
+  var ttsMemo = {}, curAudio = null;
+  function stopAudio() {
+    if (curAudio) { try { curAudio.pause(); } catch (e) {} curAudio = null; }
+    try { if (window.speechSynthesis) window.speechSynthesis.cancel(); } catch (e) {}
+  }
+  function browserSpeak(text) {
+    if (!window.speechSynthesis || !window.SpeechSynthesisUtterance) return false;
+    var u = new SpeechSynthesisUtterance(text);
+    u.lang = "ru-RU"; u.rate = 0.96;
+    var vs = window.speechSynthesis.getVoices ? window.speechSynthesis.getVoices() : [];
+    for (var i = 0; i < vs.length; i++) if (/^ru/i.test(vs[i].lang)) { u.voice = vs[i]; break; }
+    window.speechSynthesis.speak(u);
+    return true;
+  }
+  /* Возвращает «cloud» (голос Яндекса), «browser» (запасной голос браузера) или «none». */
+  function sayClientLine(i, text) {
+    stopAudio();
+    function playData(b64, mime) {
+      var a = new Audio("data:" + mime + ";base64," + b64);
+      curAudio = a;
+      return a.play().then(function () { return "cloud"; });
+    }
+    if (!cloudReady()) return Promise.resolve(browserSpeak(text) ? "browser" : "none");
+    var fromCache = ttsMemo[i] ? Promise.resolve(ttsMemo[i]) : api("tts", { scenario: "price", line: i }, 40000).then(function (j) { ttsMemo[i] = j; return j; });
+    return fromCache.then(function (j) { return playData(j.audio, j.mime || "audio/mpeg"); }).catch(function (e) {
+      if (e && e.code === "code") throw e;
+      return browserSpeak(text) ? "browser" : "none";
+    });
+  }
+
   function scrTrain(r) {
-    var step = 0, done = false;
+    var step = 0, done = false, busyAns = false, answers = [], recorder = null, stream = null, recTimer = null, textMode = false;
+    var live = cloudReady();
+    var lastVoice = "none";
+
     r.appendChild(h("div", { class: "card p" }, [
       h("b", { style: "font-size:15px" }, ["Отработка возражения «дорого»"]),
       h("p", { class: "sub2", style: "margin-top:6px" }, [
-        "Клиент вымышленный, реплики заранее записаны — он отвечает по сценарию, а не на ваши слова. "
-        + "Это тренировка формулировок, а не проверка знаний: ошибиться здесь ничего не стоит."
+        "Клиент вымышленный и говорит заранее записанными фразами: он отвечает по сценарию, а не на ваши слова. "
+        + "Слушайте реплику, отвечайте голосом, в конце получите разбор ваших ответов. Ошибиться здесь ничего не стоит."
+      ]),
+      live ? null : h("p", { class: "sub2", style: "margin-top:9px;color:var(--warn)" }, [
+        "Облако не подключено: клиента озвучит голос браузера, а отвечать можно только текстом. Подключите облако (значок в шапке), и ответы начнут распознаваться голосом, а разбор станет настоящим."
       ])
     ]));
 
     var chat = h("div", { class: "chat" }, []);
+    var status = h("div", { class: "status", role: "status", "aria-live": "polite" }, [""]);
+    var mic = h("button", { class: "mic", type: "button", "aria-label": "Начать запись ответа", title: live ? "Нажмите, говорите, нажмите ещё раз" : "Нужно облако для распознавания речи" }, []);
+    mic.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="3" width="6" height="11" rx="3"/><path d="M5 11a7 7 0 0014 0M12 18v3"/></svg>';
+    mic.disabled = !live;
+    var replay = h("button", { class: "btn ghost sm", type: "button" }, ["Прослушать ещё раз"]);
+    var textBtn = h("button", { class: "btn ghost sm", type: "button" }, ["Ввести текстом"]);
     var input = h("input", { class: "inp", placeholder: "Ваш ответ клиенту…", "aria-label": "Ваш ответ клиенту" });
     var send = h("button", { class: "btn", type: "button" }, ["Отправить"]);
-    var row = h("div", { class: "sendrow" }, [input, send]);
-    var card = h("div", { class: "card" }, [
-      h("div", { class: "ch" }, [h("h2", {}, ["Разговор"]), h("span", { class: "hint" }, ["реплика " + "1 из " + TRAIN.length])]),
-      chat, row
-    ]);
-    var hint = card.querySelector(".hint");
-    r.appendChild(card);
-    var after = h("div", {});
-    r.appendChild(after);
+    var textRow = h("div", { class: "sendrow" }, [input, send]);
+    var hint = h("span", { class: "hint" }, ["реплика 1 из " + TRAIN.length]);
+    var micbar = h("div", { class: "micbar" }, [mic, h("div", { class: "txt" }, [status]), replay, textBtn]);
+    var card = h("div", { class: "card" }, [h("div", { class: "ch" }, [h("h2", {}, ["Разговор"]), hint]), chat, micbar, textRow]);
+    var after = h("div", { class: "grid", style: "gap:16px" });
+    r.appendChild(card); r.appendChild(after);
 
+    function say(msg, err) { status.className = "status" + (err ? " err" : ""); status.textContent = msg; }
+    function showText() { textMode = true; paintText(); }
+    function paintText() { textRow.hidden = !(textMode || !live) || done; }
     function scroll() { chat.scrollTop = chat.scrollHeight; }
+    function cleanRec() {
+      clearTimeout(recTimer);
+      if (stream) { stream.getTracks().forEach(function (t) { t.stop(); }); stream = null; }
+      mic.classList.remove("rec");
+      mic.setAttribute("aria-label", "Начать запись ответа");
+    }
+    onLeave(function () { stopAudio(); try { if (recorder && recorder.state !== "inactive") { recorder.onstop = null; recorder.stop(); } } catch (e) {} cleanRec(); });
+
+    function speak(i) {
+      say("Клиент говорит…");
+      return sayClientLine(i, TRAIN[i].c).then(function (how) {
+        lastVoice = how;
+        if (how === "cloud") say("Ваша очередь. Нажмите микрофон и ответьте.");
+        else if (how === "browser") say(live ? "Голос Яндекса не сработал, читает браузер. Ваша очередь." : "Читает браузер. Ваша очередь: ответьте текстом.");
+        else say("Озвучка недоступна: прочитайте реплику выше. Ваша очередь.");
+      }, function (e) {
+        say(e.message, true);
+      });
+    }
     function client(i) {
       chat.appendChild(h("div", { class: "msg cli" }, [h("span", { class: "who" }, ["Клиент"]), TRAIN[i].c]));
       chat.appendChild(h("div", { class: "tip" }, ["Подсказка: " + TRAIN[i].tip]));
       hint.textContent = "реплика " + (i + 1) + " из " + TRAIN.length;
       scroll();
+      return speak(i);
     }
-    function finish() {
-      done = true;
-      input.disabled = true; send.disabled = true;
-      input.placeholder = "Разговор завершён";
-      hint.textContent = "разговор завершён";
-      after.appendChild(h("div", { class: "card" }, [
-        h("div", { class: "ch" }, [h("h2", {}, ["Разбор тренировки"]), h("span", { class: "tag mute" }, ["демо: оценка заранее записана"])]),
-        h("div", { class: "verd" }, [
-          h("div", {}, [
-            h("h5", { style: "color:var(--good)" }, ["Что сделали хорошо"]),
-            h("ul", {}, [
-              h("li", {}, ["Дошли до конца разговора и не бросили клиента на возражении."]),
-              h("li", {}, ["Взяли второй канал связи — телеграм остался у вас."]),
-              h("li", {}, ["Разговор закончился датой, а не словом «подумаю»."])
-            ])
-          ]),
-          h("div", {}, [
-            h("h5", { style: "color:var(--bad)" }, ["Что улучшить"]),
-            h("ul", {}, [
-              h("li", {}, ["Цена прозвучала раньше, чем вы узнали сумму долга и срок."]),
-              h("li", {}, ["На «рядом за сто тысяч» не прозвучал встречный вопрос о том, что входит в эту цену."]),
-              h("li", {}, ["Договорённость не повторена вслух: клиент ушёл, не услышав, что будет в четверг."])
-            ])
-          ])
-        ]),
-        h("div", { style: "padding:0 17px 17px" }, [
-          h("button", { class: "btn ghost sm", type: "button", onclick: function () { go("train"); } }, ["Пройти заново"])
-        ])
-      ]));
-      scroll();
-    }
-    function submit() {
+
+    function answer(text) {
       if (done) return;
-      var v = input.value.trim();
-      if (!v) { input.focus(); return; }
-      chat.appendChild(h("div", { class: "msg me" }, [h("span", { class: "who" }, ["Вы"]), v]));
-      input.value = ""; scroll();
-      step++;
-      setTimeout(function () {
-        if (step < TRAIN.length) client(step); else finish();
-      }, 450);
+      chat.appendChild(h("div", { class: "msg me" }, [h("span", { class: "who" }, ["Вы"]), text]));
+      answers.push(text); step++; scroll();
+      if (step < TRAIN.length) setTimeout(function () { client(step); }, 400);
+      else finish();
     }
+
+    function finish() {
+      done = true; stopAudio();
+      mic.disabled = true; replay.hidden = true; textBtn.hidden = true; paintText();
+      hint.textContent = "разговор завершён";
+      if (!live) {
+        say("Разговор завершён.");
+        after.appendChild(h("div", { class: "card" }, [
+          h("div", { class: "ch" }, [h("h2", {}, ["Разбор тренировки"]), h("span", { class: "tag mute" }, ["демо: оценка заранее записана"])]),
+          h("div", { class: "verd" }, [
+            h("div", {}, [h("h5", { style: "color:var(--good)" }, ["Что сделали хорошо"]), h("ul", {}, [h("li", {}, ["Дошли до конца разговора и не бросили клиента на возражении."]), h("li", {}, ["Взяли второй канал связи."]), h("li", {}, ["Разговор закончился датой, а не словом «подумаю»."])])]),
+            h("div", {}, [h("h5", { style: "color:var(--bad)" }, ["Что улучшить"]), h("ul", {}, [h("li", {}, ["Цена прозвучала раньше, чем вы узнали сумму долга и срок."]), h("li", {}, ["На «рядом за сто тысяч» не прозвучал встречный вопрос о том, что входит в эту цену."]), h("li", {}, ["Договорённость не повторена вслух."])])])
+          ]),
+          h("div", { style: "padding:0 17px 17px" }, [h("button", { class: "btn ghost sm", type: "button", onclick: function () { go("train"); } }, ["Пройти заново"])])
+        ]));
+        return;
+      }
+      say("Разбираю ваши ответы…");
+      function review() {
+        api("review", { scenario: "price", answers: answers }, 120000).then(function (res) {
+          say("Разбор готов.");
+          after.innerHTML = "";
+          resultCards(res, { title: "Разбор тренировки", hint: "по вашим ответам" }).forEach(function (n) { after.appendChild(n); });
+          after.appendChild(h("div", {}, [h("button", { class: "btn ghost sm", type: "button", onclick: function () { go("train"); } }, ["Пройти заново"])]));
+        }, function (e) {
+          say(e.message, true);
+          after.innerHTML = "";
+          after.appendChild(h("div", {}, [h("button", { class: "btn sm", type: "button", onclick: function () { after.innerHTML = ""; say("Разбираю ваши ответы…"); review(); } }, ["Повторить разбор"])]));
+        });
+      }
+      review();
+    }
+
+    /* ---- запись ответа ---- */
+    function recognize(blob) {
+      if (blob.size < 1200) { busyAns = false; say("Не услышал ответа. Попробуйте ещё раз.", true); return; }
+      say("Распознаю ответ…");
+      decodeBlob(blob).then(function (audio) { return channel16k(audio, 0); }).then(function (d) {
+        if (d.length > 28 * SR) d = d.subarray(0, 28 * SR);
+        if (rms(d, 0, d.length) < SILENCE) throw new Error("Слышна только тишина. Проверьте микрофон и повторите.");
+        return sttChunk(d, 0, d.length);
+      }).then(function (text) {
+        if (!text) throw new Error("Речь не распозналась. Повторите чуть громче или введите ответ текстом.");
+        busyAns = false; answer(text);
+      }).catch(function (e) { busyAns = false; say(e.message, true); showText(); });
+    }
+    function stopRec() { if (recorder && recorder.state !== "inactive") recorder.stop(); }
+    mic.addEventListener("click", function () {
+      if (done || !live) return;
+      if (recorder && recorder.state === "recording") { stopRec(); return; }
+      if (busyAns) return;
+      if (!navigator.mediaDevices || !window.MediaRecorder) { say("Браузер не умеет записывать звук. Введите ответ текстом.", true); showText(); return; }
+      stopAudio();
+      navigator.mediaDevices.getUserMedia({ audio: true }).then(function (s) {
+        stream = s; var chunks = [];
+        var rec = new MediaRecorder(s); recorder = rec;
+        rec.ondataavailable = function (e) { if (e.data && e.data.size) chunks.push(e.data); };
+        rec.onstop = function () { cleanRec(); busyAns = true; recognize(new Blob(chunks, { type: rec.mimeType || "audio/webm" })); };
+        rec.start();
+        mic.classList.add("rec"); mic.setAttribute("aria-label", "Закончить запись");
+        say("Идёт запись. Нажмите микрофон ещё раз, когда закончите (до 25 секунд).");
+        recTimer = setTimeout(stopRec, 25000);
+      }).catch(function () { say("Нет доступа к микрофону. Разрешите его для этой страницы или введите ответ текстом.", true); showText(); });
+    });
+    replay.addEventListener("click", function () { if (!done && step < TRAIN.length) speak(step); });
+    textBtn.addEventListener("click", function () { showText(); input.focus(); });
+    function submit() { if (done) return; var v = input.value.trim(); if (!v) { input.focus(); return; } input.value = ""; answer(v); }
     send.addEventListener("click", submit);
     input.addEventListener("keydown", function (e) { if (e.key === "Enter") submit(); });
+    paintText();
     client(0);
-    input.focus();
   }
 
   /* ---- динамика менеджера ---- */
@@ -1742,6 +2140,9 @@ tbody tr:hover { background: var(--sunk); }
     if (first) first.focus();
   }
 
+  $("#cloud").addEventListener("click", cloudModal);
+  paintCloud();
+  if (cloudReady()) cloudPing();
   buildNav();
 })();
 </script>

@@ -21,7 +21,15 @@ function norm(s: string): string {
  * молча: пользователь должен видеть, что здесь система отказалась утверждать.
  */
 export function guard(raw: unknown[], t: Transcript): { findings: Finding[]; rejected: number } {
-  const hay = norm(t.lines.map((l) => l.text).join(" "));
+  // Цитата должна быть из реплик менеджера: все пункты карты про его действия.
+  // Реплики без разметки роли (unknown) пропускаем: проверить, чьи они, нельзя.
+  const mgr = t.lines.filter((l) => l.who !== "client");
+  const hay = norm(mgr.map((l) => l.text).join(" "));
+  const snap = (s: number | null) => {
+    if (s == null) return null;
+    const before = t.lines.filter((l) => l.at <= s).map((l) => l.at);
+    return before.length ? Math.max(...before) : null;
+  };
   const seen = new Set<string>();
   const findings: Finding[] = [];
   let rejected = 0;
@@ -49,7 +57,8 @@ export function guard(raw: unknown[], t: Transcript): { findings: Finding[]; rej
     // но тогда и ссылаться на слова нельзя: пустая цитата допустима только здесь.
     if (!quote) {
       if (verdict === "bad") {
-        findings.push({ code, verdict, quote: "", at, why: why || "нужного в разговоре не прозвучало" });
+        // Слабые модели ставят 0 вместо «не знаю»: нулевую секунду у bad моментом не считаем.
+        findings.push({ code, verdict, quote: "", at: at && at > 0 ? snap(at) : null, why: why || "нужного в разговоре не прозвучало" });
       } else {
         rejected++;
         findings.push({ code, verdict: "na", quote: "", at: null, why: why,
@@ -62,11 +71,13 @@ export function guard(raw: unknown[], t: Transcript): { findings: Finding[]; rej
     if (q.length < 3 || !hay.includes(q)) {
       rejected++;
       findings.push({ code, verdict: "na", quote: "", at: null, why,
-        demoted: "вывод снят: такой фразы в расшифровке нет" });
+        demoted: "вывод снят: такой фразы у менеджера в расшифровке нет" });
       continue;
     }
 
-    findings.push({ code, verdict, quote, at, why });
+    // Время берём из места, где цитата найдена, а не из ответа модели.
+    const hit = mgr.find((l) => norm(l.text).includes(q));
+    findings.push({ code, verdict, quote, at: hit ? hit.at : snap(at), why });
   }
 
   return { findings, rejected };

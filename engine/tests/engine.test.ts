@@ -168,3 +168,29 @@ describe("разбор ответа YandexGPT", () => {
     expect(() => extractJson("Извините, не могу помочь.")).toThrow(/без JSON/);
   });
 });
+
+describe("защита: роли и время", () => {
+  it("цитата из реплики клиента не засчитывается как действие менеджера", () => {
+    const { findings, rejected } = guard(
+      [{ code: "D1", verdict: "ok", quote: "Дороговато, конечно. Я подумаю.", at: 31, why: "x" }], t);
+    expect(rejected).toBe(1);
+    expect(findings[0]?.verdict).toBe("na");
+  });
+
+  it("время положительного вывода берётся из места находки, а не из ответа модели", () => {
+    const { findings } = guard(
+      [{ code: "C2", verdict: "ok", quote: "От шести до десяти месяцев, зависит от суда.", at: 999, why: "x" }], t);
+    expect(findings[0]?.at).toBe(25);
+  });
+
+  it("нулевая секунда у bad не становится моментом потери", () => {
+    const { findings } = guard([{ code: "B1", verdict: "bad", quote: "", at: 0, why: "x" }], t);
+    expect(findings[0]?.at).toBeNull();
+    expect(lossMoment(findings, t)).toBeNull();
+  });
+
+  it("минус один значит «не знаю»", () => {
+    const { findings } = guard([{ code: "B1", verdict: "bad", quote: "", at: -1, why: "x" }], t);
+    expect(findings[0]?.at).toBeNull();
+  });
+});
