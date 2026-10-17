@@ -3,6 +3,7 @@ import fs from "node:fs";
 import { guard } from "../src/guard.js";
 import { score, lossMoment } from "../src/score.js";
 import { report } from "../src/report.js";
+import { extractJson } from "../src/analyze-yandex.js";
 import { RUBRIC, MAX_SCORE } from "../src/rubric.js";
 import type { Transcript } from "../src/types.js";
 
@@ -125,5 +126,45 @@ describe("отчёт", () => {
     const html = report({ ...a, transcript: evil }, "x");
     expect(html).not.toContain("<script>alert");
     expect(html).toContain("&lt;script&gt;");
+  });
+});
+
+describe("разбор ответа YandexGPT", () => {
+  const good = '{"findings":[{"code":"A1","verdict":"bad","quote":"","at":0,"why":"нет"}]}';
+
+  it("берёт чистый JSON", () => {
+    expect(extractJson(good)).toEqual({ findings: [{ code: "A1", verdict: "bad", quote: "", at: 0, why: "нет" }] });
+  });
+
+  it("снимает ограждение ```json", () => {
+    expect(extractJson("```json\n" + good + "\n```")).toHaveProperty("findings");
+  });
+
+  it("снимает ограждение без языка", () => {
+    expect(extractJson("```\n" + good + "\n```")).toHaveProperty("findings");
+  });
+
+  it("выкусывает JSON из болтовни вокруг", () => {
+    expect(extractJson("Конечно! Вот разбор:\n" + good + "\nНадеюсь, помог.")).toHaveProperty("findings");
+  });
+
+  it("не ломается на фигурных скобках внутри цитаты", () => {
+    const tricky = '{"findings":[{"code":"A1","verdict":"ok","quote":"он сказал } и ушёл","at":1,"why":"x"}]}';
+    const r = extractJson(tricky) as { findings: { quote: string }[] };
+    expect(r.findings[0]?.quote).toBe("он сказал } и ушёл");
+  });
+
+  it("не ломается на экранированной кавычке в цитате", () => {
+    const tricky = '{"findings":[{"code":"A1","verdict":"ok","quote":"сказал \\"дорого\\" и всё","at":1,"why":"x"}]}';
+    const r = extractJson(tricky) as { findings: { quote: string }[] };
+    expect(r.findings[0]?.quote).toBe('сказал "дорого" и всё');
+  });
+
+  it("внятно жалуется на обрезанный ответ", () => {
+    expect(() => extractJson('{"findings":[{"code":"A1"')).toThrow(/обрезан/);
+  });
+
+  it("внятно жалуется, когда JSON вообще нет", () => {
+    expect(() => extractJson("Извините, не могу помочь.")).toThrow(/без JSON/);
   });
 });

@@ -16,7 +16,7 @@ async function mockTranscribe(file: string): Promise<Transcript> {
   if (!fs.existsSync(src)) {
     throw new Error(
       `Mock-режим: нужна готовая расшифровка. Положите рядом с записью файл ${path.basename(sidecar)} ` +
-      `или задайте YANDEX_API_KEY и YANDEX_FOLDER_ID для настоящего распознавания.`
+      `или задайте YANDEX_STT_KEY и YANDEX_FOLDER_ID для настоящего распознавания.`
     );
   }
   const t = JSON.parse(fs.readFileSync(src, "utf8")) as Transcript;
@@ -24,7 +24,7 @@ async function mockTranscribe(file: string): Promise<Transcript> {
 }
 
 export function pickTranscriber(): { run: Transcriber; name: string } {
-  if (process.env.YANDEX_API_KEY && process.env.YANDEX_FOLDER_ID) {
+  if ((process.env.YANDEX_STT_KEY || process.env.YANDEX_API_KEY) && process.env.YANDEX_FOLDER_ID) {
     return { run: yandexTranscribe, name: "Yandex SpeechKit" };
   }
   return { run: mockTranscribe, name: "mock" };

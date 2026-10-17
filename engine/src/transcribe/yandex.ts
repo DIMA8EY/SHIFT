@@ -14,7 +14,8 @@ const RECOGNIZE = "https://stt.api.cloud.yandex.net/stt/v3/recognizeFileAsync";
  * Асинхронный режим: загружаем, получаем id операции, опрашиваем до готовности.
  */
 export async function yandexTranscribe(file: string): Promise<Transcript> {
-  const key = process.env.YANDEX_API_KEY!;
+  // Ключ со своей областью: speechkitStt.execute. Ключ от YandexGPT здесь не подойдёт.
+  const key = (process.env.YANDEX_STT_KEY || process.env.YANDEX_API_KEY)!;
   const folder = process.env.YANDEX_FOLDER_ID!;
   const audio = fs.readFileSync(file).toString("base64");
 
