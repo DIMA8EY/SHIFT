@@ -9,14 +9,23 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Golos+Text:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<script>
+/* Тема выбирается до первой отрисовки, иначе при загрузке мигает чужой фон.
+   По умолчанию светлая — системную тёмную не наследуем, её включают кнопкой. */
+(function () {
+  var t = "light";
+  try { t = localStorage.getItem("moment-theme") || "light"; } catch (e) {}
+  document.documentElement.setAttribute("data-theme", t === "dark" ? "dark" : "light");
+})();
+</script>
 <style>
 /* Кабинет: тёмный рельс навигации слева, светлое рабочее поле справа, экраны переключаются без перезагрузки */
 :root {
   --bg: #f6f7fb; --card: #ffffff; --sunk: #f2f4f7;
-  --ink: #101828; --ink2: #475467; --ink3: #667085;
-  --line: #e4e7ec; --line2: #eff1f5;
-  --nav: #141829; --nav-ink: #e9ecf7; --nav-ink2: #8a93b4; --nav-act: #262d4d; --nav-line: #232842;
-  --acc: #4338ca; --acc-on: #ffffff; --acc-soft: #ecedfc; --acc-dim: #8b96f7;
+  --ink: #111827; --ink2: #4b5563; --ink3: #6b7280;
+  --line: #e5e7eb; --line2: #f0f1f4;
+  --nav: #1a1f36; --nav-ink: #eef1f8; --nav-ink2: #9aa3bd; --nav-act: #252d4a; --nav-line: #272e4a;
+  --acc: #2563eb; --acc-on: #ffffff; --acc-soft: #eff6ff; --acc-dim: #93c5fd;
   --bad: #b42318; --bad-soft: #fee4e2;
   --warn: #b54708; --warn-soft: #fef0c7;
   --good: #067647; --good-soft: #dcfae6;
@@ -29,8 +38,8 @@
     --bg: #14161c; --card: #1b1f28; --sunk: #191e26;
     --ink: #ecf0f6; --ink2: #98a6b8; --ink3: #76869a;
     --line: #2a313d; --line2: #222933;
-    --nav: #0f1220; --nav-ink: #e9ecf7; --nav-ink2: #818bae; --nav-act: #222847; --nav-line: #1c2138;
-    --acc: #818cf8; --acc-on: #14161c; --acc-soft: #241f52; --acc-dim: #6366f1;
+    --nav: #141830; --nav-ink: #eef1f8; --nav-ink2: #8c96b4; --nav-act: #222a45; --nav-line: #232a44;
+    --acc: #60a5fa; --acc-on: #0b1220; --acc-soft: #1b2944; --acc-dim: #2563eb;
     --bad: #f97066; --bad-soft: #3a1b18;
     --warn: #fdb022; --warn-soft: #3a2a10;
     --good: #47cd89; --good-soft: #0e2a1d;
@@ -41,8 +50,8 @@
   --bg: #14161c; --card: #1b1f28; --sunk: #191e26;
   --ink: #ecf0f6; --ink2: #98a6b8; --ink3: #76869a;
   --line: #2a313d; --line2: #222933;
-  --nav: #0f1220; --nav-ink: #e9ecf7; --nav-ink2: #818bae; --nav-act: #222847; --nav-line: #1c2138;
-  --acc: #818cf8; --acc-on: #14161c; --acc-soft: #241f52; --acc-dim: #6366f1;
+  --nav: #141830; --nav-ink: #eef1f8; --nav-ink2: #8c96b4; --nav-act: #222a45; --nav-line: #232a44;
+  --acc: #60a5fa; --acc-on: #0b1220; --acc-soft: #1b2944; --acc-dim: #2563eb;
   --bad: #f97066; --bad-soft: #3a1b18;
   --warn: #fdb022; --warn-soft: #3a2a10;
   --good: #47cd89; --good-soft: #0e2a1d;
@@ -131,6 +140,9 @@ main { min-width: 0; display: flex; flex-direction: column; }
 .chipbar { display: flex; gap: 4px; background: var(--sunk); border-radius: 8px; padding: 3px; }
 .chipbar button { background: none; border: 0; padding: 6px 11px; border-radius: 6px; font-size: 13px; color: var(--ink2); }
 .chipbar button[aria-pressed="true"] { background: var(--card); color: var(--ink); font-weight: 600; box-shadow: 0 1px 2px rgba(16,24,40,.08); }
+.icobtn { width: 34px; height: 34px; display: grid; place-items: center; border: 1px solid var(--line); background: var(--card); border-radius: 9px; color: var(--ink2); flex: none; }
+.icobtn:hover { color: var(--ink); border-color: var(--ink3); }
+.icobtn svg { width: 17px; height: 17px; }
 .demo-flag { font-family: var(--m); font-size: 10.5px; letter-spacing: .08em; text-transform: uppercase; color: var(--warn); background: var(--warn-soft); padding: 5px 9px; border-radius: 6px; }
 .wrap { min-width: 0; padding: 20px max(16px, env(safe-area-inset-right,0px)) 48px max(16px, env(safe-area-inset-left,0px)); display: flex; flex-direction: column; gap: 16px; }
 .screen { display: none; flex-direction: column; gap: 16px; }
@@ -292,6 +304,49 @@ tbody tr:hover { background: var(--sunk); }
 .sheet { background: var(--sunk); border: 1px solid var(--line); border-radius: 10px; padding: 16px 17px; }
 .sheet h4 { margin: 0; font-size: 15px; }
 
+/* баннер «главное сейчас» */
+.alert { display: grid; grid-template-columns: 34px minmax(0,1fr) auto; gap: 13px; align-items: center;
+  background: var(--warn-soft); border: 1px solid var(--warn); border-radius: 11px; padding: 14px 16px; }
+.alert .bolt { width: 34px; height: 34px; border-radius: 9px; background: var(--warn); color: var(--acc-on);
+  display: grid; place-items: center; font-size: 17px; flex: none; }
+.alert b { display: block; font-size: 14.5px; color: var(--ink); }
+.alert span { display: block; font-size: 13px; color: var(--ink2); margin-top: 3px; }
+@media (max-width: 620px) { .alert { grid-template-columns: 34px minmax(0,1fr); } .alert > .btn { grid-column: 2; justify-self: start; } }
+
+.fcast { margin: 0; background: var(--acc-soft); border: 1px solid var(--acc-dim); border-radius: 10px;
+  padding: 12px 15px; font-size: 13.5px; color: var(--ink2); }
+.fcast b { color: var(--ink); }
+.fcast span { color: var(--ink3); }
+
+/* ROI */
+.roi { display: grid; gap: 13px; padding: 17px; }
+.roi .r { display: grid; grid-template-columns: minmax(0,1fr) auto; gap: 12px; align-items: baseline; }
+.roi .r b { font-family: var(--m); font-size: 21px; font-weight: 500; letter-spacing: -.02em; white-space: nowrap; }
+.roi .r span { font-size: 13.5px; color: var(--ink2); }
+.roi .sum { border-top: 1px solid var(--line); padding-top: 13px; }
+.roi .sum b { font-size: 26px; color: var(--good); }
+
+/* тренажёр */
+.chat { display: flex; flex-direction: column; gap: 11px; padding: 17px; max-height: 60vh; overflow-y: auto; }
+.msg { max-width: 82%; padding: 10px 13px; border-radius: 13px; font-size: 14px; line-height: 1.45; }
+.msg.cli { align-self: flex-start; background: var(--sunk); border: 1px solid var(--line); border-bottom-left-radius: 4px; }
+.msg.me { align-self: flex-end; background: var(--acc); color: var(--acc-on); border-bottom-right-radius: 4px; }
+.msg .who { display: block; font-size: 11px; opacity: .72; margin-bottom: 3px; }
+.tip { align-self: flex-start; max-width: 82%; font-size: 12.5px; color: var(--warn); background: var(--warn-soft);
+  border-radius: 8px; padding: 7px 11px; }
+.sendrow { display: grid; grid-template-columns: minmax(0,1fr) auto; gap: 9px; padding: 0 17px 17px; }
+.sendrow .inp { padding: 10px 12px; }
+.verd { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(240px,100%),1fr)); gap: 15px; padding: 17px; }
+.verd ul { margin: 7px 0 0; padding-left: 19px; font-size: 13.5px; color: var(--ink2); }
+.verd ul li { margin-bottom: 5px; }
+.verd h5 { margin: 0; font-size: 13px; text-transform: uppercase; letter-spacing: .05em; }
+
+/* подсказки после звонка */
+.tips { padding: 15px 17px 17px; }
+.tips ol { margin: 10px 0 0; padding-left: 21px; font-size: 14px; color: var(--ink2); }
+.tips ol li { margin-bottom: 7px; }
+.tips ol li b { color: var(--ink); font-weight: 500; }
+
 /* модалка */
 .ov { position: fixed; inset: 0; background: rgba(8,11,20,.55); display: grid; place-items: center; padding: 20px; z-index: 50; }
 .modal { background: var(--card); border-radius: 13px; width: 100%; max-width: 430px; padding: 22px; border: 1px solid var(--line); }
@@ -368,6 +423,7 @@ tbody tr:hover { background: var(--sunk); }
         <button type="button" data-p="q" aria-pressed="false">Квартал</button>
       </div>
       <button class="btn sm" id="rep" type="button" style="display:none">Отчёт за неделю</button>
+      <button class="icobtn" id="theme" type="button" aria-label="Переключить тему" title="Светлая или тёмная тема"></button>
       <div class="chipbar" id="roleSw" title="Только для демонстрации"></div>
     </div>
     <div class="wrap" id="screens"></div>
@@ -389,7 +445,7 @@ tbody tr:hover { background: var(--sunk); }
   var CALLS = [
     { id: 1, d: "16.10", t: "11:24", m: "Гусев Д.", deal: "Банкротство — Сидоров", dir: "вход", dur: "0:52", sc: 24, st: ["bd","bd","bd","wn","bd","bd"], res: "Нет следующего шага", risk: "bad", loss: 8, pot: 120000, out: "lost", amt: 120000, stg: "Закрыто не реализовано", dt: "16.10" },
     { id: 2, d: "16.10", t: "10:51", m: "Белова М.", deal: "Банкротство — Кравцова", dir: "вход", dur: "7:12", sc: 81, st: ["ok","ok","ok","ok","wn","ok"], res: "Встреча 18.10 в 14:00", risk: "good", loss: null, pot: 0, out: "open", amt: 95000, stg: "Встреча назначена", dt: "" },
-    { id: 3, d: "16.10", t: "10:08", m: "Орлов А.", deal: "Списание долгов — Юсупов", dir: "вход", dur: "5:40", sc: 74, st: ["ok","ok","wn","ok","ok","ok"], res: "Выслать расчёт до 17.10", risk: "good", loss: null, pot: 0, out: "open", amt: 110000, stg: "Расчёт отправлен", dt: "" },
+    { id: 3, d: "16.10", t: "10:08", m: "Орлов А.", deal: "Списание долгов — Юсупов", dir: "вход", dur: "5:40", sc: 74, st: ["ok","ok","wn","wn","ok","ok"], res: "Выслать расчёт до 17.10", risk: "good", loss: null, pot: 0, out: "open", amt: 110000, stg: "Расчёт отправлен", dt: "" },
     { id: 4, d: "15.10", t: "17:33", m: "Гусев Д.", deal: "Банкротство — Пётр В.", dir: "вход", dur: "1:46", sc: 31, st: ["ok","bd","bd","wn","bd","bd"], res: "«Перезвоните, как решите»", risk: "bad", loss: 64, pot: 120000, out: "lost", amt: 120000, stg: "Закрыто не реализовано", dt: "15.10" },
     { id: 5, d: "15.10", t: "16:02", m: "Рыбак И.", deal: "Банкротство — Ильина", dir: "вход", dur: "3:18", sc: 52, st: ["ok","wn","bd","wn","bd","bd"], res: "Нет следующего шага", risk: "warn", loss: 112, pot: 95000, out: "stall", amt: 95000, stg: "Первичный контакт", dt: "без движения 9 дней" },
     { id: 6, d: "15.10", t: "14:47", m: "Белова М.", deal: "Банкротство — Тагиров", dir: "исход", dur: "4:05", sc: 69, st: ["ok","ok","wn","wn","ok","ok"], res: "Перезвон 17.10", risk: "good", loss: null, pot: 0, out: "open", amt: 85000, stg: "Переговоры", dt: "" },
@@ -397,7 +453,7 @@ tbody tr:hover { background: var(--sunk); }
     { id: 8, d: "14.10", t: "18:10", m: "Гусев Д.", deal: "Банкротство — Ковалёв", dir: "вход", dur: "0:44", sc: 19, st: ["bd","bd","na","bd","na","bd"], res: "Назвал цену и попрощался", risk: "bad", loss: 6, pot: 120000, out: "lost", amt: 120000, stg: "Закрыто не реализовано", dt: "14.10" },
     { id: 9, d: "14.10", t: "15:36", m: "Рыбак И.", deal: "Списание долгов — Мишина", dir: "вход", dur: "2:58", sc: 46, st: ["wn","ok","bd","ok","bd","bd"], res: "«Я подумаю»", risk: "bad", loss: 96, pot: 95000, out: "lost", amt: 95000, stg: "Закрыто не реализовано", dt: "16.10" },
     { id: 10, d: "14.10", t: "11:02", m: "Белова М.", deal: "Банкротство — Ершов", dir: "вход", dur: "8:24", sc: 86, st: ["ok","ok","ok","ok","ok","ok"], res: "Встреча 16.10, пришёл", risk: "good", loss: null, pot: 0, out: "won", amt: 130000, stg: "Успешно реализовано", dt: "16.10" },
-    { id: 11, d: "13.10", t: "16:55", m: "Орлов А.", deal: "Банкротство — Лапин", dir: "вход", dur: "4:33", sc: 66, st: ["ok","wn","wn","ok","wn","ok"], res: "Перезвон 15.10", risk: "warn", loss: null, pot: 0, out: "stall", amt: 85000, stg: "Переговоры", dt: "без движения 3 дня" },
+    { id: 11, d: "13.10", t: "16:55", m: "Орлов А.", deal: "Банкротство — Лапин", dir: "вход", dur: "4:33", sc: 66, st: ["ok","wn","wn","bd","wn","ok"], res: "Перезвон 15.10", risk: "warn", loss: null, pot: 0, out: "stall", amt: 85000, stg: "Переговоры", dt: "без движения 3 дня" },
     { id: 12, d: "13.10", t: "13:21", m: "Гусев Д.", deal: "Консультация — без имени", dir: "вход", dur: "1:12", sc: 28, st: ["ok","bd","bd","wn","na","bd"], res: "Контакт не взят", risk: "bad", loss: 22, pot: 120000, out: "lost", amt: 120000, stg: "Закрыто не реализовано", dt: "13.10" }
   ];
   var STAGES = ["ПРИВЕТ.", "ПОТРЕБ.", "БОЛЬ", "ПРЕЗЕНТ.", "ВОЗР.", "ЗАКРЫТ."];
@@ -442,6 +498,33 @@ tbody tr:hover { background: var(--sunk); }
     { m: "Авг", v: 1920000 }, { m: "Сен", v: 1800000 }, { m: "Окт", v: 1560000 }
   ];
   var OUTC = { won: ["good", "выиграна"], lost: ["bad", "проиграна"], stall: ["warn", "зависла"], open: ["mute", "в работе"] };
+  /* Прошлая неделя — отдельный статичный срез, чтобы чипбар на экране «Звонки» что-то переключал. */
+  var PREV = [
+    { id: 101, d: "10.10", t: "16:40", m: "Орлов А.", deal: "Банкротство — Шилов", dir: "вход", dur: "4:12", sc: 71, st: ["ok","ok","wn","ok","wn","ok"], res: "Перезвон 13.10", risk: "good", loss: null, pot: 0, out: "won", amt: 110000, stg: "Успешно реализовано", dt: "15.10" },
+    { id: 102, d: "10.10", t: "12:05", m: "Гусев Д.", deal: "Банкротство — Нечаев", dir: "вход", dur: "1:03", sc: 22, st: ["bd","bd","bd","wn","bd","bd"], res: "Нет следующего шага", risk: "bad", loss: 11, pot: 120000, out: "lost", amt: 120000, stg: "Закрыто не реализовано", dt: "12.10" },
+    { id: 103, d: "09.10", t: "17:21", m: "Белова М.", deal: "Списание долгов — Царёв", dir: "вход", dur: "6:34", sc: 79, st: ["ok","ok","ok","wn","ok","ok"], res: "Встреча 11.10", risk: "good", loss: null, pot: 0, out: "won", amt: 95000, stg: "Успешно реализовано", dt: "14.10" },
+    { id: 104, d: "09.10", t: "14:02", m: "Рыбак И.", deal: "Банкротство — Гордеев", dir: "вход", dur: "2:11", sc: 38, st: ["wn","bd","bd","wn","bd","bd"], res: "«Я подумаю»", risk: "bad", loss: 74, pot: 95000, out: "lost", amt: 95000, stg: "Закрыто не реализовано", dt: "13.10" },
+    { id: 105, d: "08.10", t: "15:48", m: "Гусев Д.", deal: "Консультация — Руденко", dir: "вход", dur: "0:51", sc: 17, st: ["bd","bd","na","bd","na","bd"], res: "Назвал цену и попрощался", risk: "bad", loss: 7, pot: 120000, out: "lost", amt: 120000, stg: "Закрыто не реализовано", dt: "10.10" },
+    { id: 106, d: "08.10", t: "11:30", m: "Орлов А.", deal: "Банкротство — Юдина", dir: "исход", dur: "5:02", sc: 68, st: ["ok","ok","wn","wn","ok","ok"], res: "Выслать расчёт", risk: "good", loss: null, pot: 0, out: "stall", amt: 105000, stg: "Расчёт отправлен", dt: "без движения 7 дней" },
+    { id: 107, d: "07.10", t: "16:14", m: "Белова М.", deal: "Банкротство — Прохоров", dir: "вход", dur: "7:40", sc: 83, st: ["ok","ok","ok","ok","ok","ok"], res: "Договор подписан", risk: "good", loss: null, pot: 0, out: "won", amt: 135000, stg: "Успешно реализовано", dt: "12.10" },
+    { id: 108, d: "07.10", t: "10:52", m: "Рыбак И.", deal: "Списание долгов — Фомина", dir: "вход", dur: "3:05", sc: 44, st: ["wn","wn","bd","ok","bd","bd"], res: "Нет следующего шага", risk: "warn", loss: 98, pot: 95000, out: "lost", amt: 95000, stg: "Закрыто не реализовано", dt: "11.10" },
+    { id: 109, d: "06.10", t: "18:02", m: "Гусев Д.", deal: "Банкротство — Савин", dir: "вход", dur: "1:29", sc: 26, st: ["bd","bd","bd","wn","bd","bd"], res: "«Перезвоните сами»", risk: "bad", loss: 42, pot: 120000, out: "lost", amt: 120000, stg: "Закрыто не реализовано", dt: "09.10" },
+    { id: 110, d: "06.10", t: "13:17", m: "Орлов А.", deal: "Консультация — Берг", dir: "вход", dur: "4:55", sc: 70, st: ["ok","ok","ok","ok","wn","ok"], res: "Перезвон 08.10", risk: "good", loss: null, pot: 0, out: "open", amt: 90000, stg: "Переговоры", dt: "" }
+  ];
+  var WEEKSTAT = {
+    cur: { next: 58, score: 56, lost: 5, label: "10–16 октября" },
+    prev: { next: 52, score: 51, lost: 6, label: "3–9 октября" }
+  };
+  /* Трекер исправлений: одна строка — один цикл «нашли → поправили → перемерили». */
+  var FIXES = [
+    { pr: "Цена называется до выявления задачи", m: "Гусев Д.", found: "16.10", st: "found", was: null, now: null },
+    { pr: "Следующий шаг не назначен", m: "Весь отдел", found: "02.10", st: "work", was: 68, now: null },
+    { pr: "Презентация цены без привязки к задаче", m: "Орлов А.", found: "13.10", st: "check", was: 54, now: null },
+    { pr: "Договорённость не повторяется вслух", m: "Весь отдел", found: "30.09", st: "work", was: 44, now: 41 },
+    { pr: "Второй канал связи не взят", m: "Весь отдел", found: "18.09", st: "done", was: 61, now: 22 }
+  ];
+  var FIXST = { found: ["mute", "выявлена"], work: ["warn", "в работе"], check: ["warn", "проверяется"], done: ["good", "закрыта"] };
+  var MGRTREND = [18, 23, 21, 26];
   var TRANSCRIPT = [
     { t: 0, w: "Менеджер", mgr: true, x: "Алло." },
     { t: 3, w: "Клиент", x: "Здравствуйте. Я по поводу банкротства, хотел узнать, сколько это стоит." },
@@ -499,7 +582,7 @@ tbody tr:hover { background: var(--sunk); }
   function rub(v) { return h("span", { class: "st " + v }, [S[v][1]]); }
   function money(n) { return n.toLocaleString("ru-RU") + " ₽"; }
   function mmss(s) { return Math.floor(s / 60) + ":" + String(s % 60).padStart(2, "0"); }
-  var state = { role: "owner", screen: "dash", call: null, period: "w" };
+  var state = { role: "owner", screen: "dash", call: null, period: "w", week: "cur" };
   var ROLE_NAME = { owner: "Основатель", rop: "Руководитель продаж", mgr: "Менеджер" };
 
   /* ===================== ВХОД ===================== */
@@ -540,6 +623,23 @@ tbody tr:hover { background: var(--sunk); }
   }
 
   function repBtn() { $("#rep").style.display = state.role === "mgr" ? "none" : ""; }
+
+  /* ---- тема ---- */
+  var SUN = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="4.2"/><path d="M12 2v2.4M12 19.6V22M2 12h2.4M19.6 12H22M4.9 4.9l1.7 1.7M17.4 17.4l1.7 1.7M19.1 4.9l-1.7 1.7M6.6 17.4l-1.7 1.7"/></svg>';
+  var MOON = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.5 14.2A8.5 8.5 0 019.8 3.5a8.5 8.5 0 1010.7 10.7z"/></svg>';
+  function curTheme() { return document.documentElement.getAttribute("data-theme") === "dark" ? "dark" : "light"; }
+  function paintTheme() {
+    var d = curTheme() === "dark";
+    $("#theme").innerHTML = d ? SUN : MOON;
+    $("#theme").setAttribute("aria-label", d ? "Включить светлую тему" : "Включить тёмную тему");
+  }
+  $("#theme").addEventListener("click", function () {
+    var next = curTheme() === "dark" ? "light" : "dark";
+    document.documentElement.setAttribute("data-theme", next);
+    try { localStorage.setItem("moment-theme", next); } catch (e) {}
+    paintTheme();
+  });
+  paintTheme();
   $("#rep").addEventListener("click", weekReport);
 
   /* ===================== НАВИГАЦИЯ ===================== */
@@ -551,7 +651,9 @@ tbody tr:hover { background: var(--sunk); }
     team: "M16 20v-2a4 4 0 00-8 0v2M12 11a4 4 0 100-8 4 4 0 000 8z",
     plug: "M9 3v6m6-6v6M6 9h12v4a6 6 0 01-12 0V9z",
     rub: "M5 4h14M5 10h14M5 16h9",
-    loss: "M3 7l6 6 4-4 8 8M21 10v7h-7"
+    loss: "M3 7l6 6 4-4 8 8M21 10v7h-7",
+    fix: "M20 6L9 17l-5-5",
+    train: "M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"
   };
   var NAV = [
     { k: "dash", t: "Дашборд", i: "dash", r: ["owner", "rop", "mgr"] },
@@ -559,6 +661,8 @@ tbody tr:hover { background: var(--sunk); }
     { k: "calls", t: "Звонки", i: "calls", r: ["owner", "rop"], cnt: CALLS.length },
     { k: "calls", t: "Мои звонки", i: "calls", r: ["mgr"], cnt: 4 },
     { k: "probl", t: "Проблемы", i: "probl", r: ["owner", "rop"], cnt: 3 },
+    { k: "fixes", t: "Исправления", i: "fix", r: ["rop"] },
+    { k: "train", t: "Тренажёр", i: "train", r: ["mgr"] },
     { k: "upload", t: "Загрузить", i: "up", r: ["owner", "rop"] },
     { k: "team", t: "Команда", i: "team", r: ["owner", "rop"] },
     { k: "integr", t: "Интеграции", i: "plug", r: ["owner", "rop"] },
@@ -577,7 +681,7 @@ tbody tr:hover { background: var(--sunk); }
   }
   function go(k) {
     state.screen = k; buildNav(); render();
-    $("#period").style.display = (k === "loss" || k === "call") ? "none" : "";
+    $("#period").style.display = (k === "loss" || k === "call" || k === "fixes" || k === "train") ? "none" : "";
     window.scrollTo({ top: 0, behavior: "auto" });
   }
 
@@ -588,12 +692,12 @@ tbody tr:hover { background: var(--sunk); }
   });
 
   /* ===================== ЭКРАНЫ ===================== */
-  var TITLES = { dash: "Дашборд", loss: "Потери", calls: "Звонки", call: "Разбор звонка", probl: "Проблемы", upload: "Загрузить записи", team: "Команда", integr: "Интеграции", rubric: "Оценочная карта" };
+  var TITLES = { dash: "Дашборд", loss: "Потери", fixes: "Трекер исправлений", train: "Тренажёр звонков", calls: "Звонки", call: "Разбор звонка", probl: "Проблемы", upload: "Загрузить записи", team: "Команда", integr: "Интеграции", rubric: "Оценочная карта" };
 
   function render() {
     $("#ttl").textContent = state.screen === "calls" && state.role === "mgr" ? "Мои звонки" : TITLES[state.screen];
     var r = $("#screens"); r.innerHTML = "";
-    ({ dash: scrDash, loss: scrLoss, calls: scrCalls, call: scrCall, probl: scrProbl, upload: scrUpload, team: scrTeam, integr: scrIntegr, rubric: scrRubric }[state.screen] || scrDash)(r);
+    ({ dash: scrDash, loss: scrLoss, fixes: scrFixes, train: scrTrain, calls: scrCalls, call: scrCall, probl: scrProbl, upload: scrUpload, team: scrTeam, integr: scrIntegr, rubric: scrRubric }[state.screen] || scrDash)(r);
   }
 
   /* --- дашборд --- */
@@ -646,13 +750,19 @@ tbody tr:hover { background: var(--sunk); }
   }
 
   function dashOwner(r) {
+    r.appendChild(nowBanner());
     r.appendChild(h("div", { class: "kpis" }, [
       kpi("Потери за месяц, оценка", mln(lossTotal()), "↓ " + Math.round((MONTH.prev - lossTotal()) / 1000) + " тыс. к прошлому месяцу", "up"),
       kpi("Звонков разобрано", "144", "100% записанных", ""),
       kpi("Со следующим шагом", "58%", "↑ 20 п.п. за 8 недель", "up"),
       kpi("Проблем в работе", "1 из 3", "одна проверена и закрыта", "")
     ]));
-    r.appendChild(lossHero(true));
+    r.appendChild(h("p", { class: "fcast" }, [
+      h("b", {}, ["Прогноз: "]),
+      "при текущей динамике выручка вырастет примерно на 12% к концу месяца. ",
+      h("span", {}, ["Расчёт по росту доли назначенных шагов за 8 недель; это экстраполяция, а не обязательство."])
+    ]));
+    r.appendChild(h("div", { class: "grid g2" }, [lossHero(true), roiCard()]));
     r.appendChild(trendChart());
     r.appendChild(h("div", { class: "grid g2" }, [topProblems(3), closedLoop()]));
     r.appendChild(integrState());
@@ -675,7 +785,7 @@ tbody tr:hover { background: var(--sunk); }
   }
 
   function dashRop(r) {
-    var queue = CALLS.filter(function (c) { return c.risk === "bad"; }).slice(0, 4);
+    var queue = CALLS.filter(function (c) { return c.risk === "bad"; }).slice(0, 3);
     r.appendChild(h("div", { class: "kpis" }, [
       kpi("Разобрать сегодня", String(queue.length), "звонки с потерянной сделкой", "down"),
       kpi("Со следующим шагом", "58%", "цель на неделю — 65%", ""),
@@ -683,14 +793,24 @@ tbody tr:hover { background: var(--sunk); }
       kpi("Проблема в работе", "Следующий шаг", "замер через 6 дней", "")
     ]));
     r.appendChild(h("div", { class: "card" }, [
-      h("div", { class: "ch" }, [h("h2", {}, ["Очередь разбора"]), h("span", { class: "hint" }, ["звонки, где сделка была и ушла"])]),
+      h("div", { class: "ch" }, [h("h2", {}, ["Очередь разбора"]), h("span", { class: "hint" }, ["разобрать лично, три звонка"])]),
       h("div", {}, queue.map(function (c) {
-        return h("div", { class: "listnum", style: "cursor:pointer", onclick: function () { state.call = c.id; go("call"); } }, [
-          h("i", {}, [mmss(c.loss || 0)]),
-          h("div", {}, [
+        return h("div", { class: "pr" }, [
+          h("div", { style: "cursor:pointer", onclick: function () { state.call = c.id; go("call"); } }, [
             h("b", {}, [c.deal]),
-            h("div", { class: "sub2" }, [c.m + " · " + c.d + " " + c.t + " · " + c.dur]),
+            h("div", { class: "sub2", style: "margin-top:4px" }, [c.m + " · " + c.d + " " + c.t + " · " + c.dur + " · оценка " + c.sc]),
             h("div", { class: "sub2", style: "margin-top:4px;color:var(--bad)" }, ["Момент потери на " + mmss(c.loss || 0) + " · " + c.res])
+          ]),
+          h("div", { class: "act" }, [
+            h("button", {
+              class: "btn sm", type: "button", onclick: function () {
+                modal("Разбор с менеджером", "В рабочей версии здесь открывается разбор: запись, оценочная карта и поле для вашего комментария, который уходит менеджеру в задачу. В демонстрации это заглушка.",
+                  [["Кому", c.m], ["Когда", "Сегодня, 17:00"]], "Поставить разбор", function () {
+                    modal("Разбор поставлен", "Демонстрация: ничего не отправлено. В рабочей версии " + c.m + " получит задачу с ссылкой на этот звонок.", [], "Понятно", null);
+                  });
+              }
+            }, ["Разобрать"]),
+            h("button", { class: "btn ghost sm", type: "button", onclick: function () { state.call = c.id; go("call"); } }, ["Слушать"])
           ])
         ]);
       }))
@@ -734,6 +854,11 @@ tbody tr:hover { background: var(--sunk); }
         ])])
       ])
     ]));
+    r.appendChild(h("div", { class: "grid g2" }, [mgrTrend(), h("div", { class: "card p" }, [
+      h("b", { style: "font-size:15px" }, ["Тренажёр открыт"]),
+      h("p", { class: "sub2", style: "margin-top:6px" }, ["Возражение «дорого» встречается у вас в трёх звонках из четырёх. В тренажёре его можно отработать без живого клиента — ошибиться там ничего не стоит."]),
+      h("button", { class: "btn sm", style: "margin-top:12px", type: "button", onclick: function () { go("train"); } }, ["Открыть тренажёр"])
+    ])]));
     r.appendChild(callsTable(mine, true));
   }
 
@@ -782,7 +907,27 @@ tbody tr:hover { background: var(--sunk); }
   }
 
   function scrCalls(r) {
-    var rows = state.role === "mgr" ? CALLS.filter(function (c) { return c.m === "Гусев Д."; }) : CALLS.slice();
+    var src = state.week === "cur" ? CALLS : PREV;
+    var rows = state.role === "mgr" ? src.filter(function (c) { return c.m === "Гусев Д."; }) : src.slice();
+    var ws = WEEKSTAT[state.week];
+
+    var wb = h("div", { class: "chipbar" }, [
+      ["cur", "Эта неделя"], ["prev", "Прошлая неделя"]
+    ].map(function (x) {
+      return h("button", {
+        type: "button", "aria-pressed": String(state.week === x[0]),
+        onclick: function () { state.week = x[0]; render(); }
+      }, [x[1]]);
+    }));
+    r.appendChild(h("div", { class: "card" }, [h("div", { class: "filters" }, [
+      h("span", { class: "flab" }, ["Период"]), wb,
+      h("span", { class: "sub2", style: "margin:0" }, [
+        ws.label + " · " + plu(rows.length, "звонок", "звонка", "звонков")
+        + " · со следующим шагом " + ws.next + "% · средняя оценка " + ws.score
+        + " · " + plu(ws.lost, "ушедшая сделка", "ушедшие сделки", "ушедших сделок")
+      ])
+    ])]));
+
     var f = h("div", { class: "filters" }, [
       h("span", { class: "flab" }, ["Фильтры"]),
       sel("Все менеджеры", ["Все менеджеры"].concat(MGRS.map(function (m) { return m.n; })), function (v) { apply(v, "m"); }),
@@ -834,6 +979,7 @@ tbody tr:hover { background: var(--sunk); }
     ]));
 
     r.appendChild(dealCard(c));
+    if (state.role === "mgr") r.appendChild(callTips());
 
     // плеер
     var bars = [], wave = h("div", { class: "wave", role: "slider", "aria-label": "Позиция в записи", tabindex: "0" });
@@ -1381,6 +1527,195 @@ tbody tr:hover { background: var(--sunk); }
     document.addEventListener("keydown", esc);
     document.body.appendChild(ov);
     var f = ov.querySelector("input, button"); if (f) f.focus();
+  }
+
+  /* Один приоритет на дашборде владельца. Больше одного — это уже список, а список не делают. */
+  function nowBanner() {
+    return h("div", { class: "alert" }, [
+      h("span", { class: "bolt" }, ["⚡"]),
+      h("div", {}, [
+        h("b", {}, ["Главное сейчас: Орлов А. теряет сделки на презентации цены — три звонка подряд"]),
+        h("span", {}, ["Сильный менеджер по остальным этапам, просадка только здесь. Разобрать с руководителем до пятницы."])
+      ]),
+      h("button", { class: "btn sm", type: "button", onclick: function () { state.call = 11; go("call"); } }, ["Открыть звонок"])
+    ]);
+  }
+
+  function roiCard() {
+    var spent = 18000, gain = 340000;
+    return h("div", { class: "card" }, [
+      h("div", { class: "ch" }, [h("h2", {}, ["Сколько стоит и сколько вернул"]), h("span", { class: "hint" }, ["с момента подключения"])]),
+      h("div", { class: "roi" }, [
+        h("div", { class: "r" }, [h("span", {}, ["Потрачено на подписку"]), h("b", {}, [money(spent)])]),
+        h("div", { class: "r" }, [h("span", {}, ["Прирост выручки за тот же срок"]), h("b", { style: "color:var(--good)" }, ["+" + money(gain)])]),
+        h("p", { class: "sub2 sum", style: "margin:0" }, [
+          "Прирост считается по сделкам, которые закрылись после исправления найденной проблемы. "
+          + "Это корреляция, а не доказанная причина: часть роста могла прийти от сезона или рекламы."
+        ])
+      ])
+    ]);
+  }
+
+  /* ---- трекер исправлений (РОП) ---- */
+  function scrFixes(r) {
+    r.appendChild(h("div", { class: "card p" }, [
+      h("b", { style: "font-size:15px" }, ["Что нашли, что сделали, что из этого вышло"]),
+      h("p", { class: "sub2", style: "margin-top:6px" }, [
+        "Одна строка — один цикл. Строка закрывается только после перемера на новой выборке. "
+        + "Строки с минусом не прячутся: действие, которое не сработало, важнее знать, чем забыть."
+      ])
+    ]));
+    r.appendChild(h("div", { class: "card" }, [
+      h("div", { class: "ch" }, [h("h2", {}, ["Исправления"]), h("span", { class: "hint" }, [FIXES.length + " циклов"])]),
+      h("div", { class: "tw" }, [h("table", {}, [
+        h("thead", {}, [h("tr", {}, ["ПРОБЛЕМА", "МЕНЕДЖЕР", "ВЫЯВЛЕНА", "СТАТУС", "РЕЗУЛЬТАТ ПОСЛЕ ПЕРЕМЕРА"].map(function (x) { return h("th", {}, [x]); }))]),
+        h("tbody", {}, FIXES.map(function (f) {
+          var d = (f.now != null && f.was != null) ? f.was - f.now : null;
+          return h("tr", {}, [
+            h("td", {}, [f.pr]),
+            h("td", {}, [f.m]),
+            h("td", { class: "mono" }, [f.found]),
+            h("td", {}, [h("span", { class: "tag " + FIXST[f.st][0] }, [FIXST[f.st][1]])]),
+            h("td", {}, [
+              d == null
+                ? h("span", { style: "color:var(--ink3)" }, [f.was != null ? "ждём перемер, точка отсчёта " + f.was + "%" : "точка отсчёта ещё не снята"])
+                : d > 5
+                  ? h("span", { class: "tag good mono" }, ["−" + d + " п.п. · " + f.was + "% → " + f.now + "%"])
+                  : h("span", { class: "tag bad mono" }, ["не сработало · " + f.was + "% → " + f.now + "%"])
+            ])
+          ]);
+        }))
+      ])]),
+      h("p", { class: "sub2", style: "padding:13px 17px 16px;margin:0" }, [
+        "«Договорённость вслух»: 44% → 41%. Разница в пределах погрешности, значит действие не сработало и проблема вернулась в очередь."
+      ])
+    ]));
+  }
+
+  /* ---- тренажёр звонков (менеджер) ---- */
+  var TRAIN = [
+    { c: "Здравствуйте. Я по поводу банкротства. Сколько это у вас стоит?", tip: "Не отвечайте цифрой на первый вопрос. Спросите про ситуацию." },
+    { c: "Ну… долгов тысяч на восемьсот. Два кредита и микрозайм. Но вы цену скажите.", tip: "Уточните срок и давление: приставы, суды, звонки коллекторов." },
+    { c: "Приставы уже пишут, да. Слушайте, у вас дорого. Рядом за сто тысяч делают.", tip: "Возражение «дорого». Не оправдывайтесь — спросите, что входит в те сто." },
+    { c: "Да не знаю я, что там входит. Цена же меньше, вот и всё.", tip: "Покажите разницу через риск для клиента, а не через достоинства компании." },
+    { c: "Хм. Ладно, допустим. Я подумаю и перезвоню вам.", tip: "«Я подумаю» — это не отказ. Назовите дату сами, не оставляйте шаг клиенту." },
+    { c: "Ну давайте в четверг. Телеграм мой запишите, там удобнее.", tip: "Повторите договорённость вслух и зафиксируйте второй канал." }
+  ];
+
+  function scrTrain(r) {
+    var step = 0, done = false;
+    r.appendChild(h("div", { class: "card p" }, [
+      h("b", { style: "font-size:15px" }, ["Отработка возражения «дорого»"]),
+      h("p", { class: "sub2", style: "margin-top:6px" }, [
+        "Клиент вымышленный, реплики заранее записаны — он отвечает по сценарию, а не на ваши слова. "
+        + "Это тренировка формулировок, а не проверка знаний: ошибиться здесь ничего не стоит."
+      ])
+    ]));
+
+    var chat = h("div", { class: "chat" }, []);
+    var input = h("input", { class: "inp", placeholder: "Ваш ответ клиенту…", "aria-label": "Ваш ответ клиенту" });
+    var send = h("button", { class: "btn", type: "button" }, ["Отправить"]);
+    var row = h("div", { class: "sendrow" }, [input, send]);
+    var card = h("div", { class: "card" }, [
+      h("div", { class: "ch" }, [h("h2", {}, ["Разговор"]), h("span", { class: "hint" }, ["реплика " + "1 из " + TRAIN.length])]),
+      chat, row
+    ]);
+    var hint = card.querySelector(".hint");
+    r.appendChild(card);
+    var after = h("div", {});
+    r.appendChild(after);
+
+    function scroll() { chat.scrollTop = chat.scrollHeight; }
+    function client(i) {
+      chat.appendChild(h("div", { class: "msg cli" }, [h("span", { class: "who" }, ["Клиент"]), TRAIN[i].c]));
+      chat.appendChild(h("div", { class: "tip" }, ["Подсказка: " + TRAIN[i].tip]));
+      hint.textContent = "реплика " + (i + 1) + " из " + TRAIN.length;
+      scroll();
+    }
+    function finish() {
+      done = true;
+      input.disabled = true; send.disabled = true;
+      input.placeholder = "Разговор завершён";
+      hint.textContent = "разговор завершён";
+      after.appendChild(h("div", { class: "card" }, [
+        h("div", { class: "ch" }, [h("h2", {}, ["Разбор тренировки"]), h("span", { class: "tag mute" }, ["демо: оценка заранее записана"])]),
+        h("div", { class: "verd" }, [
+          h("div", {}, [
+            h("h5", { style: "color:var(--good)" }, ["Что сделали хорошо"]),
+            h("ul", {}, [
+              h("li", {}, ["Дошли до конца разговора и не бросили клиента на возражении."]),
+              h("li", {}, ["Взяли второй канал связи — телеграм остался у вас."]),
+              h("li", {}, ["Разговор закончился датой, а не словом «подумаю»."])
+            ])
+          ]),
+          h("div", {}, [
+            h("h5", { style: "color:var(--bad)" }, ["Что улучшить"]),
+            h("ul", {}, [
+              h("li", {}, ["Цена прозвучала раньше, чем вы узнали сумму долга и срок."]),
+              h("li", {}, ["На «рядом за сто тысяч» не прозвучал встречный вопрос о том, что входит в эту цену."]),
+              h("li", {}, ["Договорённость не повторена вслух: клиент ушёл, не услышав, что будет в четверг."])
+            ])
+          ])
+        ]),
+        h("div", { style: "padding:0 17px 17px" }, [
+          h("button", { class: "btn ghost sm", type: "button", onclick: function () { go("train"); } }, ["Пройти заново"])
+        ])
+      ]));
+      scroll();
+    }
+    function submit() {
+      if (done) return;
+      var v = input.value.trim();
+      if (!v) { input.focus(); return; }
+      chat.appendChild(h("div", { class: "msg me" }, [h("span", { class: "who" }, ["Вы"]), v]));
+      input.value = ""; scroll();
+      step++;
+      setTimeout(function () {
+        if (step < TRAIN.length) client(step); else finish();
+      }, 450);
+    }
+    send.addEventListener("click", submit);
+    input.addEventListener("keydown", function (e) { if (e.key === "Enter") submit(); });
+    client(0);
+    input.focus();
+  }
+
+  /* ---- динамика менеджера ---- */
+  function mgrTrend() {
+    var w = 320, ht = 96, pad = 10, max = 40, min = 10;
+    var pts = MGRTREND.map(function (v, i) {
+      return [pad + i * (w - pad * 2) / (MGRTREND.length - 1), ht - 20 - (v - min) / (max - min) * (ht - 42)];
+    });
+    var d = pts.map(function (q, i) { return (i ? "L" : "M") + q[0].toFixed(1) + " " + q[1].toFixed(1); }).join(" ");
+    return h("div", { class: "card" }, [
+      h("div", { class: "ch" }, [h("h2", {}, ["Моя оценка по неделям"]), h("span", { class: "hint" }, ["4 недели · из 100"])]),
+      h("div", { style: "padding:14px 17px", html:
+        '<svg viewBox="0 0 ' + w + ' ' + ht + '" style="display:block;width:100%;height:auto" role="img" aria-label="Оценка по неделям: ' + MGRTREND.join(", ") + ' из 100, текущая неделя ' + MGRTREND[MGRTREND.length - 1] + '">' +
+        '<path d="' + d + '" fill="none" stroke="var(--acc)" stroke-width="2" stroke-linejoin="round"/>' +
+        pts.map(function (q, i) {
+          var last = i === pts.length - 1;
+          return '<circle cx="' + q[0].toFixed(1) + '" cy="' + q[1].toFixed(1) + '" r="' + (last ? 5 : 3) + '" fill="' + (last ? "var(--acc)" : "var(--acc-dim)") + '" stroke="var(--card)" stroke-width="2"/>' +
+            '<text x="' + q[0].toFixed(1) + '" y="' + (q[1] - 11).toFixed(1) + '" text-anchor="middle" font-family="var(--m)" font-size="11" fill="' + (last ? "var(--ink)" : "var(--ink3)") + '">' + MGRTREND[i] + '</text>';
+        }).join("") +
+        '<text x="' + pad + '" y="' + (ht - 4) + '" font-family="var(--m)" font-size="10.5" fill="var(--ink3)">4 недели назад</text>' +
+        '<text x="' + (w - pad) + '" y="' + (ht - 4) + '" text-anchor="end" font-family="var(--m)" font-size="10.5" fill="var(--ink3)">эта неделя</text>' +
+        '</svg>' }),
+      h("p", { class: "sub2", style: "padding:0 17px 16px;margin:0" }, ["Рост есть, но в команде средняя 68. Ближайшая цель — 40 к концу месяца."])
+    ]);
+  }
+
+  /* ---- три подсказки под разбором звонка ---- */
+  function callTips() {
+    return h("div", { class: "card" }, [
+      h("div", { class: "ch" }, [h("h2", {}, ["Три вещи, чтобы следующий звонок был лучше"]), h("span", { class: "hint" }, ["по этому разговору"])]),
+      h("div", { class: "tips" }, [
+        h("ol", {}, [
+          h("li", {}, [h("b", {}, ["Задавайте вопросы до того, как назовёте цену. "]), "Три вопроса о ситуации — и цифра звучит как решение задачи, а не как ценник."]),
+          h("li", {}, [h("b", {}, ["Повторяйте договорённость вслух перед прощанием. "]), "«Значит, в четверг в 11 я наберу вас и пришлю расчёт» — одна фраза в конце."]),
+          h("li", {}, [h("b", {}, ["Берите второй канал связи. "]), "Телефон теряется, мессенджер остаётся. Спросите до того, как разговор закончился."])
+        ])
+      ])
+    ]);
   }
 
   /* ===================== МОДАЛКА ===================== */
